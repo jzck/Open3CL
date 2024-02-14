@@ -14,10 +14,12 @@ function tv_ug(di, de, du) {
     matcher.vitrage_vir = requestInput(de, du, 'vitrage_vir', 'bool')
     matcher.epaisseur_lame = requestInput(de, du, 'epaisseur_lame', 'float')
   }
+  console.warn(matcher)
   const row = tv('ug', matcher)
   if (row) {
     di.ug = Number(row.ug)
     de.tv_ug_id = Number(row.tv_ug_id)
+    console.warn(row.ug, row.tv_ug_id)
   } else {
     console.error('!! pas de valeur forfaitaire trouvée pour ug !!')
   }
@@ -30,7 +32,6 @@ function tv_uw(di, de, du) {
 
   if (matcher.enum_type_baie_id && !['1', '2', '3'].includes(matcher.enum_type_baie_id)) {
     matcher.enum_type_materiaux_menuiserie_id = requestInputID(de, du, 'type_materiaux_menuiserie')
-    tv_ug(di, de, du)
     matcher.ug = `^${di.ug}$`
   }
   const row = tv('uw', matcher)
@@ -141,6 +142,7 @@ export default function calc_bv(bv, zc) {
   if (de.sw_saisi) di.sw = de.sw_saisi
   else tv_sw(di, de, du)
 
+  tv_ug(di, de, du)
   if (de.uw_saisi) di.uw = de.uw_saisi
   else tv_uw(di, de, du)
 
