@@ -51,7 +51,7 @@ let coef_cout = {
 
 function cout_gaz_naturel(cef) {
 	if (cef < 5009) return 0.11121 * cef;
-	else if (conso < 50055) return 230 + 0.06533 * cef;
+	else if (cef < 50055) return 230 + 0.06533 * cef;
 	else return 415 + 0.06164 * cef;
 }
 

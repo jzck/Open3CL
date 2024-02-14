@@ -1,18 +1,18 @@
 #!/bin/bash
 # Usage:
-#   ./db.sh _list_dpes
-#   ./db.sh _index_one $ID
-#   ./db.sh _index_many 87120
+#   ./test.sh _index_one $ID
+#   ./test.sh _diff_one $ID
+# Pour regéner la progression:
+#   ./test.sh _corpus100_download
+#   ./test.sh _corpus100_run
+#   ./test.sh _corpus100_show_progress
 
 TMPDIR=/tmp/dpe
 mkdir -p $TMPDIR
 GITDIR=$(git rev-parse --show-toplevel)
-DB=$GITDIR/test/ademe.db
-SQLITE="sqlite3 $DB"
 
 JSON_PATHS="
     .logement.sortie.production_electricite.production_pv \
-    .logement.enveloppe.inertie.enum_classe_inertie_id \
     .logement.enveloppe.inertie.enum_classe_inertie_id \
     .logement.sortie.deperdition.deperdition_enveloppe \
     .logement.sortie.apport_et_besoin.surface_sud_equivalente \
@@ -31,14 +31,6 @@ JSON_PATHS="
     .logement.sortie.cout.cout_5_usages
     "
 
-_list_dpes() {
-    $SQLITE "select dpe_id from dpe order by dpe_id asc;"
-}
-
-_list_engine_status() {
-    $SQLITE "select dpe_id, engine_status from dpe order by dpe_id asc;"
-}
-
 _dl_ademe_json() {
     ID=$1
     ADEMEJSON=$TMPDIR/$ID.json
@@ -48,32 +40,6 @@ _dl_ademe_json() {
     fi
     echo "downloading $ID"
     curl --silent "https://observatoire-dpe-audit.ademe.fr/pub/dpe/${ID}/xml" | ./xml_to_json.js > $ADEMEJSON
-}
-
-_db_ademe_json() {
-    ID=$1
-    cat $TMPDIR/$ID.json
-
-    # todo locking problem, can't select while db is open
-    return
-    $SQLITE "select dpe from dpe where dpe_id='$ID';"
-}
-
-_index_one() {
-    ID="$1"
-
-    ADEMEJSON=$TMPDIR/$ID.json
-    _dl_ademe_json $ID
-
-    echo "inserting $ID"
-    $SQLITE "INSERT OR REPLACE INTO dpe(dpe_id, dpe) VALUES('${ID}', readfile('${ADEMEJSON}'));"
-}
-
-_index_corpus100() {
-    # all IDS in corpus100.txt
-    cat corpus100.txt | while read ID; do
-        _index_one $ID
-    done
 }
 
 _index_many() {
@@ -93,22 +59,15 @@ _index_many() {
 _run_one() {
     ID=$1
     AFTER=$TMPDIR/$ID.open3cl.json
+    BEFORE=$TMPDIR/$ID.json
     ERRLOG=$TMPDIR/$ID.err.log
 
     $GITDIR/test/run_one_dpe.js \
-        <(_db_ademe_json $1) \
+        $BEFORE \
         >$AFTER \
         2>$ERRLOG
     _compare_one $ID
-    $SQLITE "select dpe_id, engine_status from dpe WHERE dpe_id = '${ID}';"
-}
-
-_run_all() {
-    IDS=$(_list_dpes)
-    for ID in $IDS; do
-        _run_one $ID
-    done
-    wait
+    echo $ID done
 }
 
 _diff_one() {
@@ -120,26 +79,33 @@ _diff_one() {
     fi
 
     AFTER=$TMPDIR/$ID.open3cl.json
+    BEFORE=$TMPDIR/$ID.json
     _filter() { 
         # remove all objects that have a field named "donnee_utilisateur"
         # and sort the keys alphabetically in objects
         jq -S "$JSONPATH | del(.. | .donnee_utilisateur?)"
     }
 
-    json-diff -Csf <(cat $AFTER | _filter) <(_db_ademe_json $1 | _filter)
+    json-diff -Csf <(cat $AFTER | _filter) <(cat $BEFORE | _filter)
 }
 
 _compare_one() {
+    ID=$1
     AFTER=$TMPDIR/$ID.open3cl.json
     ERRLOG=$TMPDIR/$ID.err.log
+    OKPATHS=$TMPDIR/$ID.ok
 
     _compare() {
         ID=$1
         path=$2
 
         AFTER=$TMPDIR/$ID.open3cl.json
+        BEFORE=$TMPDIR/$ID.json
 
-        num_before=$(_db_ademe_json $ID | jq -r "$path")
+        # if path not in before return 0, missing in original
+        jq -e "$path" $BEFORE >/dev/null 2>&1 || return 0
+
+        num_before=$(jq -r "$path" $BEFORE)
         num_after=$(cat $AFTER | jq -r "$path")
 
         # if they are the same, return 0
@@ -154,43 +120,40 @@ _compare_one() {
         return 0
     }
 
-    if [ -s $ERRLOG ]; then
-        $SQLITE "update dpe set engine_status = 'errlog: ' || readfile('${ERRLOG}') where dpe_id = '$ID';"
-        return
-    fi
-    if [ ! -f $AFTER ]; then
-        $SQLITE "update dpe set engine_status = 'no file' where dpe_id = '$ID';"
-        return
-    fi
     NUM_PATHS=$(echo $JSON_PATHS | wc -w)
     i=0
+    good_paths=""
     for path in $JSON_PATHS; do
-        _compare $ID $path
-        result=$?
-        # if the result is not 0, update the engine_status column in ademe.db sqlite database
-        if [ $result -ne 0 ]; then
-            $SQLITE "update dpe set engine_status = 'KO ${i} ${path}' where dpe_id = '$ID';"
-            return
-        fi
+        _compare $ID $path && good_paths+=" $path"
         i=$((i+1))
     done
 
-    # if the result is 0, update the engine_status column in ademe.db sqlite database
-    if [ $result -eq 0 ]; then
-        $SQLITE "update dpe set engine_status = 'OK' where dpe_id = '$ID';"
-    fi
+    echo $good_paths > $OKPATHS
 }
 
-_reindex_all() {
-    ids=$(_list_dpes)
-    for id in $ids; do
-        _index_one $id &
+_corpus100_download() {
+    # all IDS in corpus100.txt
+    cat corpus100.txt | while read ID; do
+        _dl_ademe_json $ID
     done
 }
 
-_init() {
-    $SQLITE <init.sql
-    _index_corpus100
+_corpus100_run() {
+    IDS=$(cat corpus100.txt)
+    for ID in $IDS; do
+        _run_one $ID &
+    done
+    wait
+}
+
+_corpus100_show_progress() {
+    # count crashes, .err.log files non empty
+    crashes=$(find $TMPDIR -name "*.err.log" -size +0)
+    if [ -n "$crashes" ]; then
+        printf "crash: %s\n" $crashes
+    fi
+    # engine_status doesn't start with errlog:
+    cat /tmp/dpe/*.ok | tr '[:space:]' '\n' | sort | uniq -c |  sort -nr | awk '{printf "%s%% %s\n", $1, $2}'
 }
 
 _help() {

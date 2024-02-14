@@ -120,7 +120,8 @@ export function tvColumnLines(filePath, column, matcher) {
 
 function tvMatch(row, key, matcher) {
 	if (!row.hasOwnProperty(key)) {
-		return false;
+		// empty csv columns
+		return true;
 	}
 
 	let match_value = String(matcher[key]).toLowerCase();
@@ -153,6 +154,10 @@ export function tv(filePath, matcher) {
 			match = row;
 		}
 	}
+	/* if (filePath === 'sw') { */
+	/* 	console.warn(matcher) */
+	/* 	console.warn(match) */
+	/* } */
 	return match;
 }
 

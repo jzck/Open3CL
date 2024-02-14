@@ -47371,441 +47371,6 @@ export const tvs = {
   }
 ]
 ,
-"umur": [
-  {
-    "tv_umur_id": "1",
-    "enum_periode_construction_id": "1|2",
-    "periode_construction": "avant 1974 ou inconnu",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "1",
-    "umur": "2.5"
-  },
-  {
-    "tv_umur_id": "2",
-    "enum_periode_construction_id": "1|2",
-    "periode_construction": "avant 1974 ou inconnu",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "0",
-    "umur": "2.5"
-  },
-  {
-    "tv_umur_id": "3",
-    "enum_periode_construction_id": "1|2",
-    "periode_construction": "avant 1974 ou inconnu",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "1",
-    "umur": "2.5"
-  },
-  {
-    "tv_umur_id": "4",
-    "enum_periode_construction_id": "1|2",
-    "periode_construction": "avant 1974 ou inconnu",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "0",
-    "umur": "2.5"
-  },
-  {
-    "tv_umur_id": "5",
-    "enum_periode_construction_id": "1|2",
-    "periode_construction": "avant 1974 ou inconnu",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "1",
-    "umur": "2.5"
-  },
-  {
-    "tv_umur_id": "6",
-    "enum_periode_construction_id": "1|2",
-    "periode_construction": "avant 1974 ou inconnu",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "0",
-    "umur": "2.5"
-  },
-  {
-    "tv_umur_id": "7",
-    "enum_periode_construction_id": "3",
-    "periode_construction": "1975-1977",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "1",
-    "umur": "1"
-  },
-  {
-    "tv_umur_id": "8",
-    "enum_periode_construction_id": "3",
-    "periode_construction": "1975-1977",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "0",
-    "umur": "1"
-  },
-  {
-    "tv_umur_id": "9",
-    "enum_periode_construction_id": "3",
-    "periode_construction": "1975-1977",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "1",
-    "umur": "1.05"
-  },
-  {
-    "tv_umur_id": "10",
-    "enum_periode_construction_id": "3",
-    "periode_construction": "1975-1977",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "0",
-    "umur": "1.05"
-  },
-  {
-    "tv_umur_id": "11",
-    "enum_periode_construction_id": "3",
-    "periode_construction": "1975-1977",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "1",
-    "umur": "1.11"
-  },
-  {
-    "tv_umur_id": "12",
-    "enum_periode_construction_id": "3",
-    "periode_construction": "1975-1977",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "0",
-    "umur": "1.11"
-  },
-  {
-    "tv_umur_id": "13",
-    "enum_periode_construction_id": "4",
-    "periode_construction": "1978-1982",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "1",
-    "umur": "0.8"
-  },
-  {
-    "tv_umur_id": "14",
-    "enum_periode_construction_id": "4",
-    "periode_construction": "1978-1982",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "0",
-    "umur": "1"
-  },
-  {
-    "tv_umur_id": "15",
-    "enum_periode_construction_id": "4",
-    "periode_construction": "1978-1982",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "1",
-    "umur": "0.84"
-  },
-  {
-    "tv_umur_id": "16",
-    "enum_periode_construction_id": "4",
-    "periode_construction": "1978-1982",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "0",
-    "umur": "1.05"
-  },
-  {
-    "tv_umur_id": "17",
-    "enum_periode_construction_id": "4",
-    "periode_construction": "1978-1982",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "1",
-    "umur": "0.89"
-  },
-  {
-    "tv_umur_id": "18",
-    "enum_periode_construction_id": "4",
-    "periode_construction": "1978-1982",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "0",
-    "umur": "1.11"
-  },
-  {
-    "tv_umur_id": "19",
-    "enum_periode_construction_id": "5",
-    "periode_construction": "1983-1988",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "1",
-    "umur": "0.7"
-  },
-  {
-    "tv_umur_id": "20",
-    "enum_periode_construction_id": "5",
-    "periode_construction": "1983-1988",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "0",
-    "umur": "0.8"
-  },
-  {
-    "tv_umur_id": "21",
-    "enum_periode_construction_id": "5",
-    "periode_construction": "1983-1988",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "1",
-    "umur": "0.74"
-  },
-  {
-    "tv_umur_id": "22",
-    "enum_periode_construction_id": "5",
-    "periode_construction": "1983-1988",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "0",
-    "umur": "0.84"
-  },
-  {
-    "tv_umur_id": "23",
-    "enum_periode_construction_id": "5",
-    "periode_construction": "1983-1988",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "1",
-    "umur": "0.78"
-  },
-  {
-    "tv_umur_id": "24",
-    "enum_periode_construction_id": "5",
-    "periode_construction": "1983-1988",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "0",
-    "umur": "0.89"
-  },
-  {
-    "tv_umur_id": "25",
-    "enum_periode_construction_id": "6",
-    "periode_construction": "1989-2000",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "1",
-    "umur": "0.45"
-  },
-  {
-    "tv_umur_id": "26",
-    "enum_periode_construction_id": "6",
-    "periode_construction": "1989-2000",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "0",
-    "umur": "0.5"
-  },
-  {
-    "tv_umur_id": "27",
-    "enum_periode_construction_id": "6",
-    "periode_construction": "1989-2000",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "1",
-    "umur": "0.47"
-  },
-  {
-    "tv_umur_id": "28",
-    "enum_periode_construction_id": "6",
-    "periode_construction": "1989-2000",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "0",
-    "umur": "0.53"
-  },
-  {
-    "tv_umur_id": "29",
-    "enum_periode_construction_id": "6",
-    "periode_construction": "1989-2000",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "1",
-    "umur": "0.5"
-  },
-  {
-    "tv_umur_id": "30",
-    "enum_periode_construction_id": "6",
-    "periode_construction": "1989-2000",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "0",
-    "umur": "0.56"
-  },
-  {
-    "tv_umur_id": "31",
-    "enum_periode_construction_id": "7",
-    "periode_construction": "2001-2005",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "1",
-    "umur": "0.4"
-  },
-  {
-    "tv_umur_id": "32",
-    "enum_periode_construction_id": "7",
-    "periode_construction": "2001-2005",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "0",
-    "umur": "0.4"
-  },
-  {
-    "tv_umur_id": "33",
-    "enum_periode_construction_id": "7",
-    "periode_construction": "2001-2005",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "1",
-    "umur": "0.4"
-  },
-  {
-    "tv_umur_id": "34",
-    "enum_periode_construction_id": "7",
-    "periode_construction": "2001-2005",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "0",
-    "umur": "0.4"
-  },
-  {
-    "tv_umur_id": "35",
-    "enum_periode_construction_id": "7",
-    "periode_construction": "2001-2005",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "1",
-    "umur": "0.47"
-  },
-  {
-    "tv_umur_id": "36",
-    "enum_periode_construction_id": "7",
-    "periode_construction": "2001-2005",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "0",
-    "umur": "0.47"
-  },
-  {
-    "tv_umur_id": "37",
-    "enum_periode_construction_id": "8",
-    "periode_construction": "2006-2012",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "1",
-    "umur": "0.36"
-  },
-  {
-    "tv_umur_id": "38",
-    "enum_periode_construction_id": "8",
-    "periode_construction": "2006-2012",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "0",
-    "umur": "0.36"
-  },
-  {
-    "tv_umur_id": "39",
-    "enum_periode_construction_id": "8",
-    "periode_construction": "2006-2012",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "1",
-    "umur": "0.36"
-  },
-  {
-    "tv_umur_id": "40",
-    "enum_periode_construction_id": "8",
-    "periode_construction": "2006-2012",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "0",
-    "umur": "0.36"
-  },
-  {
-    "tv_umur_id": "41",
-    "enum_periode_construction_id": "8",
-    "periode_construction": "2006-2012",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "1",
-    "umur": "0.4"
-  },
-  {
-    "tv_umur_id": "42",
-    "enum_periode_construction_id": "8",
-    "periode_construction": "2006-2012",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "0",
-    "umur": "0.4"
-  },
-  {
-    "tv_umur_id": "43",
-    "enum_periode_construction_id": "9|10",
-    "periode_construction": ">=2013",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "1",
-    "umur": "0.23"
-  },
-  {
-    "tv_umur_id": "44",
-    "enum_periode_construction_id": "9|10",
-    "periode_construction": ">=2013",
-    "enum_zone_climatique_id": "1|2|3",
-    "zone_climatique": "H1",
-    "effet_joule": "0",
-    "umur": "0.23"
-  },
-  {
-    "tv_umur_id": "45",
-    "enum_periode_construction_id": "9|10",
-    "periode_construction": ">=2013",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "1",
-    "umur": "0.23"
-  },
-  {
-    "tv_umur_id": "46",
-    "enum_periode_construction_id": "9|10",
-    "periode_construction": ">=2013",
-    "enum_zone_climatique_id": "4|5|6|7",
-    "zone_climatique": "H2",
-    "effet_joule": "0",
-    "umur": "0.23"
-  },
-  {
-    "tv_umur_id": "47",
-    "enum_periode_construction_id": "9|10",
-    "periode_construction": ">=2013",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "1",
-    "umur": "0.25"
-  },
-  {
-    "tv_umur_id": "48",
-    "enum_periode_construction_id": "9|10",
-    "periode_construction": ">=2013",
-    "enum_zone_climatique_id": "8",
-    "zone_climatique": "H3",
-    "effet_joule": "0",
-    "umur": "0.25"
-  }
-]
-,
 "umur0": [
   {
     "tv_umur0_id": "1",
@@ -48905,6 +48470,516 @@ export const tvs = {
   }
 ]
 ,
+"umur": [
+  {
+    "tv_umur_id": "1",
+    "enum_periode_construction_id": "1|2",
+    "periode_construction": "avant 1974 ou inconnu",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "1",
+    "umur": "2.5"
+  },
+  {
+    "tv_umur_id": "2",
+    "enum_periode_construction_id": "1|2",
+    "periode_construction": "avant 1974 ou inconnu",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "0",
+    "umur": "2.5"
+  },
+  {
+    "tv_umur_id": "3",
+    "enum_periode_construction_id": "1|2",
+    "periode_construction": "avant 1974 ou inconnu",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "1",
+    "umur": "2.5"
+  },
+  {
+    "tv_umur_id": "4",
+    "enum_periode_construction_id": "1|2",
+    "periode_construction": "avant 1974 ou inconnu",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "0",
+    "umur": "2.5"
+  },
+  {
+    "tv_umur_id": "5",
+    "enum_periode_construction_id": "1|2",
+    "periode_construction": "avant 1974 ou inconnu",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "1",
+    "umur": "2.5"
+  },
+  {
+    "tv_umur_id": "6",
+    "enum_periode_construction_id": "1|2",
+    "periode_construction": "avant 1974 ou inconnu",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "0",
+    "umur": "2.5"
+  },
+  {
+    "tv_umur_id": "7",
+    "enum_periode_construction_id": "3",
+    "periode_construction": "1975-1977",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "1",
+    "umur": "1"
+  },
+  {
+    "tv_umur_id": "8",
+    "enum_periode_construction_id": "3",
+    "periode_construction": "1975-1977",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "0",
+    "umur": "1"
+  },
+  {
+    "tv_umur_id": "9",
+    "enum_periode_construction_id": "3",
+    "periode_construction": "1975-1977",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "1",
+    "umur": "1.05"
+  },
+  {
+    "tv_umur_id": "10",
+    "enum_periode_construction_id": "3",
+    "periode_construction": "1975-1977",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "0",
+    "umur": "1.05"
+  },
+  {
+    "tv_umur_id": "11",
+    "enum_periode_construction_id": "3",
+    "periode_construction": "1975-1977",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "1",
+    "umur": "1.11"
+  },
+  {
+    "tv_umur_id": "12",
+    "enum_periode_construction_id": "3",
+    "periode_construction": "1975-1977",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "0",
+    "umur": "1.11"
+  },
+  {
+    "tv_umur_id": "13",
+    "enum_periode_construction_id": "4",
+    "periode_construction": "1978-1982",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "1",
+    "umur": "0.8"
+  },
+  {
+    "tv_umur_id": "14",
+    "enum_periode_construction_id": "4",
+    "periode_construction": "1978-1982",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "0",
+    "umur": "1"
+  },
+  {
+    "tv_umur_id": "15",
+    "enum_periode_construction_id": "4",
+    "periode_construction": "1978-1982",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "1",
+    "umur": "0.84"
+  },
+  {
+    "tv_umur_id": "16",
+    "enum_periode_construction_id": "4",
+    "periode_construction": "1978-1982",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "0",
+    "umur": "1.05"
+  },
+  {
+    "tv_umur_id": "17",
+    "enum_periode_construction_id": "4",
+    "periode_construction": "1978-1982",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "1",
+    "umur": "0.89"
+  },
+  {
+    "tv_umur_id": "18",
+    "enum_periode_construction_id": "4",
+    "periode_construction": "1978-1982",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "0",
+    "umur": "1.11"
+  },
+  {
+    "tv_umur_id": "19",
+    "enum_periode_construction_id": "5",
+    "periode_construction": "1983-1988",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "1",
+    "umur": "0.7"
+  },
+  {
+    "tv_umur_id": "20",
+    "enum_periode_construction_id": "5",
+    "periode_construction": "1983-1988",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "0",
+    "umur": "0.8"
+  },
+  {
+    "tv_umur_id": "21",
+    "enum_periode_construction_id": "5",
+    "periode_construction": "1983-1988",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "1",
+    "umur": "0.74"
+  },
+  {
+    "tv_umur_id": "22",
+    "enum_periode_construction_id": "5",
+    "periode_construction": "1983-1988",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "0",
+    "umur": "0.84"
+  },
+  {
+    "tv_umur_id": "23",
+    "enum_periode_construction_id": "5",
+    "periode_construction": "1983-1988",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "1",
+    "umur": "0.78"
+  },
+  {
+    "tv_umur_id": "24",
+    "enum_periode_construction_id": "5",
+    "periode_construction": "1983-1988",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "0",
+    "umur": "0.89"
+  },
+  {
+    "tv_umur_id": "25",
+    "enum_periode_construction_id": "6",
+    "periode_construction": "1989-2000",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "1",
+    "umur": "0.45"
+  },
+  {
+    "tv_umur_id": "26",
+    "enum_periode_construction_id": "6",
+    "periode_construction": "1989-2000",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "0",
+    "umur": "0.5"
+  },
+  {
+    "tv_umur_id": "27",
+    "enum_periode_construction_id": "6",
+    "periode_construction": "1989-2000",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "1",
+    "umur": "0.47"
+  },
+  {
+    "tv_umur_id": "28",
+    "enum_periode_construction_id": "6",
+    "periode_construction": "1989-2000",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "0",
+    "umur": "0.53"
+  },
+  {
+    "tv_umur_id": "29",
+    "enum_periode_construction_id": "6",
+    "periode_construction": "1989-2000",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "1",
+    "umur": "0.5"
+  },
+  {
+    "tv_umur_id": "30",
+    "enum_periode_construction_id": "6",
+    "periode_construction": "1989-2000",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "0",
+    "umur": "0.56"
+  },
+  {
+    "tv_umur_id": "31",
+    "enum_periode_construction_id": "7",
+    "periode_construction": "2001-2005",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "1",
+    "umur": "0.4"
+  },
+  {
+    "tv_umur_id": "32",
+    "enum_periode_construction_id": "7",
+    "periode_construction": "2001-2005",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "0",
+    "umur": "0.4"
+  },
+  {
+    "tv_umur_id": "33",
+    "enum_periode_construction_id": "7",
+    "periode_construction": "2001-2005",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "1",
+    "umur": "0.4"
+  },
+  {
+    "tv_umur_id": "34",
+    "enum_periode_construction_id": "7",
+    "periode_construction": "2001-2005",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "0",
+    "umur": "0.4"
+  },
+  {
+    "tv_umur_id": "35",
+    "enum_periode_construction_id": "7",
+    "periode_construction": "2001-2005",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "1",
+    "umur": "0.47"
+  },
+  {
+    "tv_umur_id": "36",
+    "enum_periode_construction_id": "7",
+    "periode_construction": "2001-2005",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "0",
+    "umur": "0.47"
+  },
+  {
+    "tv_umur_id": "37",
+    "enum_periode_construction_id": "8",
+    "periode_construction": "2006-2012",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "1",
+    "umur": "0.36"
+  },
+  {
+    "tv_umur_id": "38",
+    "enum_periode_construction_id": "8",
+    "periode_construction": "2006-2012",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "0",
+    "umur": "0.36"
+  },
+  {
+    "tv_umur_id": "39",
+    "enum_periode_construction_id": "8",
+    "periode_construction": "2006-2012",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "1",
+    "umur": "0.36"
+  },
+  {
+    "tv_umur_id": "40",
+    "enum_periode_construction_id": "8",
+    "periode_construction": "2006-2012",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "0",
+    "umur": "0.36"
+  },
+  {
+    "tv_umur_id": "41",
+    "enum_periode_construction_id": "8",
+    "periode_construction": "2006-2012",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "1",
+    "umur": "0.4"
+  },
+  {
+    "tv_umur_id": "42",
+    "enum_periode_construction_id": "8",
+    "periode_construction": "2006-2012",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "0",
+    "umur": "0.4"
+  },
+  {
+    "tv_umur_id": "43",
+    "enum_periode_construction_id": "9|10",
+    "periode_construction": ">=2013",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "1",
+    "umur": "0.23"
+  },
+  {
+    "tv_umur_id": "44",
+    "enum_periode_construction_id": "9|10",
+    "periode_construction": ">=2013",
+    "enum_zone_climatique_id": "1|2|3",
+    "zone_climatique": "H1",
+    "effet_joule": "0",
+    "umur": "0.23"
+  },
+  {
+    "tv_umur_id": "45",
+    "enum_periode_construction_id": "9|10",
+    "periode_construction": ">=2013",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "1",
+    "umur": "0.23"
+  },
+  {
+    "tv_umur_id": "46",
+    "enum_periode_construction_id": "9|10",
+    "periode_construction": ">=2013",
+    "enum_zone_climatique_id": "4|5|6|7",
+    "zone_climatique": "H2",
+    "effet_joule": "0",
+    "umur": "0.23"
+  },
+  {
+    "tv_umur_id": "47",
+    "enum_periode_construction_id": "9|10",
+    "periode_construction": ">=2013",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "1",
+    "umur": "0.25"
+  },
+  {
+    "tv_umur_id": "48",
+    "enum_periode_construction_id": "9|10",
+    "periode_construction": ">=2013",
+    "enum_zone_climatique_id": "8",
+    "zone_climatique": "H3",
+    "effet_joule": "0",
+    "umur": "0.25"
+  }
+]
+,
+"upb0": [
+  {
+    "tv_upb0_id": "1",
+    "enum_type_plancher_bas_id": "1",
+    "type_plancher_bas": "Inconnu",
+    "upb0": "2"
+  },
+  {
+    "tv_upb0_id": "2",
+    "enum_type_plancher_bas_id": "2",
+    "type_plancher_bas": "Plancher avec ou sans remplissage",
+    "upb0": "1.45"
+  },
+  {
+    "tv_upb0_id": "3",
+    "enum_type_plancher_bas_id": "3",
+    "type_plancher_bas": "Plancher entre solives métalliques avec ou sans remplissage",
+    "upb0": "1.45"
+  },
+  {
+    "tv_upb0_id": "4",
+    "enum_type_plancher_bas_id": "4",
+    "type_plancher_bas": "Plancher entre solives bois avec ou sans remplissage",
+    "upb0": "1.1"
+  },
+  {
+    "tv_upb0_id": "5",
+    "enum_type_plancher_bas_id": "5",
+    "type_plancher_bas": "Plancher bois sur solives métalliques",
+    "upb0": "1.6"
+  },
+  {
+    "tv_upb0_id": "6",
+    "enum_type_plancher_bas_id": "6",
+    "type_plancher_bas": "Bardeaux et remplissage",
+    "upb0": "1.1"
+  },
+  {
+    "tv_upb0_id": "7",
+    "enum_type_plancher_bas_id": "7",
+    "type_plancher_bas": "Voutains sur solives métalliques",
+    "upb0": "1.75"
+  },
+  {
+    "tv_upb0_id": "8",
+    "enum_type_plancher_bas_id": "8",
+    "type_plancher_bas": "Voutains en briques ou moellons",
+    "upb0": "0.8"
+  },
+  {
+    "tv_upb0_id": "9",
+    "enum_type_plancher_bas_id": "9",
+    "type_plancher_bas": "Dalle béton",
+    "upb0": "2"
+  },
+  {
+    "tv_upb0_id": "10",
+    "enum_type_plancher_bas_id": "10",
+    "type_plancher_bas": "Plancher bois sur solives bois",
+    "upb0": "1.6"
+  },
+  {
+    "tv_upb0_id": "11",
+    "enum_type_plancher_bas_id": "11",
+    "type_plancher_bas": "Plancher lourd type entrevous terre-cuite, poutrelles béton",
+    "upb0": "2"
+  },
+  {
+    "tv_upb0_id": "12",
+    "enum_type_plancher_bas_id": "12",
+    "type_plancher_bas": "Plancher à entrevous isolant",
+    "upb0": "0.45"
+  }
+]
+,
 "upb": [
   {
     "tv_upb_id": "1",
@@ -49340,78 +49415,90 @@ export const tvs = {
   }
 ]
 ,
-"upb0": [
+"uph0": [
   {
-    "tv_upb0_id": "1",
-    "enum_type_plancher_bas_id": "1",
-    "type_plancher_bas": "Inconnu",
-    "upb0": "2"
+    "tv_uph0_id": "1",
+    "enum_type_plancher_haut_id": "1",
+    "type_plancher_haut": "Inconnu",
+    "uph0": "2.5"
   },
   {
-    "tv_upb0_id": "2",
-    "enum_type_plancher_bas_id": "2",
-    "type_plancher_bas": "Plancher avec ou sans remplissage",
-    "upb0": "1.45"
+    "tv_uph0_id": "2",
+    "enum_type_plancher_haut_id": "2",
+    "type_plancher_haut": "Plafond avec ou sans remplissage",
+    "uph0": "1.45"
   },
   {
-    "tv_upb0_id": "3",
-    "enum_type_plancher_bas_id": "3",
-    "type_plancher_bas": "Plancher entre solives métalliques avec ou sans remplissage",
-    "upb0": "1.45"
+    "tv_uph0_id": "3",
+    "enum_type_plancher_haut_id": "3",
+    "type_plancher_haut": "Plafond entre solives métalliques avec ou sans remplissage",
+    "uph0": "1.45"
   },
   {
-    "tv_upb0_id": "4",
-    "enum_type_plancher_bas_id": "4",
-    "type_plancher_bas": "Plancher entre solives bois avec ou sans remplissage",
-    "upb0": "1.1"
+    "tv_uph0_id": "4",
+    "enum_type_plancher_haut_id": "4",
+    "type_plancher_haut": "Plafond entre solives bois avec ou sans remplissage",
+    "uph0": "1.2"
   },
   {
-    "tv_upb0_id": "5",
-    "enum_type_plancher_bas_id": "5",
-    "type_plancher_bas": "Plancher bois sur solives métalliques",
-    "upb0": "1.6"
+    "tv_uph0_id": "5",
+    "enum_type_plancher_haut_id": "5",
+    "type_plancher_haut": "Plafond bois sur solives métalliques",
+    "uph0": "2.5"
   },
   {
-    "tv_upb0_id": "6",
-    "enum_type_plancher_bas_id": "6",
-    "type_plancher_bas": "Bardeaux et remplissage",
-    "upb0": "1.1"
+    "tv_uph0_id": "6",
+    "enum_type_plancher_haut_id": "6",
+    "type_plancher_haut": "Plafond bois sous solives métalliques",
+    "uph0": "2.5"
   },
   {
-    "tv_upb0_id": "7",
-    "enum_type_plancher_bas_id": "7",
-    "type_plancher_bas": "Voutains sur solives métalliques",
-    "upb0": "1.75"
+    "tv_uph0_id": "7",
+    "enum_type_plancher_haut_id": "7",
+    "type_plancher_haut": "Bardeaux et remplissage",
+    "uph0": "1.2"
   },
   {
-    "tv_upb0_id": "8",
-    "enum_type_plancher_bas_id": "8",
-    "type_plancher_bas": "Voutains en briques ou moellons",
-    "upb0": "0.8"
+    "tv_uph0_id": "8",
+    "enum_type_plancher_haut_id": "8",
+    "type_plancher_haut": "Dalle béton",
+    "uph0": "2.5"
   },
   {
-    "tv_upb0_id": "9",
-    "enum_type_plancher_bas_id": "9",
-    "type_plancher_bas": "Dalle béton",
-    "upb0": "2"
+    "tv_uph0_id": "9",
+    "enum_type_plancher_haut_id": "9",
+    "type_plancher_haut": "Plafond bois sur solives bois",
+    "uph0": "2"
   },
   {
-    "tv_upb0_id": "10",
-    "enum_type_plancher_bas_id": "10",
-    "type_plancher_bas": "Plancher bois sur solives bois",
-    "upb0": "1.6"
+    "tv_uph0_id": "10",
+    "enum_type_plancher_haut_id": "10",
+    "type_plancher_haut": "Plafond bois sous solives bois",
+    "uph0": "2.3"
   },
   {
-    "tv_upb0_id": "11",
-    "enum_type_plancher_bas_id": "11",
-    "type_plancher_bas": "Plancher lourd type entrevous terre-cuite, poutrelles béton",
-    "upb0": "2"
+    "tv_uph0_id": "11",
+    "enum_type_plancher_haut_id": "11",
+    "type_plancher_haut": "Plafond lourd type entrevous terre-cuite, poutrelles béton",
+    "uph0": "2.5"
   },
   {
-    "tv_upb0_id": "12",
-    "enum_type_plancher_bas_id": "12",
-    "type_plancher_bas": "Plancher à entrevous isolant",
-    "upb0": "0.45"
+    "tv_uph0_id": "12",
+    "enum_type_plancher_haut_id": "12|16",
+    "type_plancher_haut": "Combles aménagés sous rampant",
+    "uph0": "2.5"
+  },
+  {
+    "tv_uph0_id": "13",
+    "enum_type_plancher_haut_id": "13",
+    "type_plancher_haut": "Toiture en chaume",
+    "uph0": "0.24"
+  },
+  {
+    "tv_uph0_id": "14",
+    "enum_type_plancher_haut_id": "14",
+    "type_plancher_haut": "Plafond en plaque de plâtre",
+    "uph0": "2.5"
   }
 ]
 ,
@@ -50375,93 +50462,6 @@ export const tvs = {
     "effet_joule": "0",
     "type_toiture": "terrasse",
     "uph": "0.14"
-  }
-]
-,
-"uph0": [
-  {
-    "tv_uph0_id": "1",
-    "enum_type_plancher_haut_id": "1",
-    "type_plancher_haut": "Inconnu",
-    "uph0": "2.5"
-  },
-  {
-    "tv_uph0_id": "2",
-    "enum_type_plancher_haut_id": "2",
-    "type_plancher_haut": "Plafond avec ou sans remplissage",
-    "uph0": "1.45"
-  },
-  {
-    "tv_uph0_id": "3",
-    "enum_type_plancher_haut_id": "3",
-    "type_plancher_haut": "Plafond entre solives métalliques avec ou sans remplissage",
-    "uph0": "1.45"
-  },
-  {
-    "tv_uph0_id": "4",
-    "enum_type_plancher_haut_id": "4",
-    "type_plancher_haut": "Plafond entre solives bois avec ou sans remplissage",
-    "uph0": "1.2"
-  },
-  {
-    "tv_uph0_id": "5",
-    "enum_type_plancher_haut_id": "5",
-    "type_plancher_haut": "Plafond bois sur solives métalliques",
-    "uph0": "2.5"
-  },
-  {
-    "tv_uph0_id": "6",
-    "enum_type_plancher_haut_id": "6",
-    "type_plancher_haut": "Plafond bois sous solives métalliques",
-    "uph0": "2.5"
-  },
-  {
-    "tv_uph0_id": "7",
-    "enum_type_plancher_haut_id": "7",
-    "type_plancher_haut": "Bardeaux et remplissage",
-    "uph0": "1.2"
-  },
-  {
-    "tv_uph0_id": "8",
-    "enum_type_plancher_haut_id": "8",
-    "type_plancher_haut": "Dalle béton",
-    "uph0": "2.5"
-  },
-  {
-    "tv_uph0_id": "9",
-    "enum_type_plancher_haut_id": "9",
-    "type_plancher_haut": "Plafond bois sur solives bois",
-    "uph0": "2"
-  },
-  {
-    "tv_uph0_id": "10",
-    "enum_type_plancher_haut_id": "10",
-    "type_plancher_haut": "Plafond bois sous solives bois",
-    "uph0": "2.3"
-  },
-  {
-    "tv_uph0_id": "11",
-    "enum_type_plancher_haut_id": "11",
-    "type_plancher_haut": "Plafond lourd type entrevous terre-cuite, poutrelles béton",
-    "uph0": "2.5"
-  },
-  {
-    "tv_uph0_id": "12",
-    "enum_type_plancher_haut_id": "12|16",
-    "type_plancher_haut": "Combles aménagés sous rampant",
-    "uph0": "2.5"
-  },
-  {
-    "tv_uph0_id": "13",
-    "enum_type_plancher_haut_id": "13",
-    "type_plancher_haut": "Toiture en chaume",
-    "uph0": "0.24"
-  },
-  {
-    "tv_uph0_id": "14",
-    "enum_type_plancher_haut_id": "14",
-    "type_plancher_haut": "Plafond en plaque de plâtre",
-    "uph0": "2.5"
   }
 ]
 ,

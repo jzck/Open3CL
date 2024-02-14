@@ -50,7 +50,7 @@ export default function calc_inertie(enveloppe) {
   inertie.inertie_plancher_bas_lourd = s_pb_lourd / s_pb_total > 0.5 ? 1 : 0
 
   // ph
-  let ph = enveloppe.plancher_haut_collection.plancher_haut
+  let ph = enveloppe.plancher_haut_collection.plancher_haut || []
   let s_ph_lourd = ph.reduce((acc, ph) => {
     let de = ph.donnee_entree
     let du = ph.donnee_utilisateur
