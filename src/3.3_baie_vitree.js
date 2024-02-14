@@ -154,7 +154,7 @@ export default function calc_bv(bv, zc) {
 
   if (de.masque_lointain_non_homogene_collection) {
     let mlnh = de.masque_lointain_non_homogene_collection.masque_lointain_non_homogene || []
-    di.fe2 = mlnh.reduce((acc, ml) => acc - calc_omb(ml) / 100, 1)
+    di.fe2 = Math.max(0, mlnh.reduce((acc, ml) => acc - calc_omb(ml) / 100, 1))
   }
   tv_masque_proche(di, de, du)
   tv_masque_lointain_homogene(di, de, du)

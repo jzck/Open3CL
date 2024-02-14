@@ -63,10 +63,12 @@ _run_one() {
     BEFORE=$TMPDIR/$ID.json
     ERRLOG=$TMPDIR/$ID.err.log
 
+    echo $ID running
     $GITDIR/test/run_one_dpe.js \
         $BEFORE \
         >$AFTER \
         2>$ERRLOG
+    echo $ID comparing
     _compare_one $ID
     echo $ID done
 }
@@ -100,14 +102,14 @@ _compare_one() {
         ID=$1
         path=$2
 
-        AFTER=$TMPDIR/$ID.open3cl.json
         BEFORE=$TMPDIR/$ID.json
+        AFTER=$TMPDIR/$ID.open3cl.json
 
         # if path not in before return 0, missing in original
         jq -e "$path" $BEFORE >/dev/null 2>&1 || return 0
 
         num_before=$(jq -r "$path" $BEFORE)
-        num_after=$(cat $AFTER | jq -r "$path")
+        num_after=$(jq -r "$path" $AFTER)
 
         # if they are the same, return 0
         [ "$num_before" = "$num_after" ] && return 0
@@ -121,12 +123,9 @@ _compare_one() {
         return 0
     }
 
-    NUM_PATHS=$(echo $JSON_PATHS | wc -w)
-    i=0
     good_paths=""
     for path in $JSON_PATHS; do
         _compare $ID $path && good_paths+=" $path"
-        i=$((i+1))
     done
 
     echo $good_paths > $OKPATHS
