@@ -89,7 +89,7 @@ _diff_one() {
         jq -S "$JSONPATH | del(.. | .donnee_utilisateur?)"
     }
 
-    json-diff -Csf <(cat $AFTER | _filter) <(cat $BEFORE | _filter)
+    json-diff -Csf <(cat $BEFORE | _filter) <(cat $AFTER | _filter)
 }
 
 _compare_one() {
@@ -147,12 +147,6 @@ _corpus100_run() {
 }
 
 _corpus100_show_progress() {
-    # count crashes, .err.log files non empty
-    crashes=$(find $TMPDIR -name "*.err.log" -size +0)
-    if [ -n "$crashes" ]; then
-        printf "crash: %s\n" $crashes
-    fi
-    # engine_status doesn't start with errlog:
     cat /tmp/dpe/*.ok | tr '[:space:]' '\n' | sort | uniq -c |  sort -nr | awk '{printf "%s%% %s\n", $1, $2}'
 }
 

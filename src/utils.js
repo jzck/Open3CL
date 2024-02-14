@@ -2,6 +2,11 @@ import enums from './enums.js';
 import tvs from './tv.js';
 import _ from 'lodash';
 
+export let bug_for_bug_compat = false;
+export function set_bug_for_bug_compat() {
+	bug_for_bug_compat = true;
+}
+
 export const Tbase = {
 	'inférieur à 400m': {
 		h1: -9.5,

@@ -8,7 +8,7 @@ Open3CL est un projet d'exploration pour mieux comprendre le DPE et la méthode 
 
 Les DPE dans la base de l'ademe sont au format XML. Open3CL fonctionne en json, car c'est un format plus simple pour travailler au quotidien. Le fichier [xml_to_json.js](./test/xml_to_json.js) permet de transformer un DPE xml en format json utilisable par Open3CL.
 
-## Resources
+## Ressources
 
  - [PDF Méthode 3CL v1.3](https://rt-re-batiment.developpement-durable.gouv.fr/IMG/pdf/consolide_annexe_1_arrete_du_31_03_2021_relatif_aux_methodes_et_procedures_applicables.pdf)
  - [Gitlab Observatoire DPE](https://gitlab.com/observatoire-dpe/observatoire-dpe/-/blob/master/README.md) 

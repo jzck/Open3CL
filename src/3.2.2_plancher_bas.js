@@ -1,6 +1,9 @@
 import enums from './enums.js'
 import b from './3.1_b.js'
-import { tv, requestInput, requestInputID } from './utils.js'
+import { tv, requestInput, requestInputID, getKeyByValue } from './utils.js'
+
+import { bug_for_bug_compat } from './utils.js'
+var path = require('path');
 
 function tv_upb0(di, de, du) {
   requestInput(de, du, 'type_plancher_bas')
@@ -16,7 +19,7 @@ function tv_upb0(di, de, du) {
   }
 }
 
-function tv_upb(di, de, pc_id, zc, ej) {
+function tv_upb(di, de, du, pc_id, zc, ej) {
   let matcher = {
     enum_periode_construction_id: pc_id,
     enum_zone_climatique_id: zc,
@@ -156,16 +159,22 @@ export default function calc_pb(pb, zc, pc_id, ej) {
       break
     }
     case 'année de construction saisie (table forfaitaire)': {
-      /* var pi_id = pc_id */
-      /* let pc = enums.periode_construction[pc_id]; */
-      /* switch (pc) { */
-      /*   case "avant 1948": */
-      /*   case "1948-1974": */
-      /*     pi_id = getKeyByValue(enums.periode_isolation, "1975-1977"); */
-      /*     break; */
-      /* } */
+      var pi_id = pc_id
+      let pc = enums.periode_construction[pc_id];
+      switch (pc) {
+        case "avant 1948":
+        case "1948-1974":
+          pi_id = getKeyByValue(enums.periode_isolation, "1975-1977");
+          break;
+      }
       calc_upb0(di, de, du)
-      tv_upb(di, de, pc_id, zc, ej)
+      const tv_upb_avant = de.tv_upb_id
+      tv_upb(di, de, du, pi_id, zc, ej)
+      if (de.tv_upb_id != tv_upb_avant && pi_id != pc_id) {
+        var scriptName = path.basename(__filename);
+        console.warn(`BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 17)`)
+        if (bug_for_bug_compat) tv_upb(di, de, du, pc_id, zc, ej)
+      }
       di.upb = Math.min(di.upb, di.upb0)
       break
     }

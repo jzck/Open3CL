@@ -1,6 +1,8 @@
 import enums from './enums.js'
 import b from './3.1_b.js'
-import { tv, requestInput, getKeyByValue } from './utils.js'
+import { bug_for_bug_compat } from './utils.js'
+import { tv, requestInput, requestInputID, getKeyByValue } from './utils.js'
+var path = require('path');
 
 function tv_uph0(di, de, du) {
   requestInput(de, du, 'type_plancher_haut')
@@ -87,16 +89,24 @@ export default function calc_ph(ph, zc, pc_id, ej) {
       di.uph = Math.min(di.uph, di.uph0)
       break
     case 'année de construction saisie (table forfaitaire)': {
-      /* var pi_id = pc_id */
-      /* let pc = enums.periode_construction[pc_id] */
-      /* switch (pc) { */
-      /*   case 'avant 1948': */
-      /*   case '1948-1974': */
-      /*     pi_id = getKeyByValue(enums.periode_isolation, '1975-1977') */
-      /*     break */
-      /* } */
-      tv_uph(di, de, du, pc_id, zc, ej)
+      // i.e l'année d'isolation n'est pas connue
+      var pi_id = pc_id
+      let pc = enums.periode_construction[pc_id]
+      switch (pc) {
+        case 'avant 1948':
+        case '1948-1974':
+          pi_id = getKeyByValue(enums.periode_isolation, '1975-1977')
+          break
+      }
       calc_uph0(di, de, du)
+      const tv_uph_avant = de.tv_uph_id
+      tv_uph(di, de, du, pi_id, zc, ej)
+      di.uph = Math.min(di.uph, di.uph0)
+      if (de.tv_uph_id != tv_uph_avant && pi_id != pc_id) {
+        var scriptName = path.basename(__filename);
+        console.warn(`BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 21)`)
+        if (bug_for_bug_compat) tv_uph(di, de, du, pc_id, zc, ej)
+      }
       di.uph = Math.min(di.uph, di.uph0)
       break
     }

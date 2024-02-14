@@ -1,8 +1,10 @@
 import enums from './enums.js'
 import { tv, requestInput, requestInputID } from './utils.js'
 import { getKeyByValue } from './utils.js'
-
 import b from './3.1_b.js'
+
+import { bug_for_bug_compat } from './utils.js'
+var path = require('path');
 
 function tv_umur0(di, de, du) {
   let matcher = {
@@ -22,7 +24,7 @@ function tv_umur0(di, de, du) {
   }
 }
 
-function tv_umur(di, de, pc_id, zc, ej) {
+function tv_umur(di, de, du, pc_id, zc, ej) {
   let matcher = {
     enum_periode_construction_id: pc_id,
     enum_zone_climatique_id: zc,
@@ -106,27 +108,33 @@ export default function calc_mur(mur, zc, pc_id, ej) {
     }
     case 'isolation inconnue  (table forfaitaire)':
       calc_umur0(di, de, du)
-      tv_umur(di, de, pc_id, zc)
+      tv_umur(di, de, du, pc_id, zc)
       di.umur = Math.min(di.umur, di.umur0)
       break
     case "année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)": {
       calc_umur0(di, de, du)
-      let pi = requestInputID(de, du, 'periode_isolation')
-      tv_umur(di, de, pi, zc, ej)
+      let pi_id = requestInputID(de, du, 'periode_isolation')
+      tv_umur(di, de, du, pi_id, zc, ej)
       di.umur = Math.min(di.umur, di.umur0)
       break
     }
     case 'année de construction saisie (table forfaitaire)': {
-      /* var pi_id = pc_id */
-      /* let pc = enums.periode_construction[pc_id]; */
-      /* switch (pc) { */
-      /*   case "avant 1948": */
-      /*   case "1948-1974": */
-      /*     pi_id = getKeyByValue(enums.periode_isolation, "1975-1977"); */
-      /*     break; */
-      /* } */
+      var pi_id = pc_id
+      let pc = enums.periode_construction[pc_id];
+      switch (pc) {
+        case "avant 1948":
+        case "1948-1974":
+          pi_id = getKeyByValue(enums.periode_isolation, "1975-1977");
+          break;
+      }
       calc_umur0(di, de, du)
-      tv_umur(di, de, pc_id, zc, ej)
+      const tv_umur_avant = de.tv_umur_id
+      tv_umur(di, de, du, pc_id, zc, ej)
+      if (de.tv_umur_id != tv_umur_avant && pi_id != pc_id) {
+        var scriptName = path.basename(__filename);
+        console.warn(`BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 13)`)
+        if (bug_for_bug_compat) tv_umur(di, de, du, pc_id, zc, ej)
+      }
       di.umur = Math.min(di.umur, di.umur0)
       break
     }
