@@ -15,6 +15,7 @@ GITDIR=$(git rev-parse --show-toplevel)
 JSON_PATHS="
     .logement.sortie.production_electricite.production_pv \
     .logement.enveloppe.inertie.enum_classe_inertie_id \
+    .logement.sortie.deperdition.deperdition_renouvellement_air \
     .logement.sortie.deperdition.deperdition_enveloppe \
     .logement.sortie.apport_et_besoin.surface_sud_equivalente \
     .logement.sortie.apport_et_besoin.nadeq \

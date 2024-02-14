@@ -126,7 +126,7 @@ export function tvColumnLines(filePath, column, matcher) {
 function tvMatch(row, key, matcher) {
 	if (!row.hasOwnProperty(key)) {
 		// for empty csv columns
-		// needs to be false for q4pa_conv
+		// for q4pa_conv
 		return false;
 	}
 
@@ -158,13 +158,13 @@ export function tv(filePath, matcher) {
 		// if match_count is same as matcher, we are done
 		if (match_count === Object.keys(matcher).length) return row
 
-		/* if (filePath === 'sw') console.warn(match_count) */
+		/* if (filePath === 'q4pa_conv') console.warn(match_count) */
 		if (match_count > max_match_count) {
 			max_match_count = match_count;
 			match = row;
 		}
 	}
-	/* if (filePath === 'sw') { */
+	/* if (filePath === 'q4pa_conv') { */
 	/* 	console.warn(matcher) */
 	/* 	console.warn(match) */
 	/* } */

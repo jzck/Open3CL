@@ -9916,6 +9916,7 @@ export const tvs = {
     "enum_periode_construction_id": "1",
     "periode_construction": "avant 1948",
     "enum_methode_application_dpe_log_id": "2|3|4|5|6|7|8|9|10|11|12|13|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40",
+    "isolation_surfaces": "0",
     "type_habitation": "appartement/immeuble",
     "q4pa_conv": "4.6"
   },
@@ -9924,6 +9925,7 @@ export const tvs = {
     "enum_periode_construction_id": "2",
     "periode_construction": "1948-1974",
     "enum_methode_application_dpe_log_id": "2|3|4|5|6|7|8|9|10|11|12|13|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40",
+    "isolation_surfaces": "0",
     "type_habitation": "appartement/immeuble",
     "q4pa_conv": "2"
   },
@@ -9932,6 +9934,7 @@ export const tvs = {
     "enum_periode_construction_id": "3|4|5|6|7|8",
     "periode_construction": "1975-2012",
     "enum_methode_application_dpe_log_id": "2|3|4|5|6|7|8|9|10|11|12|13|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40",
+    "isolation_surfaces": "0",
     "type_habitation": "appartement/immeuble",
     "q4pa_conv": "1.5"
   },
@@ -9940,6 +9943,7 @@ export const tvs = {
     "enum_periode_construction_id": "9|10",
     "periode_construction": ">2012",
     "enum_methode_application_dpe_log_id": "2|3|4|5|6|7|8|9|10|11|12|13|26|27|28|29|30|31|32|33|34|35|36|37|38|39|40",
+    "isolation_surfaces": "0",
     "type_habitation": "appartement/immeuble",
     "q4pa_conv": "1"
   },
@@ -9966,6 +9970,7 @@ export const tvs = {
     "enum_periode_construction_id": "3|4|5|6|7",
     "periode_construction": "1975-2005",
     "enum_methode_application_dpe_log_id": "1",
+    "isolation_surfaces": "0",
     "type_habitation": "maison",
     "q4pa_conv": "1.9"
   },
@@ -9974,6 +9979,7 @@ export const tvs = {
     "enum_periode_construction_id": "8",
     "periode_construction": "2006-2012",
     "enum_methode_application_dpe_log_id": "1",
+    "isolation_surfaces": "0",
     "type_habitation": "maison",
     "q4pa_conv": "1.3"
   },
@@ -9982,6 +9988,7 @@ export const tvs = {
     "enum_periode_construction_id": "9|10",
     "periode_construction": ">2012",
     "enum_methode_application_dpe_log_id": "1",
+    "isolation_surfaces": "0",
     "type_habitation": "maison",
     "q4pa_conv": "0.6"
   },

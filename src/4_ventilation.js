@@ -31,7 +31,7 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
 			return acc + s.donnee_entree.surface_paroi_opaque;
 		else return acc;
 	}, 0);
-	let isolation_surfaces = surface_isolee / (surface_isolee + surface_non_isolee) > 0.5 ? 1 : 0;
+	let isolation_surfaces = surface_isolee / (surface_isolee + surface_non_isolee) > 0.5 ? "1" : "0";
 
 	// presence joints menuiserie
 	let surface_bv_avec_joint = bv_list.reduce((acc, bv) => {
@@ -52,6 +52,7 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
 	}, 0);
 	let pjt =
 		surface_bv_avec_joint / (surface_bv_avec_joint + surface_bv_sans_joint) > 0.5 ? '1' : '0';
+	/* pjt = '1' //because 2387E0992815Q */
 
 	let matcher = {
 		enum_periode_construction_id: cg.enum_periode_construction_id,

@@ -11,6 +11,7 @@ Pour chacuns de ces DPE, on fait le calcul avec notre moteur, puis on compare le
 97% .logement.sortie.apport_et_besoin.surface_sud_equivalente
 79% .logement.sortie.confort_ete.enum_indicateur_confort_ete_id
 79% .logement.sortie.apport_et_besoin.besoin_ecs
+75% .logement.sortie.deperdition.deperdition_renouvellement_air
 75% .logement.enveloppe.inertie.enum_classe_inertie_id
 74% .logement.sortie.apport_et_besoin.apport_solaire_ch
 74% .logement.sortie.apport_et_besoin.apport_interne_ch
@@ -18,7 +19,7 @@ Pour chacuns de ces DPE, on fait le calcul avec notre moteur, puis on compare le
 48% .logement.sortie.deperdition.deperdition_enveloppe
 40% .logement.sortie.ef_conso.conso_ecs
 24% .logement.sortie.emission_ges.emission_ges_5_usages_m2
-14% .logement.sortie.apport_et_besoin.besoin_ch
+15% .logement.sortie.apport_et_besoin.besoin_ch
 5% .logement.sortie.ef_conso.conso_ch
 4% .logement.sortie.ep_conso.ep_conso_5_usages_m2
 2% .logement.sortie.cout.cout_5_usages
