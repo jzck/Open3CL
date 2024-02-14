@@ -14,12 +14,10 @@ function tv_ug(di, de, du) {
     matcher.vitrage_vir = requestInput(de, du, 'vitrage_vir', 'bool')
     matcher.epaisseur_lame = requestInput(de, du, 'epaisseur_lame', 'float')
   }
-  console.warn(matcher)
   const row = tv('ug', matcher)
   if (row) {
     di.ug = Number(row.ug)
     de.tv_ug_id = Number(row.tv_ug_id)
-    console.warn(row.ug, row.tv_ug_id)
   } else {
     console.error('!! pas de valeur forfaitaire trouvée pour ug !!')
   }

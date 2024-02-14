@@ -58,7 +58,7 @@ function calc_umur0(di, de, du) {
       console.warn('methode_saisie_u0 inconnue:', methode_saisie_u0)
   }
 
-  if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === '1')
+  if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1)
     di.umur0 = 1 / (1 / di.umur0 + 0.7)
 
   let type_doublage = requestInput(de, du, 'type_doublage')
