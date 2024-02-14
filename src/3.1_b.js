@@ -36,7 +36,8 @@ export default function b(di, de, du, zc_id) {
 
   if (de.enum_type_adjacence_id === '10') {
     matcher.zone_climatique = zc
-    du.enum_cfg_isolation_lnc_id = ['6', '7', '8', '9', '10', '11']
+    matcher.enum_cfg_isolation_lnc_id = requestInputID(de, du, 'cfg_isolation_lnc')
+    /* du.enum_cfg_isolation_lnc_id = ['6', '7', '8', '9', '10', '11'] */
   } else if (
     ['8', '9', '11', '12', '13', '14', '15', '16', '17', '18', '19', '21'].includes(
       de.enum_type_adjacence_id

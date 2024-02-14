@@ -107,9 +107,7 @@ _compare_one() {
         AFTER=$TMPDIR/$ID.open3cl.json
 
         # if path not in before return 0, missing in original
-        jq -e "$path" $BEFORE >/dev/null 2>&1 || return 0
-
-        num_before=$(jq -r "$path" $BEFORE)
+        num_before=$(jq -er "$path" $BEFORE) || return 0
         num_after=$(jq -r "$path" $AFTER)
 
         # if they are the same, return 0

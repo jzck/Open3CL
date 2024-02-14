@@ -15,12 +15,12 @@ Pour chacuns de ces DPE, on fait le calcul avec notre moteur, puis on compare le
 75% .logement.enveloppe.inertie.enum_classe_inertie_id
 74% .logement.sortie.apport_et_besoin.apport_solaire_ch
 74% .logement.sortie.apport_et_besoin.apport_interne_ch
-55% .logement.sortie.qualite_isolation.ubat
-50% .logement.sortie.deperdition.deperdition_enveloppe
+57% .logement.sortie.qualite_isolation.ubat
+52% .logement.sortie.deperdition.deperdition_enveloppe
 40% .logement.sortie.ef_conso.conso_ecs
-23% .logement.sortie.emission_ges.emission_ges_5_usages_m2
-17% .logement.sortie.apport_et_besoin.besoin_ch
-7% .logement.sortie.ef_conso.conso_ch
-4% .logement.sortie.ep_conso.ep_conso_5_usages_m2
+24% .logement.sortie.emission_ges.emission_ges_5_usages_m2
+19% .logement.sortie.apport_et_besoin.besoin_ch
+8% .logement.sortie.ef_conso.conso_ch
+5% .logement.sortie.ep_conso.ep_conso_5_usages_m2
 2% .logement.sortie.cout.cout_5_usages
 ```
