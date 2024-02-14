@@ -65,12 +65,12 @@ _run_one() {
     ERRLOG=$TMPDIR/$ID.err.log
 
     echo $ID running
-    $GITDIR/test/run_one_dpe.js \
+    time $GITDIR/test/run_one_dpe.js \
         $BEFORE \
         >$AFTER \
         2>$ERRLOG
     echo $ID comparing
-    _compare_one $ID
+    time _compare_one $ID
     echo $ID done
 }
 

@@ -154,7 +154,7 @@ export default function calc_pb(pb, zc, pc_id, ej) {
     case "année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)": {
       let pi = requestInputID(de, du, 'periode_isolation')
       calc_upb0(di, de, du)
-      tv_upb(di, de, pi, zc, ej)
+      tv_upb(di, de, du, pi, zc, ej)
       di.upb = Math.min(di.upb, di.upb0)
       break
     }
