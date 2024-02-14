@@ -25,12 +25,8 @@ export default function calc_porte(porte, zc) {
 
   b(di, de, du, zc)
   let methode_saisie_uporte = requestInput(de, du, 'methode_saisie_uporte')
-  if (
-    methode_saisie_uporte ===
-    'valeur justifiée saisie à partir des documents justificatifs autorisés'
-  )
-    di.uporte = requestInput(de, du, 'uporte_saisi', 'float')
-  else if (methode_saisie_uporte === 'valeur forfaitaire') tv_uporte(di, de, du)
+  if (methode_saisie_uporte === 'valeur forfaitaire') tv_uporte(di, de, du)
+  else di.uporte = requestInput(de, du, 'uporte_saisi', 'float')
 
   porte.donnee_utilisateur = du
   porte.donnee_intermediaire = di
