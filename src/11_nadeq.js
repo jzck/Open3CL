@@ -1,5 +1,6 @@
 export function calc_nadeq_individuel(Sh, Nb_lgt) {
-  let Shmoy = Sh / Nb_lgt
+  Nb_lgt = 1
+  let Shmoy = Sh
 
   var Nmax
   if (Shmoy < 30) Nmax = 1

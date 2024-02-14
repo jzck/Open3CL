@@ -1,4 +1,4 @@
-# Open3cl
+# Open3CL
 
 Le méthode 3CL, décrite dans [ce PDF](https://rt-re-batiment.developpement-durable.gouv.fr/IMG/pdf/consolide_annexe_1_arrete_du_31_03_2021_relatif_aux_methodes_et_procedures_applicables.pdf), est la base de calcul pour les DPE.
 

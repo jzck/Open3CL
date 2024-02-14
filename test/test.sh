@@ -1,6 +1,7 @@
 #!/bin/bash
 # Usage:
-#   ./test.sh _index_one $ID
+#   ./test.sh _download_one $ID 
+#   ./test.sh _run_one $ID
 #   ./test.sh _diff_one $ID
 # Pour regéner la progression:
 #   ./test.sh _corpus100_download
@@ -31,7 +32,7 @@ JSON_PATHS="
     .logement.sortie.cout.cout_5_usages
     "
 
-_dl_ademe_json() {
+_download_one() {
     ID=$1
     ADEMEJSON=$TMPDIR/$ID.json
     # if the file already exists, don't download it again
@@ -134,7 +135,7 @@ _compare_one() {
 _corpus100_download() {
     # all IDS in corpus100.txt
     cat corpus100.txt | while read ID; do
-        _dl_ademe_json $ID
+        _download_one $ID
     done
 }
 
