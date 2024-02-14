@@ -74,10 +74,13 @@ function tv_sw(di, de, du) {
     enum_type_vitrage_id: requestInputID(de, du, 'type_vitrage')
   }
 
-  matcher.vitrage_vir = requestInput(de, du, 'vitrage_vir', 'bool') || '0'
   matcher.enum_type_baie_id = requestInputID(de, du, 'type_baie')
   matcher.enum_type_materiaux_menuiserie_id = requestInputID(de, du, 'type_materiaux_menuiserie')
+  matcher.vitrage_vir = requestInput(de, du, 'vitrage_vir', 'bool')
   matcher.enum_type_pose_id = requestInputID(de, du, 'type_pose')
+  /* if (!["1", "2", "3"].includes(matcher.enum_type_baie_id)) { */
+  /*   // not for briques verre/polycarbonate */
+  /* } */
 
   const row = tv('sw', matcher)
   if (row) {

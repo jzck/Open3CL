@@ -31,7 +31,7 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
 			return acc + s.donnee_entree.surface_paroi_opaque;
 		else return acc;
 	}, 0);
-	let isolation_surfaces = surface_isolee / (surface_isolee + surface_non_isolee) > 0.5 ? '1' : '0';
+	let isolation_surfaces = surface_isolee / (surface_isolee + surface_non_isolee) > 0.5 ? 1 : 0;
 
 	// presence joints menuiserie
 	let surface_bv_avec_joint = bv_list.reduce((acc, bv) => {

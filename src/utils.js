@@ -120,8 +120,9 @@ export function tvColumnLines(filePath, column, matcher) {
 
 function tvMatch(row, key, matcher) {
 	if (!row.hasOwnProperty(key)) {
-		// empty csv columns
-		return true;
+		// for empty csv columns
+		// needs to be false for q4pa_conv
+		return false;
 	}
 
 	let match_value = String(matcher[key]).toLowerCase();
@@ -149,6 +150,10 @@ export function tv(filePath, matcher) {
 		for (const key in matcher) {
 			if (tvMatch(row, key, matcher)) match_count += 1;
 		}
+		// if match_count is same as matcher, we are done
+		if (match_count === Object.keys(matcher).length) return row
+
+		/* if (filePath === 'sw') console.warn(match_count) */
 		if (match_count > max_match_count) {
 			max_match_count = match_count;
 			match = row;
