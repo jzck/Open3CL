@@ -5,6 +5,7 @@ import b from './3.1_b.js'
 
 import { bug_for_bug_compat } from './utils.js'
 var path = require('path');
+var scriptName = path.basename(__filename);
 
 function tv_umur0(di, de, du) {
   let matcher = {
@@ -40,6 +41,7 @@ function tv_umur(di, de, du, pc_id, zc, ej) {
 }
 
 function calc_umur0(di, de, du) {
+  const umur0_avant = di.umur0
   let methode_saisie_u0 = requestInput(de, du, 'methode_saisie_u0')
   switch (methode_saisie_u0) {
     case 'type de paroi inconnu (valeur par défaut)':
@@ -60,8 +62,22 @@ function calc_umur0(di, de, du) {
       console.warn('methode_saisie_u0 inconnue:', methode_saisie_u0)
   }
 
-  if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1)
-    di.umur0 = 1 / (1 / di.umur0 + 0.7)
+  if (de.paroi_ancienne) {
+    // BUG: certains DPE utilisent le champs "paroi_ancienne" au lieu de "enduit_isolant_paroi_ancienne"
+    de.enduit_isolant_paroi_ancienne = de.paroi_ancienne
+  }
+
+  if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1) {
+    // cf 2287E2336469P
+    console.warn(umur0_avant, di.umur0, de.enduit_isolant_paroi_ancienne)
+    if (umur0_avant === di.umur0) {
+      console.warn(`BUG(${scriptName}) correction isolation pour parois anciennes pas appliqué`)
+      if (bug_for_bug_compat) di.umur0 = umur0_avant
+      else di.umur0 = 1 / (1 / di.umur0 + 0.7)
+    } else {
+      di.umur0 = 1 / (1 / di.umur0 + 0.7)
+    }
+  }
 
   let type_doublage = requestInput(de, du, 'type_doublage')
   switch (type_doublage) {
@@ -80,6 +96,7 @@ export default function calc_mur(mur, zc, pc_id, ej) {
   let de = mur.donnee_entree
   let du = {}
   let di = {}
+  di.umur0 = mur.donnee_intermediaire.umur0 // pour comparaison
 
   requestInput(de, du, 'surface_paroi_totale', 'float')
   requestInput(de, du, 'orientation')
@@ -119,6 +136,7 @@ export default function calc_mur(mur, zc, pc_id, ej) {
       break
     }
     case 'année de construction saisie (table forfaitaire)': {
+      calc_umur0(di, de, du)
       var pi_id = pc_id
       let pc = enums.periode_construction[pc_id];
       switch (pc) {
@@ -127,11 +145,9 @@ export default function calc_mur(mur, zc, pc_id, ej) {
           pi_id = getKeyByValue(enums.periode_isolation, "1975-1977");
           break;
       }
-      calc_umur0(di, de, du)
       const tv_umur_avant = de.tv_umur_id
       tv_umur(di, de, du, pc_id, zc, ej)
       if (de.tv_umur_id != tv_umur_avant && pi_id != pc_id) {
-        var scriptName = path.basename(__filename);
         console.warn(`BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 13)`)
         if (bug_for_bug_compat) tv_umur(di, de, du, pc_id, zc, ej)
       }

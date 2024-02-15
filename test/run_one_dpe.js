@@ -27,7 +27,8 @@ fs.readFile(dpe_json_file, 'utf8', (err, data) => {
     console.error('Moteur dpe non implémenté pour le modèle: ' + modele)
   }
 
-  clean_dpe(dpe_in)
+  // clean_dpe(dpe_in)
+  // don't clean, so we can compare with the original dpe
   let dpe_out = calcul_3cl(dpe_in)
   // json dump dpe_out on stdout
   console.log(JSON.stringify(dpe_out, null, 2))
