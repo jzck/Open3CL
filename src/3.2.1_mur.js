@@ -21,7 +21,7 @@ function tv_umur0(di, de, du) {
       // if desc is "Mur en blocs de béton creux d'épaisseur ≥ 25 cm non isolé donnant sur l'extérieur"
       // retrive just "≥ 25" with a regex
       let desc = de.description
-      matcher.epaisseur_structure = desc.match(/(\d+)/)[1]
+      matcher.epaisseur_structure = desc.match(/(\d+) cm/)[1]
     }
   }
   const row = tv('umur0', matcher)
@@ -77,7 +77,6 @@ function calc_umur0(di, de, du) {
 
   if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1) {
     // cf 2287E2336469P
-    console.warn(umur0_avant, di.umur0, de.enduit_isolant_paroi_ancienne)
     if (umur0_avant === di.umur0) {
       console.warn(`BUG(${scriptName}) correction isolation pour parois anciennes pas appliqué`)
       if (bug_for_bug_compat) di.umur0 = umur0_avant

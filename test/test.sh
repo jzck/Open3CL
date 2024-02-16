@@ -91,6 +91,7 @@ _diff_one() {
 
 _compare_one() {
     ID=$1
+    BEFORE=$TMPDIR/$ID.json
     AFTER=$TMPDIR/$ID.open3cl.json
     ERRLOG=$TMPDIR/$ID.err.log
     OKPATHS=$TMPDIR/$ID.ok

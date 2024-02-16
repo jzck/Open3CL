@@ -164,10 +164,10 @@ export function tv(filePath, matcher) {
 			match = row;
 		}
 	}
-	/* if (filePath === 'q4pa_conv') { */
-	/* 	console.warn(matcher) */
-	/* 	console.warn(match) */
-	/* } */
+	if (filePath === 'umur0') {
+		console.warn(matcher)
+		console.warn(match)
+	}
 	return match;
 }
 
