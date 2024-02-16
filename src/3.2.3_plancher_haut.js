@@ -19,13 +19,14 @@ function tv_uph0(di, de, du) {
 }
 
 function tv_uph(di, de, du, pc_id, zc, ej) {
-  let type_adjacence = requestInput(de, du, 'type_adjacence')
-  let type_toiture = type_adjacence.includes('comble') ? 'combles' : 'terrasse'
+  /* let type_adjacence = requestInput(de, du, 'type_adjacence') */
+  let type_ph = requestInput(de, du, 'type_plancher_haut')
+  let type_toiture = type_ph.includes('combles') ? 'combles' : 'terrasse'
   let matcher = {
     enum_periode_construction_id: pc_id,
     enum_zone_climatique_id: zc,
     effet_joule: ej,
-    type_toiture: type_toiture
+    type_toiture: 'combles'
   }
   const row = tv('uph', matcher)
   if (row) {
