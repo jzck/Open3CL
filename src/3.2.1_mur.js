@@ -11,10 +11,18 @@ function tv_umur0(di, de, du) {
   let matcher = {
     enum_materiaux_structure_mur_id: de.enum_materiaux_structure_mur_id
   }
-  if (
-    de.enum_materiaux_structure_mur_id != getKeyByValue(enums.materiaux_structure_mur, 'inconnu')
-  ) {
-    matcher.epaisseur_structure = requestInput(de, du, 'epaisseur_structure', 'float') // TODO not float, get from csv
+  if (!["1", "20"].includes(de.enum_materiaux_structure_mur_id)) {
+    // 1: inconnu, 20: cloison de platree, pas concerné par les epaisseurs
+    // TODO not float, get from csv
+    matcher.epaisseur_structure = requestInput(de, du, 'epaisseur_structure', 'float')
+    if (!matcher.epaisseur_structure) {
+      // BUG: des fois, LICIEL omet le champ 'epaisseur_structure
+      // il faut aller le chercher dans description
+      // if desc is "Mur en blocs de béton creux d'épaisseur ≥ 25 cm non isolé donnant sur l'extérieur"
+      // retrive just "≥ 25" with a regex
+      let desc = de.description
+      matcher.epaisseur_structure = desc.match(/(\d+)/)[1]
+    }
   }
   const row = tv('umur0', matcher)
   if (row) {

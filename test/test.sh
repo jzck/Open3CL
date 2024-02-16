@@ -65,12 +65,12 @@ _run_one() {
     ERRLOG=$TMPDIR/$ID.err.log
 
     echo $ID running
-    time $GITDIR/test/run_one_dpe.js \
+    $GITDIR/test/run_one_dpe.js \
         $BEFORE \
         >$AFTER \
         2>$ERRLOG
     echo $ID comparing
-    time _compare_one $ID
+    _compare_one $ID
     echo $ID done
 }
 
@@ -99,35 +99,11 @@ _compare_one() {
     ERRLOG=$TMPDIR/$ID.err.log
     OKPATHS=$TMPDIR/$ID.ok
 
-    _compare() {
-        ID=$1
-        path=$2
+    jq -f flatten.jq $AFTER > $AFTER.flat
+    jq -f flatten.jq $BEFORE > $BEFORE.flat
 
-        BEFORE=$TMPDIR/$ID.json
-        AFTER=$TMPDIR/$ID.open3cl.json
-
-        # if path not in before return 0, missing in original
-        num_before=$(jq -er "$path" $BEFORE) || return 0
-        num_after=$(jq -r "$path" $AFTER)
-
-        # if they are the same, return 0
-        [ "$num_before" = "$num_after" ] && return 0
-
-        diff=$(echo "scale=5; ($num_after - $num_before) / $num_before * 100" | bc | sed 's/-//')
-        diff2=$(echo "scale=5; ($num_after - ($num_before/1000)) / ($num_before/1000) * 100" | bc | sed 's/-//')
-
-        [ -z "$diff" ] && return 1
-        [ $(echo "$diff > 0.1" | bc) = 1 ] && [ $(echo "$diff2 > 0.1" | bc) = 1 ] && return 1
-
-        return 0
-    }
-
-    good_paths=""
-    for path in $JSON_PATHS; do
-        _compare $ID $path && good_paths+=" $path"
-    done
-
-    echo $good_paths > $OKPATHS
+    # generate a json file with the substraction of the keys for each value with jq
+    jq -n --argfile before $BEFORE.flat --argfile after $AFTER.flat -f diff.jq > $TMPDIR/$ID.ok.json
 }
 
 _corpus100_download() {
@@ -146,7 +122,7 @@ _corpus100_run() {
 }
 
 _corpus100_show_progress() {
-    cat /tmp/dpe/*.ok | tr '[:space:]' '\n' | sort | uniq -c |  sort -nr | awk '{printf "%s%% %s\n", $1, $2}'
+    jq -r 'to_entries[] | select(.value == "OK") | .key' /tmp/dpe/*.ok.json | sort | uniq -c | sort -nr | awk '{printf "%s%% %s\n", $1, $2}'
 }
 
 _help() {
