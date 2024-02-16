@@ -64,14 +64,10 @@ _run_one() {
     BEFORE=$TMPDIR/$ID.json
     ERRLOG=$TMPDIR/$ID.err.log
 
-    echo $ID running
     $GITDIR/test/run_one_dpe.js \
         $BEFORE \
         >$AFTER \
         2>$ERRLOG
-    echo $ID comparing
-    _compare_one $ID
-    echo $ID done
 }
 
 _diff_one() {
@@ -116,7 +112,16 @@ _corpus100_download() {
 _corpus100_run() {
     IDS=$(cat corpus100.txt)
     for ID in $IDS; do
-        _run_one $ID &
+        echo "running $ID"
+        { _run_one $ID; _compare_one $ID; } &
+    done
+    wait
+}
+
+_corpus100_compare() {
+    IDS=$(cat corpus100.txt)
+    for ID in $IDS; do
+        _compare_one $ID &
     done
     wait
 }
