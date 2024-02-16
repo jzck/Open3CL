@@ -43,8 +43,17 @@ export default function b(di, de, du, zc_id) {
       de.enum_type_adjacence_id
     )
   ) {
+    if (de.surface_aue === 0){
+      // cf page 10
+      // NOTE: bizarre de regarder aue pour un local chauffé non accessible
+      // voir 2287E2336469P
+      di.b = 0
+      return
+    }
     matcher.enum_cfg_isolation_lnc_id = requestInputID(de, du, 'cfg_isolation_lnc')
     if (matcher.enum_cfg_isolation_lnc_id === '1') {
+      // local chauffé non accessible
+      // aiu/aue non connu
       delete matcher.enum_type_adjacence_id
     } else {
       requestInput(de, du, 'surface_aiu', 'float')
