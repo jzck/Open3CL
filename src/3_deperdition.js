@@ -62,7 +62,7 @@ export default function calc_deperdition(cg, zc, th, ej, enveloppe, logement) {
 	const pc = cg.enum_periode_construction_id;
 
 	const mur_list = enveloppe.mur_collection.mur;
-	const pb_list = enveloppe.plancher_bas_collection.plancher_bas;
+	const pb_list = enveloppe.plancher_bas_collection.plancher_bas || [];
 	const ph_list = enveloppe.plancher_haut_collection.plancher_haut || [];
 	const bv_list = enveloppe.baie_vitree_collection.baie_vitree;
 	const porte_list = enveloppe.porte_collection.porte || [];
@@ -70,7 +70,7 @@ export default function calc_deperdition(cg, zc, th, ej, enveloppe, logement) {
 	const vt_list = logement.ventilation_collection.ventilation;
 
 	mur_list.forEach((mur) => calc_mur(mur, zc, pc, ej));
-	pb_list.forEach((pb) => calc_pb(pb, zc, pc, ej));
+	pb_list.forEach((pb) => calc_pb(pb, zc, pc, ej, pb_list));
 	ph_list.forEach((ph) => calc_ph(ph, zc, pc, ej));
 	bv_list.forEach((bv) => calc_bv(bv, zc));
 	porte_list.forEach((porte) => calc_porte(porte, zc));

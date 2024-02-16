@@ -58,6 +58,44 @@ export const mois_liste = [
 	'Décembre'
 ];
 
+export function add_references(enveloppe) {
+	var i = 0;
+	for (const mur of enveloppe.mur_collection.mur || []) {
+		if (!mur.donnee_entree.reference) {
+			mur.donnee_entree.reference = `mur_${i}`;
+		}
+		i += 1
+	}
+	i = 0
+	for (const ph of enveloppe.plancher_haut_collection.plancher_haut || []) {
+		if (!ph.donnee_entree.reference) {
+			ph.donnee_entree.reference = `plancher_haut_${i}`;
+		}
+		i += 1
+	}
+	i = 0
+	for (const pb of enveloppe.plancher_bas_collection.plancher_bas || []) {
+		if (!pb.donnee_entree.reference) {
+			pb.donnee_entree.reference = `plancher_bas_${i}`;
+		}
+		i += 1
+	}
+	i = 0
+	for (const bv of enveloppe.baie_vitree_collection.baie_vitree || []) {
+		if (!bv.donnee_entree.reference) {
+			bv.donnee_entree.reference = `baie_vitree_${i}`;
+		}
+		i += 1
+	}
+	i = 0
+	for (const porte of enveloppe.porte_collection.porte || []) {
+		if (!porte.donnee_entree.reference) {
+			porte.donnee_entree.reference = `porte_${i}`;
+		}
+		i += 1
+	}
+}
+
 export function requestInputID(de, du, field, type) {
 	// enums
 	let enum_name = `enum_${field}_id`;
@@ -164,10 +202,10 @@ export function tv(filePath, matcher) {
 			match = row;
 		}
 	}
-	if (filePath === 'umur0') {
-		console.warn(matcher)
-		console.warn(match)
-	}
+	/* if (filePath === 'pont_thermique') { */
+	/* 	console.warn(matcher) */
+	/* 	console.warn(match) */
+	/* } */
 	return match;
 }
 

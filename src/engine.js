@@ -9,6 +9,7 @@ import calc_chauffage from './9_chauffage.js';
 import calc_confort_ete from './2021_04_13_confort_ete.js';
 import calc_qualite_isolation from './2021_04_13_qualite_isolation.js';
 import calc_conso from './conso.js';
+import { add_references } from './utils.js';
 
 function calc_th(map_id) {
 	let map = enums.methode_application_dpe_log[map_id];
@@ -36,6 +37,8 @@ export function calcul_3cl(dpe) {
 		console.warn('vide: logement.enveloppe.mur_collection');
 		return null;
 	}
+
+	add_references(logement.enveloppe)
 
 	dpe.administratif.diagnostiqueur = { version_logiciel: 'Open3CL v0' };
 	const env = logement.enveloppe;

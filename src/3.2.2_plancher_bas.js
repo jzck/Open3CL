@@ -66,7 +66,7 @@ function ue_ranges(inputNumber, ranges) {
 
 const values_2s_p = [3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20]
 
-function tv_ue(di, de, du, pc_id) {
+function tv_ue(di, de, du, pc_id, pb_list) {
   let type_adjacence = enums.type_adjacence[de.enum_type_adjacence_id]
   var type_adjacence_plancher
   var upb1, upb2
@@ -82,7 +82,19 @@ function tv_ue(di, de, du, pc_id) {
     type_adjacence_plancher = 'plancher sur vide sanitaire ou sous-sol non chauffé'
     ;[upb1, upb2] = ue_ranges(di.upb, [0.31, 0.34, 0.37, 0.41, 0.45, 0.83, 1.43, 3.33])
   }
-  let surface_ue = requestInput(de, du, 'surface_ue', 'float') || de.surface_paroi_opaque
+  // sum all surface_paroi_opaque for all plancher_bas
+  let S = pb_list.reduce((acc, pb) => {
+    let type_adjacence = enums.type_adjacence[pb.donnee_entree.enum_type_adjacence_id]
+    switch (type_adjacence) {
+      case 'vide sanitaire':
+      case 'sous-sol non chauffé':
+      case 'terre-plein':
+        return acc + pb.donnee_entree.surface_paroi_opaque
+      default:
+        return acc
+    }
+  }, 0)
+  let surface_ue = requestInput(de, du, 'surface_ue', 'float') || S
   let perimetre_ue = requestInput(de, du, 'perimetre_ue', 'float')
   let matcher = {
     type_adjacence_plancher: type_adjacence_plancher,
@@ -123,7 +135,7 @@ function calc_upb0(di, de, du) {
   }
 }
 
-export default function calc_pb(pb, zc, pc_id, ej) {
+export default function calc_pb(pb, zc, pc_id, ej, pb_list) {
   let de = pb.donnee_entree
   let du = {}
   let di = {}
@@ -191,7 +203,7 @@ export default function calc_pb(pb, zc, pc_id, ej) {
     case 'vide sanitaire':
     case 'sous-sol non chauffé':
     case 'terre-plein':
-      tv_ue(di, de, du, pc_id)
+      tv_ue(di, de, du, pc_id, pb_list)
       di.upb_final = de.ue
       break
     default:

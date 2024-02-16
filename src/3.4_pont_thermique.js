@@ -2,17 +2,69 @@ import enums from './enums.js'
 import { tv, requestInput } from './utils.js'
 
 function tv_k(di, de, du, pc_id, enveloppe) {
-  const mur_list = enveloppe.mur_collection.mur
-  const pb_list = enveloppe.plancher_bas_collection.plancher_bas
-  const ph_list = enveloppe.plancher_haut_collection.plancher_haut
-  const bv_list = enveloppe.baie_vitree_collection.baie_vitree
-  const porte_list = enveloppe.porte_collection.porte
+  const mur_list = enveloppe.mur_collection.mur || []
+  const pb_list = enveloppe.plancher_bas_collection.plancher_bas || []
+  const ph_list = enveloppe.plancher_haut_collection.plancher_haut || []
+  const bv_list = enveloppe.baie_vitree_collection.baie_vitree || []
+  const porte_list = enveloppe.porte_collection.porte || []
+
+  let type_liaison = requestInput(de, du, 'type_liaison')
+
+  if (!de.reference_1) {
+    console.warn(`BUG: pas de reference pour le pont thermique...`)
+    // on trouve les references grace a la description
+    let desc = de.description
+    let desc_1, desc_2
+
+    if (desc.match(/(.+) \/ (.+)/)) {
+      desc_1 = desc.match(/(.+) \/ (.+)/)[1]
+      desc_2 = desc.match(/(.+) \/ (.+)/)[2]
+    }
+    else if (desc.match(/(.+)-(.+)/)[1]) {
+      desc_1 = desc.match(/(.+)-(.+)/)[1]
+      desc_2 = desc.match(/(.+)-(.+)/)[2]
+    } else {
+      console.error(`BUG: description '${desc}' non reconnue pour le pont thermique...`)
+      return
+    }
+
+    de.reference_1 = mur_list.find(
+      (mur) => mur.donnee_entree.description.includes(desc_1) ||
+      mur.donnee_entree.description.includes(desc_2)
+    ).donnee_entree.reference
+    let list_2
+    switch (type_liaison) {
+      case 'refend / mur':
+        list_2 = null;
+        break
+      case 'plancher intermédiaire lourd / mur':
+        // TODO
+        break
+      case 'plancher bas / mur':
+      case 'plancher haut lourd / mur':
+        list_2 = pb_list.concat(ph_list)
+        break
+      case 'menuiserie / mur':
+        list_2 = bv_list.concat(porte_list)
+        break
+    }
+    if (list_2) {
+      de.reference_2 = list_2.find(
+        (men) => men.donnee_entree.description.includes(desc_2) || 
+        men.donnee_entree.description.includes(desc_1)
+      ).donnee_entree.reference
+    }
+  }
 
   let mur = mur_list.find(
     (mur) =>
-      mur.donnee_entree.reference === de.reference_1 ||
-      mur.donnee_entree.reference === de.reference_2
+    mur.donnee_entree.reference === de.reference_1 ||
+    mur.donnee_entree.reference === de.reference_2
   )
+  if (!mur) {
+    console.error('Did not find mur reference:', de.reference_1, de.reference_2)
+    return
+  }
   let type_isolation_mur = requestInput(mur.donnee_entree, mur.donnee_utilisateur, 'type_isolation')
   let pc = enums.periode_construction[pc_id]
   if (type_isolation_mur === 'inconnu') {
@@ -20,7 +72,6 @@ function tv_k(di, de, du, pc_id, enveloppe) {
     else type_isolation_mur = 'iti'
   }
 
-  let type_liaison = requestInput(de, du, 'type_liaison')
   let matcher = {
     enum_type_liaison_id: de.enum_type_liaison_id,
     isolation_mur: `^${type_isolation_mur}$` // prevent 'iti' from matching 'iti+ite
@@ -32,14 +83,14 @@ function tv_k(di, de, du, pc_id, enveloppe) {
       let plancher_list = ph_list.concat(pb_list)
       let plancher = plancher_list.find(
         (plancher) =>
-          plancher.donnee_entree.reference === de.reference_1 ||
-          plancher.donnee_entree.reference === de.reference_2
+        plancher.donnee_entree.reference === de.reference_1 ||
+        plancher.donnee_entree.reference === de.reference_2
       )
       let isolation_plancher = requestInput(
-        plancher.donnee_entree,
-        plancher.donnee_utilisateur,
-        'type_isolation'
-      )
+      plancher.donnee_entree,
+      plancher.donnee_utilisateur,
+      'type_isolation'
+    )
       matcher.isolation_plancher = `^${isolation_plancher}$`
       if (matcher.isolation_plancher.includes('inconnu')) {
         let type_adjacence_plancher = enums.type_adjacence[plancher.donnee_entree.type_adjacence_id]
@@ -62,16 +113,18 @@ function tv_k(di, de, du, pc_id, enveloppe) {
     case 'menuiserie / mur': {
       let menuiserie_list = bv_list.concat(porte_list)
       let menuiserie = menuiserie_list.find(
-        (men) =>
-          men.donnee_entree.reference === de.reference_1 ||
-          men.donnee_entree.reference === de.reference_2
-      )
-      if (!menuiserie)
+      (men) =>
+      men.donnee_entree.reference === de.reference_1 ||
+      men.donnee_entree.reference === de.reference_2
+    )
+      if (!menuiserie) {
         console.error('Did not find menuiserie reference:', de.reference_1, de.reference_2)
+        return
+      }
       let mde = menuiserie.donnee_entree
       let mdu = menuiserie.donnee_utilisateur
 
-      matcher.type_pose = requestInput(mde, mdu, 'type_pose')
+      matcher.type_pose = requestInput(mde, mdu, 'type_pose') || 'tunnel'
       matcher.presence_retour_isolation = requestInput(
         mde,
         mdu,
