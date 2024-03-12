@@ -36,9 +36,7 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
     effet_joule: ej,
     type_toiture: type_toiture
   }
-  console.warn(matcher)
   const row = tv('uph', matcher)
-  console.warn(row)
   if (row) {
     di.uph = Number(row.uph)
     de.tv_uph_id = Number(row.tv_uph_id)

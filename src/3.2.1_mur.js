@@ -155,7 +155,7 @@ export default function calc_mur(mur, zc, pc_id, ej) {
           break;
       }
       const tv_umur_avant = de.tv_umur_id
-      tv_umur(di, de, du, pc_id, zc, ej)
+      tv_umur(di, de, du, pi_id, zc, ej)
       if (de.tv_umur_id != tv_umur_avant && pi_id != pc_id) {
         console.warn(`BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 13)`)
         if (bug_for_bug_compat) tv_umur(di, de, du, pc_id, zc, ej)
