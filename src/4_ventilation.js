@@ -103,6 +103,7 @@ function calc_hperm(di, Sh, Hsp, Sdep, pfe) {
 	const n50 = Q4pa / ((4 / 50) ** (2 / 3) * Hsp * Sh);
 	const Qvinf =
 		(Hsp * Sh * n50 * e) / (1 + (f / e) * ((di.qvasouf_conv - di.qvarep_conv) / (Hsp * n50)) ** 2);
+	console.warn(`q4pa_env: ${Q4pa_env}  q4pa: ${Q4pa} n50: ${n50} qvinf: ${Qvinf} e: ${e} f: ${f} Sh: ${Sh}`)
 	di.hperm = 0.34 * Qvinf;
 }
 

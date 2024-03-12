@@ -1,8 +1,10 @@
 import enums from './enums.js'
 import b from './3.1_b.js'
-import { bug_for_bug_compat } from './utils.js'
 import { tv, requestInput, requestInputID, getKeyByValue } from './utils.js'
+
+import { bug_for_bug_compat } from './utils.js'
 var path = require('path');
+var scriptName = path.basename(__filename);
 
 function tv_uph0(di, de, du) {
   requestInput(de, du, 'type_plancher_haut')
@@ -30,6 +32,15 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
     else
       type_toiture = 'terrasse'
   }
+
+  if (de.description.includes("donnant sur l'extérieur (combles aménagés)")) {
+    // cf 2287E1327399F
+    // this is bullshit, by definition this is bullshit, how can someone have written this
+    // "combles aménagés" should be "local non chauffé" or some shit, deifnitely not extérieur
+    console.warn(`BUG(${scriptName}) extérieur != combles`)
+    if (bug_for_bug_compat) type_toiture = 'combles'
+  }
+
   let matcher = {
     enum_periode_construction_id: pc_id,
     enum_zone_climatique_id: zc,
@@ -112,7 +123,6 @@ export default function calc_ph(ph, zc, pc_id, ej) {
       tv_uph(di, de, du, pi_id, zc, ej)
       di.uph = Math.min(di.uph, di.uph0)
       if (de.tv_uph_id != tv_uph_avant && pi_id != pc_id) {
-        var scriptName = path.basename(__filename);
         console.warn(`BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 21)`)
         if (bug_for_bug_compat) tv_uph(di, de, du, pc_id, zc, ej)
       }

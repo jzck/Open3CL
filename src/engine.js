@@ -40,7 +40,7 @@ export function calcul_3cl(dpe) {
 
 	add_references(logement.enveloppe)
 
-	dpe.administratif.diagnostiqueur = { version_logiciel: 'Open3CL v0' };
+	dpe.administratif.diagnostiqueur = { version_moteur_calcul: 'Open3CL v0' };
 	const env = logement.enveloppe;
 	let Sh;
 	// TODO requestInput Sh
