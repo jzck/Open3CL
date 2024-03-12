@@ -58,10 +58,16 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
 		surface_bv_avec_joint / (surface_bv_avec_joint + surface_bv_sans_joint) > 0.5 ? '1' : '0';
 
 	if (de.tv_q4pa_conv_id === 12 && pjt === '0') {
-		//c.f 2387E0992815Q
-		//c.f 2387E0430619S
-		console.warn(`BUG(${scriptName}) presence joint considéré alors que pjt=0`)
+		//cf 2387E0992815Q
+		//cf 2387E0430619S
+		console.warn(`BUG(${scriptName}) us: pjt=0, them: pjt=1`)
 		if (bug_for_bug_compat) pjt = '1'
+	}
+
+	if ([10,11].includes(de.tv_q4pa_conv_id) && isolation_surfaces === '0') {
+		//cf 2287E1489258O
+		console.warn(`BUG(${scriptName}) us: isolation_surface=0, them: isolation_surfaces=1`)
+		if (bug_for_bug_compat) isolation_surfaces = 1
 	}
 
 	let matcher = {
@@ -70,9 +76,7 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
 		isolation_surfaces: isolation_surfaces,
 		presence_joints_menuiserie: pjt
 	};
-	console.warn(matcher)
 	const row = tv('q4pa_conv', matcher);
-	console.warn(row)
 	if (row) {
 		di.q4pa_conv = Number(row.q4pa_conv);
 		de.tv_q4pa_conv_id = Number(row.tv_q4pa_conv_id);
