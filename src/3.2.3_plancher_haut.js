@@ -19,16 +19,26 @@ function tv_uph0(di, de, du) {
 }
 
 function tv_uph(di, de, du, pc_id, zc, ej) {
-  /* let type_adjacence = requestInput(de, du, 'type_adjacence') */
+  let type_adjacence = requestInput(de, du, 'type_adjacence')
   let type_ph = requestInput(de, du, 'type_plancher_haut')
-  let type_toiture = type_ph.includes('combles') ? 'combles' : 'terrasse'
+  let type_toiture
+  if (type_adjacence != 'extérieur') {
+    type_toiture = 'combles'
+  } else {
+    if (type_ph === 'combles aménagés sous rampant')
+      type_toiture = 'combles'
+    else
+      type_toiture = 'terrasse'
+  }
   let matcher = {
     enum_periode_construction_id: pc_id,
     enum_zone_climatique_id: zc,
     effet_joule: ej,
-    type_toiture: 'combles'
+    type_toiture: type_toiture
   }
+  console.warn(matcher)
   const row = tv('uph', matcher)
+  console.warn(row)
   if (row) {
     di.uph = Number(row.uph)
     de.tv_uph_id = Number(row.tv_uph_id)

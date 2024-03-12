@@ -17,7 +17,12 @@ export default function calc_qualite_isolation(enveloppe, dp) {
   const porte_list = enveloppe.porte_collection.porte || []
   let plancher_haut_ca = ph_list.filter(
     (ph) =>
-      ph.donnee_entree.enum_type_adjacence_id === getKeyByValue(enums.type_adjacence, 'extérieur')
+      ph.donnee_entree.enum_type_adjacence_id === getKeyByValue(enums.type_adjacence, 'extérieur') && ph.donnee_entree.enum_type_plancher_haut === getKeyByValue(enums.type_plancher_haut, 'combles aménagés sous rampant')
+
+  )
+  let plancher_haut_tt = ph_list.filter(
+    (ph) =>
+      ph.donnee_entree.enum_type_adjacence_id === getKeyByValue(enums.type_adjacence, 'extérieur') && ph.donnee_entree.enum_type_plancher_haut != getKeyByValue(enums.type_plancher_haut, 'combles aménagés sous rampant')
   )
   let plancher_haut_cp = ph_list.filter(
     (ph) =>
@@ -57,8 +62,14 @@ export default function calc_qualite_isolation(enveloppe, dp) {
     (acc, ph) => acc + ph.donnee_entree.surface_paroi_opaque * ph.donnee_intermediaire.uph,
     0
   )
+  let uph_tt = plancher_haut_tt.reduce(
+    (acc, ph) => acc + ph.donnee_entree.surface_paroi_opaque * ph.donnee_intermediaire.uph,
+    0
+  )
+
   let sph_ca = plancher_haut_ca.reduce((acc, ph) => acc + ph.donnee_entree.surface_paroi_opaque, 0)
   let sph_cp = plancher_haut_cp.reduce((acc, ph) => acc + ph.donnee_entree.surface_paroi_opaque, 0)
+  let sph_tt = plancher_haut_tt.reduce((acc, ph) => acc + ph.donnee_entree.surface_paroi_opaque, 0)
 
   // menuiserie
   let umen =
@@ -81,7 +92,8 @@ export default function calc_qualite_isolation(enveloppe, dp) {
     dp.deperdition_baie_vitree +
     dp.deperdition_porte +
     dp.deperdition_pont_thermique
-  const sdep = smur + spb + sph_ca + sph_cp + sbv + sporte
+  const sph = sph_ca + sph_cp + sph_tt
+  const sdep = smur + spb + sph + sbv + sporte
   const ubat = dep / sdep
 
   let ret = {
@@ -93,6 +105,8 @@ export default function calc_qualite_isolation(enveloppe, dp) {
   }
   if (sph_ca > 0)
     ret.qualite_isol_plancher_haut_comble_amenage = qualite_isol(uph_ca / sph_ca, 0.18, 0.25, 0.3)
+  if (sph_tt > 0)
+    ret.qualite_isol_plancher_haut_toit_terrasse = qualite_isol(uph_tt / sph_tt, 0.18, 0.25, 0.3)
   if (sph_cp > 0)
     ret.qualite_isol_plancher_haut_comble_perdu = qualite_isol(uph_cp / sph_cp, 0.15, 0.2, 0.3)
 

@@ -95,6 +95,13 @@ function tv_ue(di, de, du, pc_id, pb_list) {
     }
   }, 0)
   let surface_ue = requestInput(de, du, 'surface_ue', 'float') || S
+
+  // calcul utilisé par 2187E0982591I
+  /* surface_ue = de.surface_paroi_opaque */ 
+  /* if (de.reference == 'plancher_bas_1') { */
+  /*   surface_ue = 15.9 //sum of plancher_bas_1 + plancher_bas_2 */
+  /* } */
+
   let perimetre_ue = requestInput(de, du, 'perimetre_ue', 'float')
   let matcher = {
     type_adjacence_plancher: type_adjacence_plancher,

@@ -72,6 +72,8 @@ function calc_umur0(di, de, du) {
 
   /* if (de.paroi_ancienne) { */
   /*   // BUG: certains DPE utilisent le champs "paroi_ancienne" au lieu de "enduit_isolant_paroi_ancienne" */
+  /*   // 2187E0982013C: utilise paroi_ancienne mais a de l'enduit */
+  /*   // 2287E1923356Q: utilise paroi_ancienne mais n'a pas d'enduit */
   /*   de.enduit_isolant_paroi_ancienne = de.paroi_ancienne */
   /* } */
 
