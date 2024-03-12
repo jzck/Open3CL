@@ -36,3 +36,7 @@ En travaillant sur les DPE je suis tombé sur quelques cas de DPE intéressants
 - `2387E3092820B` pas de pancher_haut
 - `2387E3103131Q` Analysimmo 4.1.1 incohérence ventil calculée comme si presence_joint_menuiserie=1 alors qu’aucune menuiserie n’a de joints
 - `2387E3103505A` Analysimmo 4.1.1 incohérence pont thermique, PB considéré pont ITI+ITE ??
+
+# A regarder
+
+14 lachamp village - St germain les vergnes 19330

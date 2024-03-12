@@ -6,15 +6,15 @@ Pour chacuns de ces DPE, on fait le calcul avec notre moteur, puis on compare le
 
 ```
 100% .logement.sortie.apport_et_besoin.v40_ecs_journalier
+100% .logement.sortie.apport_et_besoin.surface_sud_equivalente
 100% .logement.sortie.apport_et_besoin.nadeq
 100% .logement.sortie.apport_et_besoin.besoin_ecs
-97% .logement.sortie.apport_et_besoin.surface_sud_equivalente
 76% .logement.sortie.qualite_isolation.ubat
 75% .logement.sortie.deperdition.deperdition_renouvellement_air
 68% .logement.sortie.deperdition.deperdition_enveloppe
 45% .logement.sortie.ef_conso.conso_ecs
+35% .logement.sortie.apport_et_besoin.besoin_ch
 34% .logement.sortie.emission_ges.emission_ges_5_usages_m2
-34% .logement.sortie.apport_et_besoin.besoin_ch
 11% .logement.sortie.ef_conso.conso_ch
 8% .logement.sortie.ep_conso.ep_conso_5_usages_m2
 2% .logement.sortie.cout.cout_5_usages

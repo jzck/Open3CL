@@ -155,6 +155,7 @@ export default function calc_bv(bv, zc) {
     di.u_menuiserie = di.uw
   }
 
+  di.fe2 = 1
   if (de.masque_lointain_non_homogene_collection) {
     let mlnh = de.masque_lointain_non_homogene_collection.masque_lointain_non_homogene || []
     di.fe2 = Math.max(0, mlnh.reduce((acc, ml) => acc - calc_omb(ml) / 100, 1))

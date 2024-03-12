@@ -5,7 +5,6 @@ import { mois_liste } from './utils.js'
 export function calc_sse_j(bv_list, zc, mois) {
   const c1 = tvs['c1']
 
-  /* let bv_list2 = bv_list.filter((bv) => Number(bv.donnee_entree.enum_type_baie_id) < 6) */
   let ssej = bv_list.reduce((acc, bv) => {
     let type_adjacence = enums.type_adjacence[bv.donnee_entree.enum_type_adjacence_id]
     if (type_adjacence != 'extérieur') return acc
@@ -18,9 +17,9 @@ export function calc_sse_j(bv_list, zc, mois) {
     if (inclinaison == 'horizontal') oi = 'horizontal'
     let c1j = c1[zc][mois][oi]
 
-    let fe1 = di.fe1 || 1
-    let fe2 = di.fe2 || 1
-    let ssei = acc + de.surface_totale_baie * c1j * di.sw * fe1 * fe2
+    let fe1 = di.fe1
+    let fe2 = di.fe2
+    let ssei = acc + (de.surface_totale_baie * c1j * di.sw * fe1 * fe2)
     return ssei
   }, 0)
   return ssej
