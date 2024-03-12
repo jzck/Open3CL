@@ -44731,7 +44731,7 @@ export const tvs = {
     "epaisseur_lame": "15",
     "enum_type_vitrage_id": "4",
     "type_vitrage": "Survitrage",
-    "ug": "2.8000000000000003"
+    "ug": "2.8"
   },
   {
     "tv_ug_id": "80",
@@ -44743,7 +44743,7 @@ export const tvs = {
     "epaisseur_lame": "16",
     "enum_type_vitrage_id": "4",
     "type_vitrage": "Survitrage",
-    "ug": "2.8000000000000003"
+    "ug": "2.8"
   },
   {
     "tv_ug_id": "81",
@@ -44755,7 +44755,7 @@ export const tvs = {
     "epaisseur_lame": "18",
     "enum_type_vitrage_id": "4",
     "type_vitrage": "Survitrage",
-    "ug": "2.8000000000000003"
+    "ug": "2.8"
   },
   {
     "tv_ug_id": "82",
@@ -44767,7 +44767,7 @@ export const tvs = {
     "epaisseur_lame": "20",
     "enum_type_vitrage_id": "4",
     "type_vitrage": "Survitrage",
-    "ug": "2.8000000000000003"
+    "ug": "2.8"
   },
   {
     "tv_ug_id": "83",
@@ -44779,7 +44779,7 @@ export const tvs = {
     "epaisseur_lame": "6",
     "enum_type_vitrage_id": "4",
     "type_vitrage": "Survitrage",
-    "ug": "2.5500000000000003"
+    "ug": "2.55"
   },
   {
     "tv_ug_id": "84",
@@ -44803,7 +44803,7 @@ export const tvs = {
     "epaisseur_lame": "10",
     "enum_type_vitrage_id": "4",
     "type_vitrage": "Survitrage",
-    "ug": "1.9000000000000001"
+    "ug": "1.9"
   },
   {
     "tv_ug_id": "86",
@@ -44815,7 +44815,7 @@ export const tvs = {
     "epaisseur_lame": "12",
     "enum_type_vitrage_id": "4",
     "type_vitrage": "Survitrage",
-    "ug": "1.7000000000000002"
+    "ug": "1.7"
   },
   {
     "tv_ug_id": "87",
@@ -44887,7 +44887,7 @@ export const tvs = {
     "epaisseur_lame": "6",
     "enum_type_vitrage_id": "4",
     "type_vitrage": "Survitrage",
-    "ug": "3.8000000000000003"
+    "ug": "3.8"
   },
   {
     "tv_ug_id": "93",
@@ -44911,7 +44911,7 @@ export const tvs = {
     "epaisseur_lame": "10",
     "enum_type_vitrage_id": "4",
     "type_vitrage": "Survitrage",
-    "ug": "3.3000000000000003"
+    "ug": "3.3"
   },
   {
     "tv_ug_id": "95",
@@ -45007,7 +45007,7 @@ export const tvs = {
     "epaisseur_lame": "8",
     "enum_type_vitrage_id": "4",
     "type_vitrage": "Survitrage",
-    "ug": "2.3000000000000003"
+    "ug": "2.3"
   },
   {
     "tv_ug_id": "103",
@@ -45043,7 +45043,7 @@ export const tvs = {
     "epaisseur_lame": "14",
     "enum_type_vitrage_id": "4",
     "type_vitrage": "Survitrage",
-    "ug": "1.7000000000000002"
+    "ug": "1.7"
   },
   {
     "tv_ug_id": "106",

@@ -6,7 +6,7 @@ rm -f *.json
 rm -f *.csv
 
 # convert the excel file to csv
-ssconvert valeur_tables.xlsx -S "%s.csv"
+ssconvert valeur_tables.ods -S "%s.csv"
 
 # convert the csv files to json
 for csv in *.csv; do 
@@ -40,4 +40,4 @@ done
 printf "}\n" >> ../tv.js
 printf "export default tvs" >> ../tv.js
 
-ssconvert valeur_tables.xlsx -S "%s.csv"
+ssconvert valeur_tables.ods -S "%s.csv"
