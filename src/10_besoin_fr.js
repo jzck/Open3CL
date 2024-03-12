@@ -26,12 +26,12 @@ export function calc_besoin_fr_j(Sh, GV, inertie, aij_fr, asj_fr, nrefj, textmoy
 }
 
 export default function calc_besoin_fr(ilpa, ca, zc, Sh, nadeq, GV, inertie, bv) {
-  const Nref26 = tvs['nref26'][ilpa]
-  const Nref28 = tvs['nref28'][ilpa]
-  const e_fr_26 = tvs['e_fr_26'][ilpa]
-  const e_fr_28 = tvs['e_fr_28'][ilpa]
-  const textmoy_clim_26 = tvs['textmoy_clim_26'][ilpa]
-  const textmoy_clim_28 = tvs['textmoy_clim_28'][ilpa]
+  const Nref26 = tvs['nref26']
+  const Nref28 = tvs['nref28']
+  const e_fr_26 = tvs['e_fr_26']
+  const e_fr_28 = tvs['e_fr_28']
+  const textmoy_clim_26 = tvs['textmoy_clim_26']
+  const textmoy_clim_28 = tvs['textmoy_clim_28']
 
   let ret = {
     besoin_fr: 0,

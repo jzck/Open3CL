@@ -2,7 +2,7 @@ import { tvs } from './tv.js'
 import { mois_liste, Njj } from './utils.js'
 
 export function calc_besoin_ecs_j(ilpa, ca, mois, zc, nadeq, depensier) {
-  const tefsj = tvs['tefs'][ilpa][ca][mois][zc]
+  const tefsj = tvs['tefs'][ca][mois][zc]
   let njj = Njj[mois]
 
   if (depensier) {

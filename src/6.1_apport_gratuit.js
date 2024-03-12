@@ -15,8 +15,8 @@ export function calc_as_j(ssej, ej) {
 export function calc_ai(ilpa, ca, zc, Sh, nadeq) {
   const Nref19 = tvs['nref19'][ilpa]
   const Nref21 = tvs['nref21'][ilpa]
-  const Nref26 = tvs['nref26'][ilpa]
-  const Nref28 = tvs['nref28'][ilpa]
+  const Nref26 = tvs['nref26']
+  const Nref28 = tvs['nref28']
 
   let ret = {
     apport_interne_ch: 0,
@@ -39,8 +39,8 @@ export function calc_ai(ilpa, ca, zc, Sh, nadeq) {
 
 export function calc_as(ilpa, ca, zc, bv) {
   const e = tvs['e'][ilpa]
-  const e_fr_26 = tvs['e_fr_26'][ilpa]
-  const e_fr_28 = tvs['e_fr_28'][ilpa]
+  const e_fr_26 = tvs['e_fr_26']
+  const e_fr_28 = tvs['e_fr_28']
 
   let As = 0
   let ret = {

@@ -21,17 +21,18 @@ Les DPE dans la base de l'ademe sont au format XML. Open3CL fonctionne en json, 
 En travaillant sur les DPE je suis tombé sur quelques cas de DPE intéressants
 
 - `2307E3075089A` chaudiere a condensation + climatiseur
+- `2344E2258429L` DPE generé a partir des données immeuble
 - `2362E3036179P` poele a charbon
 - `2369E2991011Q` 1 radiateur à gaz + fenetres avec masques lointains
-- `2387E2923777K` pas d’ECS, pas de portes
-- `2387E3092820B` pas de pancher_haut
-- `2387E3074987E` bouclage ECS
-- `2387E1742056P` 2 emetteur ch
-- `2387E2899635W` 2 installation_ch
+- `2387E0402213E` methode_application 'maison_individuelle' mais les portes sont saisie depuis une étude rt2012/rt2020
 - `2387E0576340J` 2 gen ch
+- `2387E0888781I` inertie lourde + paroi anciennes (tableaux de valeurs différents)
+- `2387E1742056P` 2 emetteur ch
 - `2387E2058698D` ventil hybride
 - `2387E2603968B` inertie lourde + parois ancienne (différentes periode de chauffe)
-- `2344E2258429L` DPE generé a partir des données immeuble
-- `2387E0402213E` methode_application 'maison_individuelle' mais les portes sont saisie depuis une étude rt2012/rt2020
-- `2387E3103505A` Analysimmo 4.1.1 incohérence pont thermique, PB considéré pont ITI+ITE ??
+- `2387E2899635W` 2 installation_ch
+- `2387E2923777K` pas d’ECS, pas de portes
+- `2387E3074987E` bouclage ECS
+- `2387E3092820B` pas de pancher_haut
 - `2387E3103131Q` Analysimmo 4.1.1 incohérence ventil calculée comme si presence_joint_menuiserie=1 alors qu’aucune menuiserie n’a de joints
+- `2387E3103505A` Analysimmo 4.1.1 incohérence pont thermique, PB considéré pont ITI+ITE ??

@@ -27,14 +27,14 @@ done
 
 rm *.csv
 
-ssconvert 18.2_sollicitations_ext.gnumeric -S '%s.csv'
-ssconvert 18.5_c1.gnumeric -S '%s.csv'
+ssconvert 18.2_sollicitations_ext.ods -S '%s.csv'
+ssconvert 18.5_c1.ods -S '%s.csv'
 
 for csv in *.csv; do
 	echo + $csv
 	name=${csv%.csv}
 	printf "\"${name}\": " >> ../tv.js
-	cat $csv | ./gnumeric_to_json.py | jq . >> ../tv.js
+	cat $csv | ./csv_to_json.py | jq . >> ../tv.js
 	printf ",\n" >> ../tv.js
 done
 printf "}\n" >> ../tv.js
