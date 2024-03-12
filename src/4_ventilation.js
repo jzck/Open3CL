@@ -2,6 +2,10 @@ import enums from './enums.js';
 import { tv, requestInputID, requestInput } from './utils.js';
 import calc_pvent from './5_conso_ventilation.js';
 
+import { bug_for_bug_compat } from './utils.js'
+var path = require('path');
+var scriptName = path.basename(__filename);
+
 function tv_debits_ventilation(di, de, du) {
 	let matcher = {
 		enum_type_ventilation_id: requestInputID(de, du, 'type_ventilation')
@@ -31,7 +35,7 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
 			return acc + s.donnee_entree.surface_paroi_opaque;
 		else return acc;
 	}, 0);
-	let isolation_surfaces = surface_isolee / (surface_isolee + surface_non_isolee) > 0.5 ? "1" : "0";
+	let isolation_surfaces = surface_isolee > surface_non_isolee ? "1" : "0";
 
 	// presence joints menuiserie
 	let surface_bv_avec_joint = bv_list.reduce((acc, bv) => {
@@ -52,7 +56,13 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
 	}, 0);
 	let pjt =
 		surface_bv_avec_joint / (surface_bv_avec_joint + surface_bv_sans_joint) > 0.5 ? '1' : '0';
-	/* pjt = '1' //because 2387E0992815Q */
+
+	if (de.tv_q4pa_conv_id === 12 && pjt === '0') {
+		//c.f 2387E0992815Q
+		//c.f 2387E0430619S
+		console.warn(`BUG(${scriptName}) presence joint considéré alors que pjt=0`)
+		if (bug_for_bug_compat) pjt = '1'
+	}
 
 	let matcher = {
 		enum_periode_construction_id: cg.enum_periode_construction_id,
@@ -60,7 +70,9 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
 		isolation_surfaces: isolation_surfaces,
 		presence_joints_menuiserie: pjt
 	};
+	console.warn(matcher)
 	const row = tv('q4pa_conv', matcher);
+	console.warn(row)
 	if (row) {
 		di.q4pa_conv = Number(row.q4pa_conv);
 		de.tv_q4pa_conv_id = Number(row.tv_q4pa_conv_id);

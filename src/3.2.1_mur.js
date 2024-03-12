@@ -16,7 +16,7 @@ function tv_umur0(di, de, du) {
     // TODO not float, get from csv
     matcher.epaisseur_structure = requestInput(de, du, 'epaisseur_structure', 'float')
     if (!matcher.epaisseur_structure) {
-      // BUG: des fois, LICIEL omet le champ 'epaisseur_structure
+      // BUG: des fois, LICIEL omet le champ 'epaisseur_structure'
       // il faut aller le chercher dans description
       // if desc is "Mur en blocs de béton creux d'épaisseur ≥ 25 cm non isolé donnant sur l'extérieur"
       // retrive just "≥ 25" with a regex
