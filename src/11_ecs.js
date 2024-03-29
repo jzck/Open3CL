@@ -43,13 +43,14 @@ function tv_rendement_distribution_ecs(di, de, du, pvc) {
 	}
 }
 
-export default function calc_ecs(ecs, becs, becs_dep, GV, ca_id, zc_id) {
+export default function calc_ecs(ecs, becs, becs_dep, Sh, GV, ca_id, zc_id) {
 	let de = ecs.donnee_entree;
 	let di = {};
 	let du = {};
 
-	di.besoin_ecs = becs;
-	di.besoin_ecs_depensier = becs_dep;
+	let ratio = de.surface_habitable / Sh;
+	di.besoin_ecs = becs * ratio;
+	di.besoin_ecs_depensier = becs_dep * ratio;
 
 	let pvc = ecs.generateur_ecs_collection.generateur_ecs[0].donnee_entree.position_volume_chauffe;
 	tv_rendement_distribution_ecs(di, de, du, pvc);

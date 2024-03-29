@@ -89,7 +89,7 @@ export function calcul_3cl(dpe) {
 
 	let becs = apport_et_besoin.besoin_ecs;
 	let becs_dep = apport_et_besoin.besoin_ecs_depensier;
-	ecs.forEach((ecs) => calc_ecs(ecs, becs, becs_dep, GV, ca_id, zc_id));
+	ecs.forEach((ecs) => calc_ecs(ecs, becs, becs_dep, Sh, GV, ca_id, zc_id));
 
 	let ac = cg.annee_construction;
 	// needed for apport_et_besoin
