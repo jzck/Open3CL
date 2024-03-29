@@ -11,11 +11,11 @@ const Nh = {
   h3: 1506
 }
 
-export default function calc_conso_eclairage(zc_id) {
-  let zc = enums.zone_climatique[zc_id]
+export default function calc_conso_eclairage (zc_id) {
+  const zc = enums.zone_climatique[zc_id]
 
-  let C = 0.9
-  let Pecl = 1.4
-  let Cecl = (C * Pecl * Nh[zc]) / 1000
+  const C = 0.9
+  const Pecl = 1.4
+  const Cecl = (C * Pecl * Nh[zc]) / 1000
   return Cecl
 }
