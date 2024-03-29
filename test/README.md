@@ -10,7 +10,7 @@ Pour chacuns de ces DPE, on fait le calcul avec notre moteur, puis on compare le
 100% .logement.sortie.apport_et_besoin.nadeq
 100% .logement.sortie.apport_et_besoin.besoin_ecs
 98% .logement.sortie.deperdition.deperdition_renouvellement_air
-93% .logement.sortie.ef_conso.conso_ecs
+94% .logement.sortie.ef_conso.conso_ecs
 93% .logement.sortie.deperdition.deperdition_enveloppe
 82% .logement.sortie.qualite_isolation.ubat
 50% .logement.sortie.emission_ges.emission_ges_5_usages_m2

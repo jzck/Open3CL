@@ -123,8 +123,15 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, GV, ca_id, zc_id) {
   let combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ecs')
   let Iecs, Iecs_dep
   if (pac_ids.includes(type_generateur_id)) {
-    tv_scop(di, de, du, zc_id, null, 'ecs')
-    let cop = di.scop ? di.scop : di.cop
+    let cop;
+    if (di.cop || di.scop) {
+      // cop est saisi directement
+      cop = di.scop ? di.scop : di.cop
+    } else {
+      // on prends cop de la table
+      tv_scop(di, de, du, zc_id, null, 'ecs')
+      let cop = di.scop ? di.scop : di.cop
+    }
     Iecs = 1 / cop
     Iecs_dep = 1 / cop
   } else if (type_energie === 'électricité') {
