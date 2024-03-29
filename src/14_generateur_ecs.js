@@ -88,16 +88,16 @@ function type_generateur_ecs(di, de, du, usage_generateur) {
 function rg_chauffe_eau_gaz(di, besoin_ecs) {
   let becs = besoin_ecs * 1000 // en W
   let rg = 1 / (1 / di.rpn + 1790 * ((di.qp0) / (becs)) + 6970 * (di.pveil / becs))
-  console.warn(`rpn: ${di.rpn}, qp0: ${di.qp0}, Qgw: ${di.Qgw}, besoin_ecs: ${besoin_ecs}, pveil: ${di.pveil}, rg: ${rg}`)
   return rg
 }
 
 function rgrs_chaudiere(di, besoin_ecs) {
+  let becs = besoin_ecs * 1000 // en W
   let rgrs =
     1 /
     (1 / di.rpn +
-      (1790 * di.qp0 + di.Qgw) / (besoin_ecs * 1000) +
-      (6970 * 0.5 * di.pveil) / (besoin_ecs * 1000))
+      (1790 * di.qp0 + di.Qgw) / becs +
+      (6970 * 0.5 * di.pveil) / becs)
   return rgrs
 }
 

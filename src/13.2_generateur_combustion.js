@@ -41,10 +41,17 @@ function excel_to_js_exec(box, pn, E, F) {
     .replace(/logPn/g, '*Math.log10(Pn)')
     .replace(/%/g, '/100')
     .replace(/\^/g, '**')
-  let js = `let Pn=${pn / 1000}, E=${E}, F=${F}; (${formula})`
-  /* console.warn(js) */
+  let pn_w
+  if (pn < 1000)
+    // ca c'est degueulasse:
+    // parfois quand pn est saisi en W, et parfois en kW.
+    pn_w = pn
+  else
+    pn_w = pn / 1000
+  let js = `let Pn=${pn_w}, E=${E}, F=${F}; (${formula})`
+  console.warn(js)
   let result = eval(js)
-  /* console.warn(result) */
+  console.warn(result)
   return result
 }
 
@@ -74,6 +81,8 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
     else di.qp0 = qp0_calc * di.pn
   } else di.qp0 = 0
   if (di.pveil) {
+    // ce if ne marche que pour les DPEs existants, pour un nouveau DPE il faut absolument aller chercher
+    // une valeur forfaitaire, et il faut un mecanisme pour que le diagnostiqueur puisse override
     if (Number(row.pveil)) di.pveil = Number(row.pveil)
     else di.pveil = 0
   } else {
