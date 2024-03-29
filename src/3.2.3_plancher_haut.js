@@ -1,14 +1,13 @@
 import enums from './enums.js'
 import b from './3.1_b.js'
-import { tv, requestInput, requestInputID, getKeyByValue } from './utils.js'
+import { tv, requestInput, requestInputID, getKeyByValue, bug_for_bug_compat } from './utils.js'
 
-import { bug_for_bug_compat } from './utils.js'
-var path = require('path');
-var scriptName = path.basename(__filename);
+const path = require('path')
+const scriptName = path.basename(__filename)
 
-function tv_uph0(di, de, du) {
+function tv_uph0 (di, de, du) {
   requestInput(de, du, 'type_plancher_haut')
-  let matcher = {
+  const matcher = {
     enum_type_plancher_haut_id: de.enum_type_plancher_haut_id
   }
   const row = tv('uph0', matcher, de)
@@ -20,17 +19,15 @@ function tv_uph0(di, de, du) {
   }
 }
 
-function tv_uph(di, de, du, pc_id, zc, ej) {
-  let type_adjacence = requestInput(de, du, 'type_adjacence')
-  let type_ph = requestInput(de, du, 'type_plancher_haut')
+function tv_uph (di, de, du, pc_id, zc, ej) {
+  const type_adjacence = requestInput(de, du, 'type_adjacence')
+  const type_ph = requestInput(de, du, 'type_plancher_haut')
   let type_toiture
   if (type_adjacence != 'extérieur') {
     type_toiture = 'combles'
   } else {
-    if (type_ph === 'combles aménagés sous rampant')
-      type_toiture = 'combles'
-    else
-      type_toiture = 'terrasse'
+    if (type_ph === 'combles aménagés sous rampant') type_toiture = 'combles'
+    else type_toiture = 'terrasse'
   }
 
   if (de.description.includes("donnant sur l'extérieur (combles aménagés)")) {
@@ -41,11 +38,11 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
     if (bug_for_bug_compat) type_toiture = 'combles'
   }
 
-  let matcher = {
+  const matcher = {
     enum_periode_construction_id: pc_id,
     enum_zone_climatique_id: zc,
     effet_joule: ej,
-    type_toiture: type_toiture
+    type_toiture
   }
   const row = tv('uph', matcher, de)
   if (row) {
@@ -56,8 +53,8 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
   }
 }
 
-function calc_uph0(di, de, du) {
-  let methode_saisie_u0 = requestInput(de, du, 'methode_saisie_u0')
+function calc_uph0 (di, de, du) {
+  const methode_saisie_u0 = requestInput(de, du, 'methode_saisie_u0')
   switch (methode_saisie_u0) {
     case 'type de paroi inconnu (valeur par défaut)':
     case 'déterminé selon le matériau et épaisseur à partir de la table de valeur forfaitaire':
@@ -74,14 +71,14 @@ function calc_uph0(di, de, du) {
   }
 }
 
-export default function calc_ph(ph, zc, pc_id, ej) {
-  let de = ph.donnee_entree
-  let du = {}
-  let di = {}
+export default function calc_ph (ph, zc, pc_id, ej) {
+  const de = ph.donnee_entree
+  const du = {}
+  const di = {}
 
   b(di, de, du, zc)
 
-  let methode_saisie_u = requestInput(de, du, 'methode_saisie_u')
+  const methode_saisie_u = requestInput(de, du, 'methode_saisie_u')
 
   switch (methode_saisie_u) {
     case 'non isolé':
@@ -90,14 +87,14 @@ export default function calc_ph(ph, zc, pc_id, ej) {
       break
     case 'epaisseur isolation saisie justifiée par mesure ou observation':
     case 'epaisseur isolation saisie justifiée à partir des documents justificatifs autorisés': {
-      let e = requestInput(de, du, 'epaisseur_isolation', 'int') * 0.01
+      const e = requestInput(de, du, 'epaisseur_isolation', 'int') * 0.01
       calc_uph0(di, de, du)
       di.uph = 1 / (1 / di.uph0 + e / 0.04)
       break
     }
     case "resistance isolation saisie justifiée observation de l'isolant installé et mesure de son épaisseur":
     case 'resistance isolation saisie justifiée  à partir des documents justificatifs autorisés': {
-      let r = requestInput(de, du, 'resistance_isolation', 'float')
+      const r = requestInput(de, du, 'resistance_isolation', 'float')
       calc_uph0(di, de, du)
       di.uph = 1 / (1 / di.uph0 + r)
       break
@@ -110,8 +107,8 @@ export default function calc_ph(ph, zc, pc_id, ej) {
       break
     case 'année de construction saisie (table forfaitaire)': {
       // i.e l'année d'isolation n'est pas connue
-      var pi_id = pc_id
-      let pc = enums.periode_construction[pc_id]
+      let pi_id = pc_id
+      const pc = enums.periode_construction[pc_id]
       switch (pc) {
         case 'avant 1948':
         case '1948-1974':
@@ -123,7 +120,9 @@ export default function calc_ph(ph, zc, pc_id, ej) {
       tv_uph(di, de, du, pi_id, zc, ej)
       di.uph = Math.min(di.uph, di.uph0)
       if (de.tv_uph_id != tv_uph_avant && pi_id != pc_id) {
-        console.warn(`BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 21)`)
+        console.warn(
+          `BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 21)`
+        )
         if (bug_for_bug_compat) tv_uph(di, de, du, pc_id, zc, ej)
       }
       di.uph = Math.min(di.uph, di.uph0)
