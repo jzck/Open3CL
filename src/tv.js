@@ -4674,6 +4674,7 @@ export const tvs = {
     "pn": "Pn",
     "rpn": "91 + 1 logPn",
     "rpint": "97 + 1 logPn",
+    "qp0_perc": "0.01",
     "pveil": "120"
   },
   {
@@ -4683,7 +4684,8 @@ export const tvs = {
     "type_generateur": "Chaudière gaz à condensation 2001-2015",
     "pn": "Pn",
     "rpn": "91 + 1 logPn",
-    "rpint": "97 + 1 logPn"
+    "rpint": "97 + 1 logPn",
+    "qp0_perc": "0.01"
   },
   {
     "tv_generateur_combustion_id": "13",

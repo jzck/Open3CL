@@ -39,8 +39,4 @@ En travaillant sur les DPE je suis tombé sur quelques cas de DPE intéressants
 - `2187E1039187C` toiture terrasse
 - `2287E1724516Y` pour un meme generateur, position_volume_chauffe = 0 ou 1 selon si c'est le gen_ecs ou le gen_ch
 - `2387E3092820B` le gen_ecs est calculé comme si pveil=0 alors que les tableaux disent bien pveil=100 pour ce type de chauffeau
-
-# A regarder
-
-14 lachamp village - St germain les vergnes 19330
-`2387E0291550X` probleme ubat/uph comble amenagés
+- `2387E0291550X` probleme ubat/uph comble amenagés
