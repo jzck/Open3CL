@@ -86,8 +86,9 @@ function type_generateur_ecs(di, de, du, usage_generateur) {
 }
 
 function rg_chauffe_eau_gaz(di, besoin_ecs) {
-  let rg = 1 / (1 / di.rpn + 1790 * (di.qp0 / (besoin_ecs * 1000)) + 6970 * (di.pveil / besoin_ecs))
-  di.rendement_generation = rg
+  let becs = besoin_ecs * 1000 // en W
+  let rg = 1 / (1 / di.rpn + 1790 * ((di.qp0) / (becs)) + 6970 * (di.pveil / becs))
+  console.warn(`rpn: ${di.rpn}, qp0: ${di.qp0}, Qgw: ${di.Qgw}, besoin_ecs: ${besoin_ecs}, pveil: ${di.pveil}, rg: ${rg}`)
   return rg
 }
 
@@ -138,6 +139,7 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, GV, ca_id, zc_id) {
     Iecs = 1 / di.rendement_stockage
     Iecs_dep = 1 / di.rendement_stockage_depensier
   } else if (combustion_ids.includes(type_generateur_id)) {
+    // combustion
     let ca = enums.classe_altitude[ca_id]
     let zc = enums.zone_climatique[zc_id]
     let tbase = Tbase[ca][zc.slice(0, 2)]
@@ -150,31 +152,30 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, GV, ca_id, zc_id) {
       type_generateur.includes('chauffe-eau gaz') ||
       type_generateur.includes('chauffe-eau gpl/propane/butane')
     ) {
+      // Chauffe-eau gaz
       di.rendement_generation = rg_chauffe_eau_gaz(di, besoin_ecs)
       di.rendement_generation_depensier = rg_chauffe_eau_gaz(di, besoin_ecs_dep)
-      Iecs = 1 / di.rendement_generation
-      Iecs_dep = 1 / di.rendement_generation_depensier
     } else if (type_generateur.includes('chaudière')) {
-      if (di.Qgw == 0) {
-        di.rendement_generation = rgrs_chaudiere(di, besoin_ecs)
-        di.rendement_generation_depensier = rgrs_chaudiere(di, besoin_ecs_dep)
-        Iecs = 1 / di.rendement_generation
-        Iecs_dep = 1 / di.rendement_generation_depensier
-      } else {
-        di.rendement_generation_stockage = rgrs_chaudiere(di, besoin_ecs)
-        di.rendement_generation_stockage_depensier = rgrs_chaudiere(di, besoin_ecs_dep)
-        Iecs = 1 / di.rendement_generation_stockage
-        Iecs_dep = 1 / di.rendement_generation_stockage_depensier
-      }
+      // Chaudière
+      di.rendement_generation = rgrs_chaudiere(di, besoin_ecs)
+      di.rendement_generation_depensier = rgrs_chaudiere(di, besoin_ecs_dep)
     } else if (type_generateur.includes('accumulateur gaz')) {
       di.rendement_generation = rg_accumulateur_gaz(di, besoin_ecs)
       di.rendement_generation_depensier = rg_accumulateur_gaz(di, besoin_ecs_dep)
-      Iecs = 1 / di.rendement_generation
-      Iecs_dep = 1 / di.rendement_generation_depensier
     } else {
       console.warn(`!! type_generateur_ecs ${type_generateur} non implémenté !!`)
     }
+    Iecs = 1 / di.rendement_generation
+    Iecs_dep = 1 / di.rendement_generation_depensier
+    if (di.Qgw == 0) {
+      // pas de stockage
+      di.rendement_generation_stockage = di.rendement_generation
+      di.rendement_generation_stockage_depensier = di.rendement_generation_depensier
+      delete di.rendement_generation
+      delete di.rendement_generation_depensier
+    }
   } else {
+    // ni pac, ni combustion ??
     Iecs = 1
     Iecs_dep = 1
   }
