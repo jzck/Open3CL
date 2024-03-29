@@ -24,7 +24,7 @@ function tv_umur0(di, de, du) {
       matcher.epaisseur_structure = desc.match(/(\d+) cm/)[1]
     }
   }
-  const row = tv('umur0', matcher)
+  const row = tv('umur0', matcher, de)
   if (row) {
     di.umur0 = Number(row.umur0)
     de.tv_umur0_id = Number(row.tv_umur0_id)
@@ -39,7 +39,7 @@ function tv_umur(di, de, du, pc_id, zc, ej) {
     enum_zone_climatique_id: zc,
     effet_joule: ej
   }
-  const row = tv('umur', matcher)
+  const row = tv('umur', matcher, de)
   if (row) {
     di.umur = Number(row.umur)
     de.tv_umur_id = Number(row.tv_umur_id)

@@ -49,8 +49,8 @@ function tv_temp_fonc_30_100(di, de, du, em_ch, ac) {
       else matcher.periode_emetteurs = 'après 2000'
     }
 
-    let row_30 = tv('temp_fonc_30', matcher)
-    let row_100 = tv('temp_fonc_100', matcher)
+    let row_30 = tv('temp_fonc_30', matcher, de)
+    let row_100 = tv('temp_fonc_100', matcher, de)
 
     if (row_30) {
       if (!di.temp_fonc_30 || Number(row_30.temp_fonc_30) > di.temp_fonc_30) {

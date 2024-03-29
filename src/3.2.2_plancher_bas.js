@@ -10,7 +10,7 @@ function tv_upb0(di, de, du) {
   let matcher = {
     enum_type_plancher_bas_id: de.enum_type_plancher_bas_id
   }
-  const row = tv('upb0', matcher)
+  const row = tv('upb0', matcher, de)
   if (row) {
     di.upb0 = Number(row.upb0)
     de.tv_upb0_id = Number(row.tv_upb0_id)
@@ -25,7 +25,7 @@ function tv_upb(di, de, du, pc_id, zc, ej) {
     enum_zone_climatique_id: zc,
     effet_joule: ej
   }
-  const row = tv('upb', matcher)
+  const row = tv('upb', matcher, de)
   if (row) {
     di.upb = Number(row.upb)
     de.tv_upb_id = Number(row.tv_upb_id)

@@ -16,7 +16,7 @@ function tv_pertes_stockage(di, de) {
     volume_ballon: vb
   }
 
-  const row = tv('pertes_stockage', matcher)
+  const row = tv('pertes_stockage', matcher, de)
   if (row) {
     di.cr = Number(row.cr)
     de.tv_pertes_stockage_id = Number(row.tv_pertes_stockage_id)

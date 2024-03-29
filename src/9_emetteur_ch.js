@@ -14,7 +14,7 @@ function tv_rendement_distribution_ch(di, de) {
     enum_type_emission_distribution_id: de.enum_type_emission_distribution_id,
     reseau_distribution_isole: de.reseau_distribution_isole
   }
-  const row = tv('rendement_distribution_ch', matcher)
+  const row = tv('rendement_distribution_ch', matcher, de)
   if (row) {
     di.rendement_distribution = Number(row.rd)
     de.tv_rendement_distribution_ch_id = Number(row.tv_rendement_distribution_ch_id)
@@ -27,7 +27,7 @@ function tv_rendement_emission(di, de) {
   let matcher = {
     enum_type_emission_distribution_id: de.enum_type_emission_distribution_id
   }
-  const row = tv('rendement_emission', matcher)
+  const row = tv('rendement_emission', matcher, de)
   if (row) {
     di.rendement_emission = Number(row.re)
     de.tv_rendement_emission_id = Number(row.tv_rendement_emission_id)
@@ -40,7 +40,7 @@ function tv_rendement_regulation(di, de) {
   let matcher = {
     enum_type_emission_distribution_id: de.enum_type_emission_distribution_id
   }
-  const row = tv('rendement_regulation', matcher)
+  const row = tv('rendement_regulation', matcher, de)
   if (row) {
     di.rendement_regulation = Number(row.rr)
     de.tv_rendement_regulation_id = Number(row.tv_rendement_regulation_id)
@@ -61,7 +61,7 @@ function tv_intermittence(di, de, inst_ch_de, map_id, inertie_id) {
     /* TODO */
     comptage_individuel: 'Absence'
   }
-  const row = tv('intermittence', matcher)
+  const row = tv('intermittence', matcher, de)
   if (row) {
     di.i0 = Number(row.i0)
     de.tv_intermittence_id = Number(row.tv_intermittence_id)

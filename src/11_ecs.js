@@ -34,7 +34,7 @@ function tv_rendement_distribution_ecs(di, de, du, pvc) {
 		matcher.type_reseau_collectif = type_reseau_collectif;
 	}
 	if (configuration_logement) matcher.configuration_logement = configuration_logement;
-	const row = tv('rendement_distribution_ecs', matcher);
+	const row = tv('rendement_distribution_ecs', matcher, de);
 	if (row) {
 		di.rendement_distribution = Number(row.rd);
 		de.tv_rendement_distribution_ecs_id = Number(row.tv_rendement_distribution_ecs_id);

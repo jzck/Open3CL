@@ -14,7 +14,7 @@ function tv_ug(di, de, du) {
     matcher.vitrage_vir = requestInput(de, du, 'vitrage_vir', 'bool')
     matcher.epaisseur_lame = requestInput(de, du, 'epaisseur_lame', 'float')
   }
-  const row = tv('ug', matcher)
+  const row = tv('ug', matcher, de)
   if (row) {
     di.ug = Number(row.ug)
     de.tv_ug_id = Number(row.tv_ug_id)
@@ -32,7 +32,7 @@ function tv_uw(di, de, du) {
     matcher.enum_type_materiaux_menuiserie_id = requestInputID(de, du, 'type_materiaux_menuiserie')
     matcher.ug = `^${di.ug}$`
   }
-  const row = tv('uw', matcher)
+  const row = tv('uw', matcher, null) // on ne passe pas de car on veut garder notre valeur
   if (row) {
     di.uw = Number(row.uw)
     de.tv_uw_id = Number(row.tv_uw_id)
@@ -45,7 +45,7 @@ function tv_deltar(di, de, du) {
   let matcher = {
     enum_type_fermeture_id: requestInputID(de, du, 'type_fermeture')
   }
-  const row = tv('deltar', matcher)
+  const row = tv('deltar', matcher, de)
   if (row) {
     di.deltar = Number(row.deltar)
     de.tv_deltar_id = Number(row.tv_deltar_id)
@@ -60,7 +60,7 @@ function tv_ujn(di, de, du) {
     deltar: di.deltar,
     uw: `^${di.uw}$`
   }
-  const row = tv('ujn', matcher)
+  const row = tv('ujn', matcher, null)
   if (row) {
     di.ujn = Number(row.ujn)
     de.tv_ujn_id = Number(row.tv_ujn_id)
@@ -82,7 +82,7 @@ function tv_sw(di, de, du) {
   /*   // not for briques verre/polycarbonate */
   /* } */
 
-  const row = tv('sw', matcher)
+  const row = tv('sw', matcher, de)
   if (row) {
     di.sw = Number(row.sw)
     de.tv_sw_id = Number(row.tv_sw_id)
@@ -96,7 +96,7 @@ function tv_masque_proche(di, de, du) {
   let matcher = {
     tv_coef_masque_proche_id: de.tv_coef_masque_proche_id // TODO remove
   }
-  const row = tv('coef_masque_proche', matcher)
+  const row = tv('coef_masque_proche', matcher, de)
   if (row) {
     di.fe1 = Number(row.fe1)
     de.tv_coef_masque_proche_id = Number(row.tv_coef_masque_proche_id)
@@ -110,7 +110,7 @@ function tv_masque_lointain_homogene(di, de, du) {
   let matcher = {
     tv_coef_masque_lointain_homogene_id: de.tv_coef_masque_lointain_homogene_id // TODO remove
   }
-  const row = tv('coef_masque_lointain_homogene', matcher)
+  const row = tv('coef_masque_lointain_homogene', matcher, de)
   if (row) {
     di.fe2 = Number(row.fe2)
     de.tv_coef_masque_lointain_homogene_id = Number(row.tv_coef_masque_lointain_homogene_id)
@@ -119,11 +119,11 @@ function tv_masque_lointain_homogene(di, de, du) {
   }
 }
 
-function calc_omb(ml) {
+function calc_omb(ml, de) {
   let matcher = {
     tv_coef_masque_lointain_non_homogene_id: ml.tv_coef_masque_lointain_non_homogene_id // TODO remove
   }
-  const row = tv('coef_masque_lointain_non_homoge', matcher)
+  const row = tv('coef_masque_lointain_non_homoge', matcher, de)
   if (row) {
     let omb = Number(row.omb)
     /* de.tv_coef_masque_lointain_non_homogene_id = Number(row.tv_coef_masque_lointain_homogene_id) */
@@ -158,7 +158,7 @@ export default function calc_bv(bv, zc) {
   di.fe2 = 1
   if (de.masque_lointain_non_homogene_collection) {
     let mlnh = de.masque_lointain_non_homogene_collection.masque_lointain_non_homogene || []
-    di.fe2 = Math.max(0, mlnh.reduce((acc, ml) => acc - calc_omb(ml) / 100, 1))
+    di.fe2 = Math.max(0, mlnh.reduce((acc, ml) => acc - calc_omb(ml, de) / 100, 1))
   }
   tv_masque_proche(di, de, du)
   tv_masque_lointain_homogene(di, de, du)

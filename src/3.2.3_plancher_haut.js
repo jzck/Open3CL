@@ -11,7 +11,7 @@ function tv_uph0(di, de, du) {
   let matcher = {
     enum_type_plancher_haut_id: de.enum_type_plancher_haut_id
   }
-  const row = tv('uph0', matcher)
+  const row = tv('uph0', matcher, de)
   if (row) {
     di.uph0 = Number(row.uph0)
     de.tv_uph0_id = Number(row.tv_uph0_id)
@@ -47,7 +47,7 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
     effet_joule: ej,
     type_toiture: type_toiture
   }
-  const row = tv('uph', matcher)
+  const row = tv('uph', matcher, de)
   if (row) {
     di.uph = Number(row.uph)
     de.tv_uph_id = Number(row.tv_uph_id)

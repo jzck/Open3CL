@@ -83,7 +83,7 @@ export default function b(di, de, du, zc_id) {
     }
   }
 
-  let row = tv('coef_reduction_deperdition', matcher)
+  let row = tv('coef_reduction_deperdition', matcher, de)
   if (row) {
     di.b = Number(row.b)
     de.tv_coef_reduction_deperdition_id = Number(row.tv_coef_reduction_deperdition_id)

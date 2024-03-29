@@ -46,7 +46,7 @@ function tv_rendement_generation(di, de, du) {
   let matcher = {
     enum_type_generateur_ch_id: requestInputID(de, du, 'type_generateur_ch')
   }
-  const row = tv('rendement_generation', matcher)
+  const row = tv('rendement_generation', matcher, de)
   if (row) {
     di.rendement_generation = Number(row.rg)
     di.rg = di.rendement_generation

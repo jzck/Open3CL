@@ -135,7 +135,7 @@ function tv_k(di, de, du, pc_id, enveloppe) {
     }
   }
 
-  const row = tv('pont_thermique', matcher)
+  const row = tv('pont_thermique', matcher, de)
   if (row) {
     di.k = Number(row.k)
     de.tv_pont_thermique_id = Number(row.tv_pont_thermique_id)

@@ -60,7 +60,7 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
     di.pn = (1.2 * GV * (19 - tbase)) / 0.95 ** 3
   }
   matcher.critere_pn = criterePn(di.pn / 1000, matcher)
-  const row = tv('generateur_combustion', matcher)
+  const row = tv('generateur_combustion', matcher, de)
   if (!row) console.error('!! pas de valeur forfaitaire trouvée pour generateur_combustion !!')
   de.tv_generateur_combustion_id = Number(row.tv_generateur_combustion_id)
   if (Number(row.pn)) di.pn = Number(row.pn) * 1000

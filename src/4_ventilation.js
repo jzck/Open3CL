@@ -11,7 +11,7 @@ function tv_debits_ventilation(di, de, du) {
 		enum_type_ventilation_id: requestInputID(de, du, 'type_ventilation')
 	};
 
-	const row = tv('debits_ventilation', matcher);
+	const row = tv('debits_ventilation', matcher, de);
 	if (row) {
 		di.qvarep_conv = Number(row.qvarep_conv);
 		di.qvasouf_conv = Number(row.qvasouf_conv);
@@ -76,7 +76,7 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
 		isolation_surfaces: isolation_surfaces,
 		presence_joints_menuiserie: pjt
 	};
-	const row = tv('q4pa_conv', matcher);
+	const row = tv('q4pa_conv', matcher, de);
 	if (row) {
 		di.q4pa_conv = Number(row.q4pa_conv);
 		de.tv_q4pa_conv_id = Number(row.tv_q4pa_conv_id);

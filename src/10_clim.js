@@ -5,7 +5,7 @@ function tv_seer(di, de, du, zc_id) {
     enum_zone_climatique_id: zc_id,
     enum_periode_installation_fr_id: requestInputID(de, du, 'periode_installation_fr')
   }
-  const row = tv('seer', matcher)
+  const row = tv('seer', matcher, de)
   if (row) {
     de.tv_seer_id = Number(row.tv_seer_id)
     di.eer = row.eer

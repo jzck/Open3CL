@@ -182,7 +182,7 @@ function tvMatch(row, key, matcher) {
 	return true;
 }
 
-export function tv(filePath, matcher) {
+export function tv(filePath, matcher, de) {
 	const list = tvs[filePath];
 	let match_count = 0;
 	let max_match_count = 0;
@@ -194,7 +194,10 @@ export function tv(filePath, matcher) {
 			if (tvMatch(row, key, matcher)) match_count += 1;
 		}
 		// if match_count is same as matcher, we are done
-		if (match_count === Object.keys(matcher).length) return row
+		if (match_count === Object.keys(matcher).length) {
+			match = row
+			break;
+		}
 
 		/* if (filePath === 'q4pa_conv') console.warn(match_count) */
 		if (match_count > max_match_count) {
@@ -202,10 +205,20 @@ export function tv(filePath, matcher) {
 			match = row;
 		}
 	}
-	/* if (filePath === 'pont_thermique') { */
-	/* 	console.warn(matcher) */
-	/* 	console.warn(match) */
-	/* } */
+	if (de) {
+		// on compare avant et apres
+		let id_avant = de[`tv_${filePath}_id`];
+		let id_apres = match[`tv_${filePath}_id`];
+		if (id_avant && String(id_avant) !== String(id_apres)) {
+			if (bug_for_bug_compat) {
+				// on remplace par l'ancien
+				match = list.find((row) => row[`tv_${filePath}_id`] === String(id_avant));
+				console.warn(`!! tv_${filePath}_id mismatch(replaced) avant: ${id_avant} apres: ${id_apres}`);
+			} else {
+				console.warn(`!! tv_${filePath}_id mismatch avant: ${id_avant} apres: ${id_apres}`);
+			}
+		}
+	}
 	return match;
 }
 
