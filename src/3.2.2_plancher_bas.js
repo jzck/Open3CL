@@ -1,13 +1,12 @@
 import enums from './enums.js'
 import b from './3.1_b.js'
-import { tv, requestInput, requestInputID, getKeyByValue } from './utils.js'
+import { tv, requestInput, requestInputID, getKeyByValue, bug_for_bug_compat } from './utils.js'
 
-import { bug_for_bug_compat } from './utils.js'
-var path = require('path');
+const path = require('path')
 
-function tv_upb0(di, de, du) {
+function tv_upb0 (di, de, du) {
   requestInput(de, du, 'type_plancher_bas')
-  let matcher = {
+  const matcher = {
     enum_type_plancher_bas_id: de.enum_type_plancher_bas_id
   }
   const row = tv('upb0', matcher)
@@ -19,8 +18,8 @@ function tv_upb0(di, de, du) {
   }
 }
 
-function tv_upb(di, de, du, pc_id, zc, ej) {
-  let matcher = {
+function tv_upb (di, de, du, pc_id, zc, ej) {
+  const matcher = {
     enum_periode_construction_id: pc_id,
     enum_zone_climatique_id: zc,
     effet_joule: ej
@@ -34,7 +33,7 @@ function tv_upb(di, de, du, pc_id, zc, ej) {
   }
 }
 
-function ue_ranges(inputNumber, ranges) {
+function ue_ranges (inputNumber, ranges) {
   const result = []
 
   if (inputNumber < ranges[0]) {
@@ -66,25 +65,25 @@ function ue_ranges(inputNumber, ranges) {
 
 const values_2s_p = [3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20]
 
-function tv_ue(di, de, du, pc_id, pb_list) {
-  let type_adjacence = enums.type_adjacence[de.enum_type_adjacence_id]
-  var type_adjacence_plancher
-  var upb1, upb2
+function tv_ue (di, de, du, pc_id, pb_list) {
+  const type_adjacence = enums.type_adjacence[de.enum_type_adjacence_id]
+  let type_adjacence_plancher
+  let upb1, upb2
   if (type_adjacence === 'terre-plein') {
     if (Number(pc_id) < 7) {
-      type_adjacence_plancher = 'terre plein bâtiment construit avant 2001'
-      ;[upb1, upb2] = ue_ranges(di.upb, [0.46, 0.59, 0.85, 1.5, 3.4])
+      type_adjacence_plancher = 'terre plein bâtiment construit avant 2001';
+      [upb1, upb2] = ue_ranges(di.upb, [0.46, 0.59, 0.85, 1.5, 3.4])
     } else {
-      type_adjacence_plancher = 'terre plein bâtiment construit à partir de 2001'
-      ;[upb1, upb2] = ue_ranges(di.upb, [0.31, 0.37, 0.46, 0.6, 0.85, 1.5, 3.4])
+      type_adjacence_plancher = 'terre plein bâtiment construit à partir de 2001';
+      [upb1, upb2] = ue_ranges(di.upb, [0.31, 0.37, 0.46, 0.6, 0.85, 1.5, 3.4])
     }
   } else {
-    type_adjacence_plancher = 'plancher sur vide sanitaire ou sous-sol non chauffé'
-    ;[upb1, upb2] = ue_ranges(di.upb, [0.31, 0.34, 0.37, 0.41, 0.45, 0.83, 1.43, 3.33])
+    type_adjacence_plancher = 'plancher sur vide sanitaire ou sous-sol non chauffé';
+    [upb1, upb2] = ue_ranges(di.upb, [0.31, 0.34, 0.37, 0.41, 0.45, 0.83, 1.43, 3.33])
   }
   // sum all surface_paroi_opaque for all plancher_bas
-  let S = pb_list.reduce((acc, pb) => {
-    let type_adjacence = enums.type_adjacence[pb.donnee_entree.enum_type_adjacence_id]
+  const S = pb_list.reduce((acc, pb) => {
+    const type_adjacence = enums.type_adjacence[pb.donnee_entree.enum_type_adjacence_id]
     switch (type_adjacence) {
       case 'vide sanitaire':
       case 'sous-sol non chauffé':
@@ -94,17 +93,17 @@ function tv_ue(di, de, du, pc_id, pb_list) {
         return acc
     }
   }, 0)
-  let surface_ue = requestInput(de, du, 'surface_ue', 'float') || S
+  const surface_ue = requestInput(de, du, 'surface_ue', 'float') || S
 
   // calcul utilisé par 2187E0982591I
-  /* surface_ue = de.surface_paroi_opaque */ 
+  /* surface_ue = de.surface_paroi_opaque */
   /* if (de.reference == 'plancher_bas_1') { */
   /*   surface_ue = 15.9 //sum of plancher_bas_1 + plancher_bas_2 */
   /* } */
 
-  let perimetre_ue = requestInput(de, du, 'perimetre_ue', 'float')
-  let matcher = {
-    type_adjacence_plancher: type_adjacence_plancher,
+  const perimetre_ue = requestInput(de, du, 'perimetre_ue', 'float')
+  const matcher = {
+    type_adjacence_plancher,
     '2s_p': Math.round((2 * surface_ue) / perimetre_ue)
   }
   // get 2s_p from surface_ue and perimetre_ue, choose from closest 2s_p_values
@@ -112,8 +111,8 @@ function tv_ue(di, de, du, pc_id, pb_list) {
     return Math.abs(curr - matcher['2s_p']) < Math.abs(prev - matcher['2s_p']) ? curr : prev
   })
   matcher['2s_p'] = `^${matcher['2s_p']}$`
-  let matcher_1 = { ...matcher, ...{ upb: String(upb1) } }
-  let matcher_2 = { ...matcher, ...{ upb: String(upb2) } }
+  const matcher_1 = { ...matcher, ...{ upb: String(upb1) } }
+  const matcher_2 = { ...matcher, ...{ upb: String(upb2) } }
   const row_1 = tv('ue', matcher_1)
   const row_2 = tv('ue', matcher_2)
   const delta_ue = Number(row_2.ue) - Number(row_1.ue)
@@ -124,8 +123,8 @@ function tv_ue(di, de, du, pc_id, pb_list) {
   de.ue = ue
 }
 
-function calc_upb0(di, de, du) {
-  let methode_saisie_u0 = requestInput(de, du, 'methode_saisie_u0')
+function calc_upb0 (di, de, du) {
+  const methode_saisie_u0 = requestInput(de, du, 'methode_saisie_u0')
   switch (methode_saisie_u0) {
     case 'type de paroi inconnu (valeur par défaut)':
     case 'déterminé selon le matériau et épaisseur à partir de la table de valeur forfaitaire':
@@ -142,14 +141,14 @@ function calc_upb0(di, de, du) {
   }
 }
 
-export default function calc_pb(pb, zc, pc_id, ej, pb_list) {
-  let de = pb.donnee_entree
-  let du = {}
-  let di = {}
+export default function calc_pb (pb, zc, pc_id, ej, pb_list) {
+  const de = pb.donnee_entree
+  const du = {}
+  const di = {}
 
   b(di, de, du, zc)
 
-  let methode_saisie_u = requestInput(de, du, 'methode_saisie_u')
+  const methode_saisie_u = requestInput(de, du, 'methode_saisie_u')
   switch (methode_saisie_u) {
     case 'non isolé':
       calc_upb0(di, de, du)
@@ -157,41 +156,43 @@ export default function calc_pb(pb, zc, pc_id, ej, pb_list) {
       break
     case 'epaisseur isolation saisie justifiée par mesure ou observation':
     case 'epaisseur isolation saisie justifiée à partir des documents justificatifs autorisés': {
-      let e = requestInput(de, du, 'epaisseur_isolation', 'float') * 0.01
+      const e = requestInput(de, du, 'epaisseur_isolation', 'float') * 0.01
       calc_upb0(di, de, du)
       di.upb = 1 / (1 / di.upb0 + e / 0.042)
       break
     }
     case "resistance isolation saisie justifiée observation de l'isolant installé et mesure de son épaisseur":
     case 'resistance isolation saisie justifiée  à partir des documents justificatifs autorisés': {
-      let r = requestInput(de, du, 'resistance_isolation', 'float')
+      const r = requestInput(de, du, 'resistance_isolation', 'float')
       calc_upb0(di, de, du)
       di.upb = 1 / (1 / di.upb0 + r)
       break
     }
     case 'isolation inconnue  (table forfaitaire)':
     case "année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)": {
-      let pi = requestInputID(de, du, 'periode_isolation')
+      const pi = requestInputID(de, du, 'periode_isolation')
       calc_upb0(di, de, du)
       tv_upb(di, de, du, pi, zc, ej)
       di.upb = Math.min(di.upb, di.upb0)
       break
     }
     case 'année de construction saisie (table forfaitaire)': {
-      var pi_id = pc_id
-      let pc = enums.periode_construction[pc_id];
+      let pi_id = pc_id
+      const pc = enums.periode_construction[pc_id]
       switch (pc) {
-        case "avant 1948":
-        case "1948-1974":
-          pi_id = getKeyByValue(enums.periode_isolation, "1975-1977");
-          break;
+        case 'avant 1948':
+        case '1948-1974':
+          pi_id = getKeyByValue(enums.periode_isolation, '1975-1977')
+          break
       }
       calc_upb0(di, de, du)
       const tv_upb_avant = de.tv_upb_id
       tv_upb(di, de, du, pi_id, zc, ej)
       if (de.tv_upb_id != tv_upb_avant && pi_id != pc_id) {
-        var scriptName = path.basename(__filename);
-        console.warn(`BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 17)`)
+        const scriptName = path.basename(__filename)
+        console.warn(
+          `BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 17)`
+        )
         if (bug_for_bug_compat) tv_upb(di, de, du, pc_id, zc, ej)
       }
       di.upb = Math.min(di.upb, di.upb0)
@@ -205,7 +206,7 @@ export default function calc_pb(pb, zc, pc_id, ej, pb_list) {
       console.warn('methode_saisie_u inconnue:', methode_saisie_u)
   }
 
-  let type_adjacence = requestInput(de, du, 'type_adjacence')
+  const type_adjacence = requestInput(de, du, 'type_adjacence')
   switch (type_adjacence) {
     case 'vide sanitaire':
     case 'sous-sol non chauffé':

@@ -1,7 +1,7 @@
 import enums from './enums.js'
 import { tv, tvColumnLines, requestInput, requestInputID } from './utils.js'
 
-function criterePn(Pn, matcher) {
+function criterePn (Pn, matcher) {
   let critere_list = tvColumnLines('generateur_combustion', 'critere_pn', matcher)
   critere_list = critere_list.filter((critere) => critere)
   let ret
@@ -22,18 +22,18 @@ function criterePn(Pn, matcher) {
   return ret
 }
 
-let E_tab = {
+const E_tab = {
   0: 2.5,
   1: 1.75
 }
 
-let F_tab = {
+const F_tab = {
   0: -0.8,
   1: -0.55
 }
 
-function excel_to_js_exec(box, pn, E, F) {
-  let formula = box
+function excel_to_js_exec (box, pn, E, F) {
+  const formula = box
     .replace(/ /g, '')
     .replace(/,/g, '.')
     .replace(/\*logPn/g, '*Math.log10(Pn)')
@@ -41,19 +41,19 @@ function excel_to_js_exec(box, pn, E, F) {
     .replace(/logPn/g, '*Math.log10(Pn)')
     .replace(/%/g, '/100')
     .replace(/\^/g, '**')
-  let js = `let Pn=${pn / 1000}, E=${E}, F=${F}; (${formula})`
+  const js = `let Pn=${pn / 1000}, E=${E}, F=${F}; (${formula})`
   /* console.warn(js) */
-  let result = eval(js)
+  const result = eval(js)
   /* console.warn(result) */
   return result
 }
 
-export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
-  let matcher = {}
-  let enum_type_generateur_id = de[`enum_type_generateur_${type}_id`]
+export function tv_generateur_combustion (di, de, du, type, GV, tbase) {
+  const matcher = {}
+  const enum_type_generateur_id = de[`enum_type_generateur_${type}_id`]
   matcher[`enum_type_generateur_${type}_id`] = enum_type_generateur_id
 
-  let ms_carac_sys = requestInput(de, du, 'methode_saisie_carac_sys')
+  const ms_carac_sys = requestInput(de, du, 'methode_saisie_carac_sys')
   if (!di.pn) {
     // some engines don't set ms_carac_sys properly...
     // so instead we just check if di.pn is set or not
@@ -64,12 +64,12 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
   if (!row) console.error('!! pas de valeur forfaitaire trouvée pour generateur_combustion !!')
   de.tv_generateur_combustion_id = Number(row.tv_generateur_combustion_id)
   if (Number(row.pn)) di.pn = Number(row.pn) * 1000
-  let E = E_tab[de.presence_ventouse]
-  let F = F_tab[de.presence_ventouse]
+  const E = E_tab[de.presence_ventouse]
+  const F = F_tab[de.presence_ventouse]
   if (row.rpn) di.rpn = excel_to_js_exec(row.rpn, di.pn, E, F) / 100
   if (type === 'ch' && row.rpint) di.rpint = excel_to_js_exec(row.rpint, di.pn, E, F) / 100
   if (row.qp0_perc) {
-    let qp0_calc = excel_to_js_exec(row.qp0_perc, di.pn, E, F)
+    const qp0_calc = excel_to_js_exec(row.qp0_perc, di.pn, E, F)
     if (row.qp0_perc.includes('Pn')) di.qp0 = qp0_calc * 1000
     else di.qp0 = qp0_calc * di.pn
   } else di.qp0 = 0

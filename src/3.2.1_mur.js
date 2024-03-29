@@ -1,17 +1,15 @@
 import enums from './enums.js'
-import { tv, requestInput, requestInputID } from './utils.js'
-import { getKeyByValue } from './utils.js'
+import { tv, requestInput, requestInputID, getKeyByValue, bug_for_bug_compat } from './utils.js'
 import b from './3.1_b.js'
 
-import { bug_for_bug_compat } from './utils.js'
-var path = require('path');
-var scriptName = path.basename(__filename);
+const path = require('path')
+const scriptName = path.basename(__filename)
 
-function tv_umur0(di, de, du) {
-  let matcher = {
+function tv_umur0 (di, de, du) {
+  const matcher = {
     enum_materiaux_structure_mur_id: de.enum_materiaux_structure_mur_id
   }
-  if (!["1", "20"].includes(de.enum_materiaux_structure_mur_id)) {
+  if (!['1', '20'].includes(de.enum_materiaux_structure_mur_id)) {
     // 1: inconnu, 20: cloison de platree, pas concerné par les epaisseurs
     // TODO not float, get from csv
     matcher.epaisseur_structure = requestInput(de, du, 'epaisseur_structure', 'float')
@@ -20,7 +18,7 @@ function tv_umur0(di, de, du) {
       // il faut aller le chercher dans description
       // if desc is "Mur en blocs de béton creux d'épaisseur ≥ 25 cm non isolé donnant sur l'extérieur"
       // retrive just "≥ 25" with a regex
-      let desc = de.description
+      const desc = de.description
       matcher.epaisseur_structure = desc.match(/(\d+) cm/)[1]
     }
   }
@@ -33,8 +31,8 @@ function tv_umur0(di, de, du) {
   }
 }
 
-function tv_umur(di, de, du, pc_id, zc, ej) {
-  let matcher = {
+function tv_umur (di, de, du, pc_id, zc, ej) {
+  const matcher = {
     enum_periode_construction_id: pc_id,
     enum_zone_climatique_id: zc,
     effet_joule: ej
@@ -48,9 +46,9 @@ function tv_umur(di, de, du, pc_id, zc, ej) {
   }
 }
 
-function calc_umur0(di, de, du) {
+function calc_umur0 (di, de, du) {
   const umur0_avant = di.umur0
-  let methode_saisie_u0 = requestInput(de, du, 'methode_saisie_u0')
+  const methode_saisie_u0 = requestInput(de, du, 'methode_saisie_u0')
   switch (methode_saisie_u0) {
     case 'type de paroi inconnu (valeur par défaut)':
       de.enum_materiaux_structure_mur_id = getKeyByValue(enums.materiaux_structure_mur, 'inconnu')
@@ -88,7 +86,7 @@ function calc_umur0(di, de, du) {
     }
   }
 
-  let type_doublage = requestInput(de, du, 'type_doublage')
+  const type_doublage = requestInput(de, du, 'type_doublage')
   switch (type_doublage) {
     case "doublage indéterminé ou lame d'air inf 15 mm":
       di.umur0 = 1 / (1 / di.umur0 + 0.1)
@@ -101,10 +99,10 @@ function calc_umur0(di, de, du) {
   di.umur0 = Math.min(2.5, di.umur0)
 }
 
-export default function calc_mur(mur, zc, pc_id, ej) {
-  let de = mur.donnee_entree
-  let du = {}
-  let di = {}
+export default function calc_mur (mur, zc, pc_id, ej) {
+  const de = mur.donnee_entree
+  const du = {}
+  const di = {}
   di.umur0 = mur.donnee_intermediaire.umur0 // pour comparaison
 
   requestInput(de, du, 'surface_paroi_totale', 'float')
@@ -112,7 +110,7 @@ export default function calc_mur(mur, zc, pc_id, ej) {
 
   b(di, de, du, zc)
 
-  let methode_saisie_u = requestInput(de, du, 'methode_saisie_u')
+  const methode_saisie_u = requestInput(de, du, 'methode_saisie_u')
   switch (methode_saisie_u) {
     case 'non isolé':
       calc_umur0(di, de, du)
@@ -121,14 +119,14 @@ export default function calc_mur(mur, zc, pc_id, ej) {
     case 'epaisseur isolation saisie justifiée par mesure ou observation':
     case 'epaisseur isolation saisie justifiée à partir des documents justificatifs autorisés': {
       calc_umur0(di, de, du)
-      let e = requestInput(de, du, 'epaisseur_isolation', 'int') * 0.01
+      const e = requestInput(de, du, 'epaisseur_isolation', 'int') * 0.01
       di.umur = 1 / (1 / Number(di.umur0) + e / 0.04)
       break
     }
     case "resistance isolation saisie justifiée observation de l'isolant installé et mesure de son épaisseur":
     case 'resistance isolation saisie justifiée  à partir des documents justificatifs autorisés': {
       calc_umur0(di, de, du)
-      let r = requestInput(de, du, 'resistance_isolation', 'float')
+      const r = requestInput(de, du, 'resistance_isolation', 'float')
       di.umur = 1 / (1 / Number(di.umur0) + r)
       break
     }
@@ -139,25 +137,27 @@ export default function calc_mur(mur, zc, pc_id, ej) {
       break
     case "année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)": {
       calc_umur0(di, de, du)
-      let pi_id = requestInputID(de, du, 'periode_isolation')
+      const pi_id = requestInputID(de, du, 'periode_isolation')
       tv_umur(di, de, du, pi_id, zc, ej)
       di.umur = Math.min(di.umur, di.umur0)
       break
     }
     case 'année de construction saisie (table forfaitaire)': {
       calc_umur0(di, de, du)
-      var pi_id = pc_id
-      let pc = enums.periode_construction[pc_id];
+      let pi_id = pc_id
+      const pc = enums.periode_construction[pc_id]
       switch (pc) {
-        case "avant 1948":
-        case "1948-1974":
-          pi_id = getKeyByValue(enums.periode_isolation, "1975-1977");
-          break;
+        case 'avant 1948':
+        case '1948-1974':
+          pi_id = getKeyByValue(enums.periode_isolation, '1975-1977')
+          break
       }
       const tv_umur_avant = de.tv_umur_id
       tv_umur(di, de, du, pi_id, zc, ej)
       if (de.tv_umur_id != tv_umur_avant && pi_id != pc_id) {
-        console.warn(`BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 13)`)
+        console.warn(
+          `BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 13)`
+        )
         if (bug_for_bug_compat) tv_umur(di, de, du, pc_id, zc, ej)
       }
       di.umur = Math.min(di.umur, di.umur0)

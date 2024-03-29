@@ -2,9 +2,9 @@ import enums from './enums.js'
 import b from './3.1_b.js'
 import { tv, requestInput } from './utils.js'
 
-function tv_uporte(di, de, du) {
+function tv_uporte (di, de, du) {
   requestInput(de, du, 'type_porte')
-  let matcher = {
+  const matcher = {
     enum_type_porte_id: de.enum_type_porte_id
   }
   const row = tv('uporte', matcher)
@@ -16,15 +16,15 @@ function tv_uporte(di, de, du) {
   }
 }
 
-export default function calc_porte(porte, zc) {
-  let de = porte.donnee_entree
-  let di = {}
-  let du = {}
+export default function calc_porte (porte, zc) {
+  const de = porte.donnee_entree
+  const di = {}
+  const du = {}
 
   requestInput(de, du, 'surface_porte', 'float')
 
   b(di, de, du, zc)
-  let methode_saisie_uporte = requestInput(de, du, 'methode_saisie_uporte')
+  const methode_saisie_uporte = requestInput(de, du, 'methode_saisie_uporte')
   if (methode_saisie_uporte === 'valeur forfaitaire') tv_uporte(di, de, du)
   else di.uporte = requestInput(de, du, 'uporte_saisi', 'float')
 

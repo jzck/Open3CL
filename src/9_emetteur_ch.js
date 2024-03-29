@@ -1,16 +1,16 @@
 import enums from './enums.js'
 import { tv } from './utils.js'
 
-export function rendement_emission(em) {
-  let re = em.donnee_intermediaire.rendement_emission
-  let rd = em.donnee_intermediaire.rendement_distribution
-  let rr = em.donnee_intermediaire.rendement_regulation
-  let rendement_em = re * rd * rr
+export function rendement_emission (em) {
+  const re = em.donnee_intermediaire.rendement_emission
+  const rd = em.donnee_intermediaire.rendement_distribution
+  const rr = em.donnee_intermediaire.rendement_regulation
+  const rendement_em = re * rd * rr
   return rendement_em
 }
 
-function tv_rendement_distribution_ch(di, de) {
-  let matcher = {
+function tv_rendement_distribution_ch (di, de) {
+  const matcher = {
     enum_type_emission_distribution_id: de.enum_type_emission_distribution_id,
     reseau_distribution_isole: de.reseau_distribution_isole
   }
@@ -23,8 +23,8 @@ function tv_rendement_distribution_ch(di, de) {
   }
 }
 
-function tv_rendement_emission(di, de) {
-  let matcher = {
+function tv_rendement_emission (di, de) {
+  const matcher = {
     enum_type_emission_distribution_id: de.enum_type_emission_distribution_id
   }
   const row = tv('rendement_emission', matcher)
@@ -36,8 +36,8 @@ function tv_rendement_emission(di, de) {
   }
 }
 
-function tv_rendement_regulation(di, de) {
-  let matcher = {
+function tv_rendement_regulation (di, de) {
+  const matcher = {
     enum_type_emission_distribution_id: de.enum_type_emission_distribution_id
   }
   const row = tv('rendement_regulation', matcher)
@@ -49,8 +49,8 @@ function tv_rendement_regulation(di, de) {
   }
 }
 
-function tv_intermittence(di, de, inst_ch_de, map_id, inertie_id) {
-  let matcher = {
+function tv_intermittence (di, de, inst_ch_de, map_id, inertie_id) {
+  const matcher = {
     enum_methode_application_dpe_log_id: map_id,
     enum_type_installation_id: inst_ch_de.enum_type_installation_id,
     enum_type_chauffage_id: de.enum_type_chauffage_id,
@@ -70,10 +70,10 @@ function tv_intermittence(di, de, inst_ch_de, map_id, inertie_id) {
   }
 }
 
-export function calc_emetteur_ch(em_ch, inst_ch_de, map_id, inertie_id) {
-  let de = em_ch.donnee_entree
-  let di = {}
-  let du = {}
+export function calc_emetteur_ch (em_ch, inst_ch_de, map_id, inertie_id) {
+  const de = em_ch.donnee_entree
+  const di = {}
+  const du = {}
 
   tv_rendement_distribution_ch(di, de)
   tv_rendement_emission(di, de)

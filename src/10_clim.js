@@ -1,7 +1,7 @@
 import { tv, requestInput, requestInputID } from './utils.js'
 
-function tv_seer(di, de, du, zc_id) {
-  let matcher = {
+function tv_seer (di, de, du, zc_id) {
+  const matcher = {
     enum_zone_climatique_id: zc_id,
     enum_periode_installation_fr_id: requestInputID(de, du, 'periode_installation_fr')
   }
@@ -14,12 +14,12 @@ function tv_seer(di, de, du, zc_id) {
   }
 }
 
-export default function calc_clim(clim, bfr, bfr_dep, zc_id, Sh) {
-  let de = clim.donnee_entree
-  let di = {}
-  let du = {}
+export default function calc_clim (clim, bfr, bfr_dep, zc_id, Sh) {
+  const de = clim.donnee_entree
+  const di = {}
+  const du = {}
 
-  let rs = de.surface_clim / Sh
+  const rs = de.surface_clim / Sh
   di.besoin_fr = bfr * rs
   di.besoin_fr_depensier = bfr_dep * rs
 
