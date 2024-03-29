@@ -7,7 +7,11 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "qa:lint": "prettier --plugin-search-dir . --check . && eslint .",
+    "qa:lint:fix": "npm run qa:format && prettier --check . && eslint . --fix",
+    "qa:duplication": "jscpd",
+    "qa:format": "prettier --plugin-search-dir . --write ."
   },
   "repository": {
     "type": "git",
@@ -21,10 +25,37 @@
     "fast-xml-parser": "^4.3.3",
     "lodash": "^4.17.21"
   },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-check-file": "^2.7.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^16.6.2",
+    "eslint-plugin-promise": "^6.1.1",
+    "jscpd": "^3.5.10",
+    "prettier": "^3.2.5"
+  },
   "author": "Jack Halford",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/jzck/Open3CL/issues"
   },
-  "homepage": "https://github.com/jzck/Open3CL#readme"
+  "homepage": "https://github.com/jzck/Open3CL#readme",
+  "jscpd": {
+    "threshold": 0.1,
+    "reporters": [
+      "console",
+      "html"
+    ],
+    "ignore": [
+      "**/*.test.ts"
+    ],
+    "path": [
+      "src"
+    ],
+    "output": "./duplicate",
+    "absolute": true,
+    "gitignore": true
+  }
 }
