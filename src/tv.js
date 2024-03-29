@@ -4717,7 +4717,8 @@ export const tvs = {
     "critere_pn": "Pn>400",
     "pn": "400",
     "rpn": "96.6",
-    "rpint": "106.3"
+    "rpint": "106.3",
+    "qp0_perc": "0.003"
   },
   {
     "tv_generateur_combustion_id": "16",

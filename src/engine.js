@@ -92,8 +92,8 @@ export function calcul_3cl(dpe) {
 	ecs.forEach((ecs) => calc_ecs(ecs, becs, becs_dep, Sh, GV, ca_id, zc_id));
 
 	let ac = cg.annee_construction;
-	// needed for apport_et_besoin
 	instal_ch.forEach((ch) => {
+		// 1ere passe, sans bch et bch_dep
 		calc_chauffage(ch, ca_id, zc_id, inertie_id, map_id, 0, 0, GV, Sh, hsp, ac);
 	});
 
@@ -115,6 +115,7 @@ export function calcul_3cl(dpe) {
 	let bch = apport_et_besoin.besoin_ch;
 	let bch_dep = apport_et_besoin.besoin_ch_depensier;
 	instal_ch.forEach((ch) =>
+		// 2eme passe, cette fois avec bch et bch_dep
 		calc_chauffage(ch, ca_id, zc_id, inertie_id, map_id, bch, bch_dep, GV, Sh, hsp, ac)
 	);
 

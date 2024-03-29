@@ -28,8 +28,9 @@ export default function calc_chauffage(
 	let cfg_id = requestInput(de, du, 'cfg_installation_ch');
 	let Sc = de.surface_chauffee;
 	let gen_ch = ch.generateur_chauffage_collection.generateur_chauffage;
-	gen_ch.forEach((gen_ch, _pos) =>
+	gen_ch.forEach((gen_ch, _pos) => {
 		calc_generateur_ch(gen_ch, _pos, em_ch, cfg_id, bch, bch_dep, GV, Sh, Sc, hsp, ca_id, zc_id, ac)
+	}
 	);
 
 	di.conso_ch = gen_ch.reduce((acc, gen_ch) => acc + gen_ch.donnee_intermediaire.conso_ch, 0);
