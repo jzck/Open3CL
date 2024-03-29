@@ -73,6 +73,12 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
     if (row.qp0_perc.includes('Pn')) di.qp0 = qp0_calc * 1000
     else di.qp0 = qp0_calc * di.pn
   } else di.qp0 = 0
-  if (Number(row.pveil)) di.pveil = Number(row.pveil)
-  else di.pveil = 0
+  if (di.pveil) {
+    if (Number(row.pveil)) di.pveil = Number(row.pveil)
+    else di.pveil = 0
+  } else {
+    //Souvent, les diagnostiqueur saisissent pveil=0 car la chaudiere n'a pas de veilleuse
+    //Dans ce cas, il ne faut pas aller chercher une valuer forfaitaire pour pveil
+    di.pveil = 0
+  }
 }

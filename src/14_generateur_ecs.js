@@ -167,7 +167,7 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, GV, ca_id, zc_id) {
     }
     Iecs = 1 / di.rendement_generation
     Iecs_dep = 1 / di.rendement_generation_depensier
-    if (di.Qgw == 0) {
+    if (di.Qgw == 0 && !type_generateur.includes('chaudière')) {
       // pas de stockage
       di.rendement_generation_stockage = di.rendement_generation
       di.rendement_generation_stockage_depensier = di.rendement_generation_depensier
