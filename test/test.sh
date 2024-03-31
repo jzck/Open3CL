@@ -35,13 +35,13 @@ JSON_PATHS="
 
 _download_one() {
     ID=$1
-    ADEMEJSON=$TMPDIR/$ID.json
+    BEFORE=$TMPDIR/$ID.orig.json
     # if the file already exists, don't download it again
-    if [ -s $TMPDIR/$ID.json ]; then
+    if [ -s $BEFORE ]; then
         return
     fi
     echo "downloading $ID"
-    curl --silent "https://observatoire-dpe-audit.ademe.fr/pub/dpe/${ID}/xml" | ./xml_to_json.js > $ADEMEJSON
+    curl --silent "https://observatoire-dpe-audit.ademe.fr/pub/dpe/${ID}/xml" | ./xml_to_json.js > $BEFORE
 }
 
 _index_many() {
@@ -61,7 +61,7 @@ _index_many() {
 _run_one() {
     ID=$1
     AFTER=$TMPDIR/$ID.open3cl.json
-    BEFORE=$TMPDIR/$ID.json
+    BEFORE=$TMPDIR/$ID.orig.json
     ERRLOG=$TMPDIR/$ID.err.log
 
     $GITDIR/test/run_one_dpe.js \
@@ -79,7 +79,7 @@ _diff_one() {
     fi
 
     AFTER=$TMPDIR/$ID.open3cl.json
-    BEFORE=$TMPDIR/$ID.json
+    BEFORE=$TMPDIR/$ID.orig.json
     _filter() { 
         # remove all objects that have a field named "donnee_utilisateur"
         # and sort the keys alphabetically in objects
@@ -91,7 +91,7 @@ _diff_one() {
 
 _compare_one() {
     ID=$1
-    BEFORE=$TMPDIR/$ID.json
+    BEFORE=$TMPDIR/$ID.orig.json
     AFTER=$TMPDIR/$ID.open3cl.json
     ERRLOG=$TMPDIR/$ID.err.log
     OKPATHS=$TMPDIR/$ID.ok

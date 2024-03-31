@@ -5,7 +5,7 @@ import { calc_besoin_ecs_j } from './11_besoin_ecs.js'
 import { calc_Qrec_gen_j } from './9_generateur_ch.js'
 import { calc_ai_j, calc_as_j } from './6.1_apport_gratuit.js'
 import { calc_sse_j } from './6.2_surface_sud_equivalente.js'
-import { mois_liste, Njj, Njj_sum } from './utils.js'
+import { mois_liste, Njj, Njj_reel, Njj_sum } from './utils.js'
 
 export default function calc_besoin_ch(
   ilpa,
@@ -26,6 +26,7 @@ export default function calc_besoin_ch(
   let besoin_ch = 0
   let besoin_ch_depensier = 0
 
+  let n_instal_ecs = instal_ecs.length
   let gen_ch = instal_ch[0].generateur_chauffage_collection.generateur_chauffage[0]
 
   const dh21 = tvs['dh21'][ilpa]
@@ -53,7 +54,7 @@ export default function calc_besoin_ch(
     let Qgw_total = instal_ecs.reduce((acc, instal_ecs) => {
       let gen_ecs = instal_ecs.generateur_ecs_collection.generateur_ecs
       return gen_ecs.reduce((acc, gen_ecs) => {
-        return acc + (gen_ecs.donnee_intermediaire.Qgw || 0)
+        return acc + (gen_ecs.donnee_entree.position_volume_chauffe === 1 ? 0 : gen_ecs.donnee_intermediaire.Qgw || 0)
       }, 0)
     }, 0)
     let Qrec_stock_19 = (0.48 * nref19 * Qgw_total) / (24 * 365)
@@ -64,13 +65,11 @@ export default function calc_besoin_ch(
     // pertes distribution
     let becs_j = calc_besoin_ecs_j(ilpa, ca, mois, zc, nadeq, false)
     let becs_j_dep = calc_besoin_ecs_j(ilpa, ca, mois, zc, nadeq, true)
-    let Qrec_distr = instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j), 0)
-    let Qrec_distr_dep = instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j_dep), 0)
-    pertes_distribution_ecs_recup += (0.48 * nref19 * Qrec_distr) / Njj[mois]
-    pertes_distribution_ecs_recup_depensier += (0.48 * nref21 * Qrec_distr_dep) / Njj[mois]
-    /* pertes_distribution_ecs_recup += 0.48 * nref19 * Qrec_distr */
-    /* pertes_distribution_ecs_recup_depensier += 0.48 * nref21 * Qrec_distr_dep */
-    /* console.warn(pertes_distribution_ecs_recup) */
+    let Qrec_distr = instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j, n_instal_ecs), 0)
+    let Qrec_distr_dep = instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j_dep, n_instal_ecs), 0)
+    pertes_distribution_ecs_recup += (0.48 * nref19 * Qrec_distr ) / (24* Njj[mois])
+    pertes_distribution_ecs_recup_depensier += (0.48 * nref21 * Qrec_distr_dep) / (24*Njj[mois])
+    console.warn(`${mois} (${Njj[mois]}) nref19 ${nref19} Qrec_distr: ${Qrec_distr}, pertes_distribution_ecs_recup: ${pertes_distribution_ecs_recup}`)
 
     // bvj
     let dh19j = dh19[ca][mois][zc]
@@ -98,9 +97,6 @@ export default function calc_besoin_ch(
     besoin_ch_depensier += (bvj_dep * dh21j) / 1000
   }
 
-  pertes_distribution_ecs_recup /= 24
-  pertes_distribution_ecs_recup_depensier /= 24
-  /* console.warn(pertes_distribution_ecs_recup) */
   let recup = pertes_distribution_ecs_recup + pertes_stockage_ecs_recup + pertes_generateur_ch_recup
   let recup_depensier =
     pertes_distribution_ecs_recup_depensier +

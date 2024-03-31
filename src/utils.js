@@ -40,6 +40,21 @@ export const Njj = {
 	Décembre: 24
 };
 
+export const Njj_reel = {
+	Janvier: 31,
+	Février: 28,
+	Mars: 31,
+	Avril: 30,
+	Mai: 31,
+	Juin: 30,
+	Juillet: 31,
+	Aout: 31,
+	Septembre: 30,
+	Octobre: 31,
+	Novembre: 30,
+	Décembre: 31
+};
+
 // sum all Njj values
 export const Njj_sum = Object.values(Njj).reduce((acc, val) => acc + val, 0);
 

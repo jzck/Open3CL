@@ -13,8 +13,12 @@ Pour chacuns de ces DPE, on fait le calcul avec notre moteur, puis on compare le
 93% .logement.sortie.ef_conso.conso_ecs
 93% .logement.sortie.deperdition.deperdition_enveloppe
 82% .logement.sortie.qualite_isolation.ubat
-47% .logement.sortie.apport_et_besoin.besoin_ch
-33% .logement.sortie.emission_ges.emission_ges_5_usages_m2
-21% .logement.sortie.ef_conso.conso_ch
-18% .logement.sortie.ep_conso.ep_conso_5_usages_m2
+58% .logement.sortie.apport_et_besoin.pertes_stockage_ecs_recup
+39% .logement.sortie.apport_et_besoin.apport_solaire_ch
+39% .logement.sortie.apport_et_besoin.apport_interne_ch
+36% .logement.sortie.apport_et_besoin.besoin_ch
+29% .logement.sortie.emission_ges.emission_ges_5_usages_m2
+12% .logement.sortie.ef_conso.conso_ch
+11% .logement.sortie.ep_conso.ep_conso_5_usages_m2
+1% .logement.sortie.apport_et_besoin.pertes_distribution_ecs_recup
 ```
