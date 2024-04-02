@@ -3,11 +3,17 @@
   "version": "0.1.0",
   "description": "Open Source 3CL-DPE engine",
   "main": "index.js",
+  "author": "Jack Halford",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/jzck/Open3CL/issues"
+  },
+  "homepage": "https://github.com/jzck/Open3CL#readme",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\"",
     "qa:lint": "prettier --plugin-search-dir . --check . && eslint .",
     "qa:lint:fix": "npm run qa:format && prettier --check . && eslint . --fix",
     "qa:duplication": "jscpd",
@@ -47,12 +53,6 @@
     "pretty-quick": "^4.0.0",
     "semantic-release": "^23.0.6"
   },
-  "author": "Jack Halford",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/jzck/Open3CL/issues"
-  },
-  "homepage": "https://github.com/jzck/Open3CL#readme",
   "jscpd": {
     "threshold": 0.1,
     "reporters": [
@@ -68,5 +68,8 @@
     "output": "./duplicate",
     "absolute": true,
     "gitignore": true
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }
