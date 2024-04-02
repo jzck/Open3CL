@@ -1,8 +1,7 @@
 import enums from './enums.js'
-import { tv } from './utils.js'
-import { requestInput, requestInputID } from './utils.js'
+import { tv, requestInput, requestInputID } from './utils.js'
 
-function findRanges(inputNumber) {
+function findRanges (inputNumber) {
   const ranges = [0.25, 0.5, 0.75, 1, 1.25, 2, 2.5, 3, 3.5, 4, 6, 8, 10, 25, 50]
   const result = []
 
@@ -26,11 +25,11 @@ function findRanges(inputNumber) {
   return result
 }
 
-export default function b(di, de, du, zc_id) {
-  let zc = enums.zone_climatique[zc_id].slice(0, 2)
+export default function b (di, de, du, zc_id) {
+  const zc = enums.zone_climatique[zc_id].slice(0, 2)
 
   du.enum_type_adjacence_id = Object.keys(enums.type_adjacence)
-  let matcher = {
+  const matcher = {
     enum_type_adjacence_id: requestInputID(de, du, 'type_adjacence')
   }
 
@@ -43,7 +42,7 @@ export default function b(di, de, du, zc_id) {
       de.enum_type_adjacence_id
     )
   ) {
-    if (de.surface_aue === 0){
+    if (de.surface_aue === 0) {
       // cf page 10
       // NOTE: bizarre de regarder aue pour un local chauffé non accessible
       // voir 2287E2336469P
@@ -58,7 +57,7 @@ export default function b(di, de, du, zc_id) {
     } else {
       requestInput(de, du, 'surface_aiu', 'float')
       requestInput(de, du, 'surface_aue', 'float')
-      let ranges = findRanges(de.surface_aiu / de.surface_aue)
+      const ranges = findRanges(de.surface_aiu / de.surface_aue)
       if (ranges[0]) {
         matcher.aiu_aue_min =
           ranges[0]
@@ -83,7 +82,7 @@ export default function b(di, de, du, zc_id) {
     }
   }
 
-  let row = tv('coef_reduction_deperdition', matcher, de)
+  const row = tv('coef_reduction_deperdition', matcher)
   if (row) {
     di.b = Number(row.b)
     de.tv_coef_reduction_deperdition_id = Number(row.tv_coef_reduction_deperdition_id)

@@ -1,9 +1,9 @@
 import { tvs } from './tv.js'
 import { mois_liste, Njj } from './utils.js'
 
-export function calc_besoin_ecs_j(ilpa, ca, mois, zc, nadeq, depensier) {
-  const tefsj = tvs['tefs'][ca][mois][zc]
-  let njj = Njj[mois]
+export function calc_besoin_ecs_j (ilpa, ca, mois, zc, nadeq, depensier) {
+  const tefsj = tvs.tefs[ca][mois][zc]
+  const njj = Njj[mois]
 
   if (depensier) {
     return (1.163 * nadeq * 79 * (40 - tefsj) * njj) / 1000
@@ -12,8 +12,8 @@ export function calc_besoin_ecs_j(ilpa, ca, mois, zc, nadeq, depensier) {
   }
 }
 
-export default function calc_besoin_ecs(ilpa, ca, zc, Sh, nadeq) {
-  let ret = {
+export default function calc_besoin_ecs (ilpa, ca, zc, Sh, nadeq) {
+  const ret = {
     besoin_ecs: 0,
     besoin_ecs_depensier: 0
   }
