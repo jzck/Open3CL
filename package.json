@@ -11,7 +11,10 @@
     "qa:lint": "prettier --plugin-search-dir . --check . && eslint .",
     "qa:lint:fix": "npm run qa:format && prettier --check . && eslint . --fix",
     "qa:duplication": "jscpd",
-    "qa:format": "prettier --plugin-search-dir . --write ."
+    "qa:format": "prettier --plugin-search-dir . --write .",
+    "release": "semantic-release",
+    "release:dry": "semantic-release --dry-run",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -26,6 +29,11 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.2.1",
+    "@commitlint/config-conventional": "^19.1.0",
+    "@commitlint/cz-commitlint": "^19.2.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/github": "^10.0.2",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard": "^17.1.0",
@@ -33,8 +41,11 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1",
+    "husky": "^9.0.11",
     "jscpd": "^3.5.10",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "pretty-quick": "^4.0.0",
+    "semantic-release": "^23.0.6"
   },
   "author": "Jack Halford",
   "license": "GPL-3.0",
@@ -49,7 +60,7 @@
       "html"
     ],
     "ignore": [
-      "**/*.test.ts"
+      "**/*.test.js"
     ],
     "path": [
       "src"
