@@ -1,3 +1,5 @@
 test/ademe.db
 *.csv
 bun.lockb
+/.idea/
+/node_modules/
