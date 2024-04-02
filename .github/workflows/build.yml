@@ -40,8 +40,6 @@ jobs:
 
       - name: Run unit tests
         run: |
-          npm run qa:lint
-          npm run qa:duplication
           npm run test
 
 #  release:

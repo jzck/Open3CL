@@ -4,3 +4,4 @@ bun.lockb
 /.idea/
 /node_modules/
 /duplicate/
+*.iml
