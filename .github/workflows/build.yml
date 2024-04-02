@@ -19,29 +19,30 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      -   name: Install Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: '20'
-            architecture: x64
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          architecture: x64
 
-      -   name: Git checkout for source code analysis
-          uses: actions/checkout@v4
+      - name: Git checkout for source code analysis
+        uses: actions/checkout@v4
 
-      -   name: Install Dependencies
-          run: |
-            npm ci
+      - name: Install Dependencies
+        run: |
+          npm ci
 
-      -   name: Cache Node.js modules
-          uses: actions/cache@v4
-          with:
-            path: ~/.npm
-            key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
 
-      -   name: Run unit tests
-          run: |
-            npm run qa:lint
-            npm run test
+      - name: Run unit tests
+        run: |
+          npm run qa:lint
+          npm run qa:duplication
+          npm run test
 
 #  release:
 #    uses: RedFroggy/Open3CL/.github/workflows/release.yml@main
