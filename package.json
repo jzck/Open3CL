@@ -52,6 +52,9 @@
   "bugs": {
     "url": "https://github.com/jzck/Open3CL/issues"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "homepage": "https://github.com/jzck/Open3CL#readme",
   "jscpd": {
     "threshold": 0.1,
