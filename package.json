@@ -68,10 +68,5 @@
     "output": "./duplicate",
     "absolute": true,
     "gitignore": true
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
   }
 }
