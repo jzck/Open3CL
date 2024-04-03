@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\"",
     "qa:lint": "prettier --plugin-search-dir . --check . && eslint .",
     "qa:lint:fix": "npm run qa:format && prettier --check . && eslint . --fix",
     "qa:duplication": "jscpd",
