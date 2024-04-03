@@ -9,8 +9,6 @@ on:
 permissions:
   contents: write
   issues: write
-  pages: write
-  pull-requests: write
   id-token: write
 
 jobs:
@@ -45,4 +43,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm run release -- --r ${{secrets.REPO_URL}}
+        run: |
+          cp package.json src/
+          cp README.md src/
+          npm run release -- --r ${{secrets.REPO_URL}}
