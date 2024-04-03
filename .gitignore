@@ -2,6 +2,7 @@ test/ademe.db
 *.csv
 bun.lockb
 /.idea/
+*.iml
 /node_modules/
 /duplicate/
-*.iml
+/coverage/
