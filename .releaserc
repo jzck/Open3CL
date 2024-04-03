@@ -22,12 +22,12 @@
       }
     ],
     "@semantic-release/release-notes-generator",
-    "@semantic-release/changelog",
     ["@semantic-release/npm", {
-      "pkgRoot": "dist/main",
+      "npmPublish": false,
+      "pkgRoot": "src"
      }],
      ["@semantic-release/git", {
-        "assets": ["package.json", "CHANGELOG.md", "README.md"],
+        "assets": ["package.json", "README.md"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
      }],
     "@semantic-release/github"
