@@ -154,8 +154,6 @@ describe('Test Open3CL engine on corpus', () => {
         expect(dpeModele).toBe('dpe 3cl 2021 méthode logement');
 
         dpeResult = calcul_3cl(JSON.parse(JSON.stringify(dpeJson)));
-
-        fs.wr;
       });
 
       test('check "deperdition" value', () => {
