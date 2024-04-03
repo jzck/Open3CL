@@ -7,9 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "qa:lint": "prettier --plugin-search-dir . --check . && eslint .",
-    "qa:lint:fix": "npm run qa:format && prettier --check . && eslint . --fix",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "qa:lint": "eslint .",
+    "qa:lint:fix": "npm run qa:lint -- --fix",
     "qa:duplication": "jscpd",
     "qa:format": "prettier --plugin-search-dir . --write .",
     "release": "semantic-release",
@@ -34,6 +34,8 @@
     "@commitlint/cz-commitlint": "^19.2.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/github": "^10.0.2",
+    "@types/node": "^20.12.3",
+    "@types/jest": "^29.5.12",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard": "^17.1.0",
@@ -42,6 +44,8 @@
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.1.1",
     "husky": "^9.0.11",
+    "jest": "^29.7.0",
+    "jest-html-reporter": "^3.10.2",
     "jscpd": "^3.5.10",
     "prettier": "^3.2.5",
     "pretty-quick": "^4.0.0",
@@ -53,6 +57,7 @@
     "url": "https://github.com/jzck/Open3CL/issues"
   },
   "homepage": "https://github.com/jzck/Open3CL#readme",
+  "type": "module",
   "jscpd": {
     "threshold": 0.1,
     "reporters": [
