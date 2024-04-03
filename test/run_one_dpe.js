@@ -1,11 +1,10 @@
 #!/bin/env bun
 
 import * as fs from 'fs';
-import * as path from 'path';
 
 import enums from '../src/enums.js';
 import { calcul_3cl } from '../src/engine.js';
-import { clean_dpe, set_bug_for_bug_compat } from '../src/utils.js';
+import { set_bug_for_bug_compat } from '../src/utils.js';
 
 set_bug_for_bug_compat();
 const args = process.argv.slice(2);

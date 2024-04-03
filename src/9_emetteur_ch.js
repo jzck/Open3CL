@@ -1,4 +1,3 @@
-import enums from './enums.js';
 import { tv } from './utils.js';
 
 export function rendement_emission(em) {

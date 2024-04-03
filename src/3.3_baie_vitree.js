@@ -1,4 +1,3 @@
-import enums from './enums.js';
 import b from './3.1_b.js';
 import { tv, requestInput, requestInputID } from './utils.js';
 
@@ -91,7 +90,7 @@ function tv_sw(di, de, du) {
   }
 }
 
-function tv_masque_proche(di, de, du) {
+function tv_masque_proche(di, de) {
   if (!de.tv_coef_masque_proche_id) return;
   const matcher = {
     tv_coef_masque_proche_id: de.tv_coef_masque_proche_id // TODO remove
@@ -105,7 +104,7 @@ function tv_masque_proche(di, de, du) {
   }
 }
 
-function tv_masque_lointain_homogene(di, de, du) {
+function tv_masque_lointain_homogene(di, de) {
   if (!de.tv_coef_masque_lointain_homogene_id) return;
   const matcher = {
     tv_coef_masque_lointain_homogene_id: de.tv_coef_masque_lointain_homogene_id // TODO remove

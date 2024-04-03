@@ -36,7 +36,9 @@ jobs:
         run: npm run test
 
       - name: Run qa
-        run: npm run qa:duplication
+        run: |
+          npm run qa:lint
+          npm run qa:duplication
 
       - name: Release
         if: github.ref == 'refs/heads/main'

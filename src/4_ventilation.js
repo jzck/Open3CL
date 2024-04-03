@@ -2,7 +2,10 @@ import enums from './enums.js';
 import { tv, requestInputID, requestInput, bug_for_bug_compat } from './utils.js';
 import calc_pvent from './5_conso_ventilation.js';
 
-const path = require('path');
+import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
 const scriptName = path.basename(__filename);
 
 function tv_debits_ventilation(di, de, du) {

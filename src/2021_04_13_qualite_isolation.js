@@ -1,7 +1,7 @@
 import enums from './enums.js';
 import { getKeyByValue } from './utils.js';
 
-function qualite_isol(u, s1, s2, s3, dp) {
+function qualite_isol(u, s1, s2, s3) {
   if (!u) u = 0;
   if (u < s1) return Number(getKeyByValue(enums.qualite_composant, 'très bonne'));
   else if (u < s2) return Number(getKeyByValue(enums.qualite_composant, 'bonne'));

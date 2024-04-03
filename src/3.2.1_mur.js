@@ -2,7 +2,10 @@ import enums from './enums.js';
 import { tv, requestInput, requestInputID, getKeyByValue, bug_for_bug_compat } from './utils.js';
 import b from './3.1_b.js';
 
-const path = require('path');
+import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
 const scriptName = path.basename(__filename);
 
 function tv_umur0(di, de, du) {

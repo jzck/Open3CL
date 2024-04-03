@@ -134,12 +134,7 @@ function Px(x, di, Cdimref) {
 }
 
 function Pfou(x, di, Cdimref) {
-  const x_final = Tch_xfinal(x, Cdimref);
   // find coef_pond[x] in coef_pond where x is closest to x_final
-  const x_list = Object.keys(coef_pond).map((x) => Number(x));
-  const x_closest = x_list.reduce((acc, x) =>
-    Math.abs(x - x_final) < Math.abs(acc - x_final) ? x : acc
-  );
   const Pfou = Px(x, di, Cdimref) * coef_pond[x];
   return Pfou;
 }
@@ -160,10 +155,6 @@ export function calc_generateur_combustion_ch(di, de, du, em_ch, GV, ca_id, zc_i
     tv_temp_fonc_30_100(di, de, du, em_ch, ac);
   }
 
-  const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur');
-  const em = em_ch.find((em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id);
-  const em_ch_de = em.donnee_entree;
-  const em_ch_du = em.donnee_utilisateur;
   const Cdimref = di.pn / (GV * (19 - tbase));
   const Cdimref_dep = di.pn / (GV * (21 - tbase));
   const Pmfou = Object.keys(coef_pond).reduce((acc, x) => acc + Pfou(x, di, Cdimref), 0);

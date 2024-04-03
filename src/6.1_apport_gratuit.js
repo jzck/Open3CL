@@ -14,8 +14,6 @@ export function calc_as_j(ssej, ej) {
 
 export function calc_ai(ilpa, ca, zc, Sh, nadeq) {
   const Nref19 = tvs.nref19[ilpa];
-  const Nref21 = tvs.nref21[ilpa];
-  const Nref26 = tvs.nref26;
   const Nref28 = tvs.nref28;
 
   const ret = {
@@ -26,8 +24,6 @@ export function calc_ai(ilpa, ca, zc, Sh, nadeq) {
   };
   for (const mois of mois_liste) {
     const nref19 = Nref19[ca][mois][zc];
-    const nref21 = Nref21[ca][mois][zc];
-    const nref26 = Nref26[ca][mois][zc];
     const nref28 = Nref28[ca][mois][zc];
     ret.apport_interne_ch += calc_ai_j(Sh, nadeq, nref19);
     /* ret.apport_interne_ch_depensier += calc_ai_j(Sh, nadeq, nref21) */
@@ -39,10 +35,8 @@ export function calc_ai(ilpa, ca, zc, Sh, nadeq) {
 
 export function calc_as(ilpa, ca, zc, bv) {
   const e = tvs.e[ilpa];
-  const e_fr_26 = tvs.e_fr_26;
   const e_fr_28 = tvs.e_fr_28;
 
-  const As = 0;
   const ret = {
     apport_solaire_ch: 0,
     apport_solaire_fr: 0
@@ -51,7 +45,6 @@ export function calc_as(ilpa, ca, zc, bv) {
   for (const mois of mois_liste) {
     const ssej = calc_sse_j(bv, zc, mois);
     const ej = e[ca][mois][zc];
-    const ej_fr_26 = e_fr_26[ca][mois][zc];
     const ej_fr_28 = e_fr_28[ca][mois][zc];
 
     ret.apport_solaire_ch += calc_as_j(ssej, ej);

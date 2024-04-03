@@ -1,4 +1,3 @@
-import enums from './enums.js';
 import { requestInput, requestInputID } from './utils.js';
 import { rendement_emission } from './9_emetteur_ch.js';
 import { calc_intermittence } from './8_intermittence.js';
@@ -56,7 +55,6 @@ function coef_ch(Fch) {
 
 export function conso_ch(di, de, du, _pos, cfg_ch, em_list, GV, Sh, hsp, bch, bch_dep) {
   const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur');
-  const gen_lge = enums.lien_generateur_emetteur[gen_lge_id];
   const coef = coef_ch(0.5)[cfg_ch][_pos];
 
   const em_filt = em_list.filter(

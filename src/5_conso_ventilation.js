@@ -1,5 +1,4 @@
-import enums from './enums.js';
-import { requestInputID, requestInput } from './utils.js';
+import { requestInput } from './utils.js';
 
 const pvent_moy_maison = {
   'simple flux auto': {
@@ -59,6 +58,7 @@ export default function calc_pvent(di, de, du, th) {
     case "ventilation hybride avec entrées d'air hygro après 2012":
       hybride = true;
       post_2012 = 0;
+      break;
     case 'ventilation mécanique sur conduit existant avant 2013':
     case 'ventilation mécanique sur conduit existant à partir de 2013':
     case 'vmc sf auto réglable avant 1982':

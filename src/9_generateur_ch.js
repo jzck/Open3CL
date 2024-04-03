@@ -1,5 +1,5 @@
 import enums from './enums.js';
-import { tv, tvColumnIDs, requestInput, requestInputID, Tbase } from './utils.js';
+import { tv, tvColumnIDs, requestInput, requestInputID } from './utils.js';
 import { tv_scop } from './12.4_pac.js';
 import { conso_aux_gen } from './15_conso_aux.js';
 import { conso_ch } from './9_conso_ch.js';

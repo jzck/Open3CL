@@ -1,5 +1,4 @@
-import enums from './enums.js';
-import { tv, tvColumnLines, requestInput, requestInputID } from './utils.js';
+import { tv, tvColumnLines } from './utils.js';
 
 function criterePn(Pn, matcher) {
   let critere_list = tvColumnLines('generateur_combustion', 'critere_pn', matcher);
@@ -53,7 +52,6 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
   const enum_type_generateur_id = de[`enum_type_generateur_${type}_id`];
   matcher[`enum_type_generateur_${type}_id`] = enum_type_generateur_id;
 
-  const ms_carac_sys = requestInput(de, du, 'methode_saisie_carac_sys');
   if (!di.pn) {
     // some engines don't set ms_carac_sys properly...
     // so instead we just check if di.pn is set or not

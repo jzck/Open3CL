@@ -1,8 +1,11 @@
 import enums from './enums.js';
 import b from './3.1_b.js';
-import { tv, requestInput, requestInputID, getKeyByValue, bug_for_bug_compat } from './utils.js';
+import { tv, requestInput, getKeyByValue, bug_for_bug_compat } from './utils.js';
 
-const path = require('path');
+import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
 const scriptName = path.basename(__filename);
 
 function tv_uph0(di, de, du) {
@@ -67,7 +70,7 @@ function calc_uph0(di, de, du) {
     case 'u0 non saisi car le u est saisi connu et justifié.':
       break;
     default:
-      console.warn('methode_saisie_u0 inconnue:', methode_saisie_u);
+      console.warn('methode_saisie_u0 inconnue');
   }
 }
 

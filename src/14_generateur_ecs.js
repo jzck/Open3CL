@@ -48,7 +48,7 @@ export function calc_Qdw_j(instal_ecs, becs_j) {
   return Qdw_j;
 }
 
-function calc_Qgw(di, de, du, ecs_di) {
+function calc_Qgw(di, de, du) {
   const type_stockage_ecs = requestInput(de, du, 'type_stockage_ecs');
 
   // stockage

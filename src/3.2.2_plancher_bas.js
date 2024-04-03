@@ -2,7 +2,10 @@ import enums from './enums.js';
 import b from './3.1_b.js';
 import { tv, requestInput, requestInputID, getKeyByValue, bug_for_bug_compat } from './utils.js';
 
-const path = require('path');
+import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
 
 function tv_upb0(di, de, du) {
   requestInput(de, du, 'type_plancher_bas');
