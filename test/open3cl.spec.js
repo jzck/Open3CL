@@ -1,214 +1,389 @@
-import * as fs from 'fs';
-import { XMLParser } from 'fast-xml-parser';
-import enums from '../src/enums.js';
 import { calcul_3cl } from '../src/engine.js';
+import corpus from './corpus.json';
+import { jest } from '@jest/globals';
+import { getAdemeFileJson, saveResultFile } from './test-helpers.js';
 
 describe('Test Open3CL engine on corpus', () => {
-  const xmlParser = new XMLParser({
-    // We want to make sure collections of length 1 are still parsed as arrays
-    isArray: (name, jpath, isLeafNode, isAttribute) => {
-      const collectionNames = [
-        'mur',
-        'plancher_bas',
-        'plancher_haut',
-        'baie_vitree',
-        'porte',
-        'pont_thermique',
-        'ventilation',
-        'installation_ecs',
-        'generateur_ecs',
-        'climatisation',
-        'installation_chauffage',
-        'generateur_chauffage',
-        'emetteur_chauffage',
-        'sortie_par_energie'
-      ];
-      if (collectionNames.includes(name)) return true;
-    },
-    tagValueProcessor: (tagName, val) => {
-      if (tagName.startsWith('enum_')) {
-        // Preserve value as string for tags starting with "enum_"
-        return null;
-      }
-      if (Number.isNaN(Number(val))) return val;
-      return Number(val);
-    }
+  beforeAll(() => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
-  let ademeIds = [
-    '2187E0981996L',
-    '2187E0982013C',
-    '2187E0982378D',
-    '2187E0982782R',
-    '2187E1037899O',
-    '2187E1039187C',
-    '2213E0696993Z',
-    '2287E0104246W',
-    '2287E0142690M',
-    '2287E0224445X',
-    '2287E0272588O',
-    '2287E0281128A',
-    '2287E0373232M',
-    '2287E0393451D',
-    '2287E0429850C',
-    '2287E0532057D',
-    '2287E0552632M',
-    '2287E0577966W',
-    '2287E0601916A',
-    '2287E0722622O',
-    '2287E0793758O',
-    '2287E0800437L',
-    '2287E0839803N',
-    '2287E0914527N',
-    '2287E1018120W',
-    '2287E1043883T',
-    '2287E1155727L',
-    '2287E1201982M',
-    '2287E1307980I',
-    '2287E1308066Q',
-    '2287E1313308G',
-    '2287E1327399F',
-    '2287E1345114O',
-    '2287E1429819L',
-    '2287E1429838E',
-    '2287E1429874O',
-    '2287E1430326Y',
-    '2287E1473380W',
-    '2287E1473669Z',
-    '2287E1489258O',
-    '2287E1490206A',
-    '2287E1530029R',
-    '2287E1641515P',
-    '2287E1724516Y',
-    '2287E1730921H',
-    '2287E1869613P',
-    '2287E1923356Q',
-    '2287E1956426O',
-    '2287E2021836I',
-    '2287E2092136E',
-    '2287E2232398W',
-    '2287E2336469P',
-    '2287E2475376E',
-    '2287E2508668Q',
-    '2287E2761872G',
-    '2287E3039996I',
-    '2287E3122267P',
-    '2387E0028605Q',
-    '2387E0045247S',
-    '2387E0072031W',
-    '2387E0112514X',
-    '2387E0112818P',
-    '2387E0112951S',
-    '2387E0113220B',
-    '2387E0113373Y',
-    '2387E0167911O',
-    '2387E0167926D',
-    '2387E0273032R',
-    '2387E0291550X',
-    '2387E0402213E',
-    '2387E0430619S',
-    '2387E0507343Q',
-    '2387E0562437Q',
-    '2387E0692052V',
-    '2387E0695337E',
-    '2387E0715833M',
-    '2387E0837391U',
-    '2387E0839319Y',
-    '2387E0855381S',
-    '2387E0870867I',
-    '2387E0872756Z',
-    '2387E0888781I',
-    '2387E0909114J',
-    '2387E0992815Q',
-    '2387E1211881G',
-    '2387E1211986H',
-    '2387E1228202Z',
-    '2387E1478659Y',
-    '2223E1914800C',
-    '2187E0982591I',
-    '2307E3075089A',
-    '2362E3036179P',
-    '2387E2923777K',
-    '2387E3092820B',
-    '2387E3074987E',
-    '2387E1742056P',
-    '2387E2899635W',
-    '2387E0576340J',
-    '2387E2058698D',
-    '2387E2603968B'
-  ];
-
-  describe.each(ademeIds)(
+  describe.each(corpus)(
     'engine output should be same than original ADEME file for %s',
     (ademeId) => {
-      let dpeResult, dpeJson;
+      let dpeResult, dpeRequest;
 
       beforeAll(() => {
-        const dpeFile = `test/fixtures/${ademeId}.xml`;
-        const data = fs.readFileSync(dpeFile, { encoding: 'utf8', flag: 'r' });
-
-        dpeJson = xmlParser.parse(data).dpe;
-        expect(dpeJson).not.toBeUndefined();
-
-        const dpeModele = enums.modele_dpe[dpeJson.administratif.enum_modele_dpe_id];
-        expect(dpeModele).toBe('dpe 3cl 2021 méthode logement');
-
-        dpeResult = calcul_3cl(JSON.parse(JSON.stringify(dpeJson)));
+        dpeRequest = getAdemeFileJson(ademeId);
+        try {
+          dpeResult = calcul_3cl(structuredClone(dpeRequest));
+        } catch (err) {
+          console.warn(`3CL Engine failed for file ${ademeId}`, err);
+        }
       });
 
       test('check "deperdition" value', () => {
         expect(dpeResult.logement.sortie.deperdition).toStrictEqual(
-          dpeJson.logement.sortie.deperdition
+          dpeRequest.logement.sortie.deperdition
         );
       });
 
       test('check "apport_et_besoin" value', () => {
         expect(dpeResult.logement.sortie.apport_et_besoin).toStrictEqual(
-          dpeJson.logement.sortie.apport_et_besoin
+          dpeRequest.logement.sortie.apport_et_besoin
         );
       });
 
       test('check "ef_conso" value', () => {
-        expect(dpeResult.logement.sortie.ef_conso).toStrictEqual(dpeJson.logement.sortie.ef_conso);
+        expect(dpeResult.logement.sortie.ef_conso).toStrictEqual(
+          dpeRequest.logement.sortie.ef_conso
+        );
       });
 
       test('check "ep_conso" value', () => {
-        expect(dpeResult.logement.sortie.ep_conso).toStrictEqual(dpeJson.logement.sortie.ep_conso);
+        expect(dpeResult.logement.sortie.ep_conso).toStrictEqual(
+          dpeRequest.logement.sortie.ep_conso
+        );
       });
 
       test('check "emission_ges" value', () => {
         expect(dpeResult.logement.sortie.emission_ges).toStrictEqual(
-          dpeJson.logement.sortie.emission_ges
+          dpeRequest.logement.sortie.emission_ges
         );
       });
 
       test('check "cout" value', () => {
-        expect(dpeResult.logement.sortie.cout).toStrictEqual(dpeJson.logement.sortie.cout);
+        expect(dpeResult.logement.sortie.cout).toStrictEqual(dpeRequest.logement.sortie.cout);
       });
 
       test('check "production_electricite" value', () => {
         expect(dpeResult.logement.sortie.production_electricite).toStrictEqual(
-          dpeJson.logement.sortie.production_electricite
+          dpeRequest.logement.sortie.production_electricite
         );
       });
 
       test('check "sortie_par_energie_collection" value', () => {
         expect(dpeResult.logement.sortie.sortie_par_energie_collection).toStrictEqual(
-          dpeJson.logement.sortie.sortie_par_energie_collection
+          dpeRequest.logement.sortie.sortie_par_energie_collection
         );
       });
 
       test('check "confort_ete" value', () => {
         expect(dpeResult.logement.sortie.confort_ete).toStrictEqual(
-          dpeJson.logement.sortie.confort_ete
+          dpeRequest.logement.sortie.confort_ete
         );
       });
 
       test('check "qualite_isolation" value', () => {
         expect(dpeResult.logement.sortie.qualite_isolation).toStrictEqual(
-          dpeJson.logement.sortie.qualite_isolation
+          dpeRequest.logement.sortie.qualite_isolation
         );
       });
     }
   );
+
+  describe('check each value for all ADEME files', () => {
+    describe.each(corpus)('check "deperdition" values for file %s', (ademeId) => {
+      let dpeRequest, dpeResult;
+
+      beforeAll(() => {
+        dpeRequest = getAdemeFileJson(ademeId);
+        dpeResult = calcul_3cl(structuredClone(dpeRequest));
+      });
+
+      test.each([
+        'deperdition_baie_vitree',
+        'deperdition_enveloppe',
+        'deperdition_mur',
+        'deperdition_plancher_bas',
+        'deperdition_plancher_haut',
+        'deperdition_pont_thermique',
+        'deperdition_porte',
+        'deperdition_renouvellement_air',
+        'hperm',
+        'hvent'
+      ])('check "deperdition.%s" value', (attr) => {
+        expect(dpeResult.logement.sortie.deperdition[attr]).toBe(
+          dpeRequest.logement.sortie.deperdition[attr]
+        );
+      });
+    });
+
+    describe.each(corpus)('check "apport_et_besoin" values for file %s', (ademeId) => {
+      let dpeRequest, dpeResult;
+
+      beforeAll(() => {
+        dpeRequest = getAdemeFileJson(ademeId);
+        dpeResult = calcul_3cl(structuredClone(dpeRequest));
+      });
+
+      test.each([
+        'surface_sud_equivalente',
+        'apport_solaire_fr',
+        'apport_interne_fr',
+        'apport_solaire_ch',
+        'apport_interne_ch',
+        'fraction_apport_gratuit_ch',
+        'fraction_apport_gratuit_depensier_ch',
+        'pertes_distribution_ecs_recup',
+        'pertes_distribution_ecs_recup_depensier',
+        'pertes_stockage_ecs_recup',
+        'pertes_generateur_ch_recup',
+        'pertes_generateur_ch_recup_depensier',
+        'nadeq',
+        'v40_ecs_journalier',
+        'v40_ecs_journalier_depensier',
+        'besoin_ch',
+        'besoin_ch_depensier',
+        'besoin_ecs',
+        'besoin_ecs_depensier',
+        'besoin_fr',
+        'besoin_fr_depensier'
+      ])('check "apport_et_besoin.%s" value', (attr) => {
+        expect(dpeResult.logement.sortie.apport_et_besoin[attr]).toBe(
+          dpeRequest.logement.sortie.apport_et_besoin[attr]
+        );
+      });
+    });
+
+    describe.each(corpus)('check "ef_conso" values for file %s', (ademeId) => {
+      let dpeRequest, dpeResult;
+
+      beforeAll(() => {
+        dpeRequest = getAdemeFileJson(ademeId);
+        dpeResult = calcul_3cl(structuredClone(dpeRequest));
+      });
+
+      test.each([
+        'conso_ch',
+        'conso_ch_depensier',
+        'conso_ecs',
+        'conso_ecs_depensier',
+        'conso_eclairage',
+        'conso_auxiliaire_generation_ch',
+        'conso_auxiliaire_generation_ch_depensier',
+        'conso_auxiliaire_distribution_ch',
+        'conso_auxiliaire_generation_ecs',
+        'conso_auxiliaire_generation_ecs_depensier',
+        'conso_auxiliaire_distribution_ecs',
+        'conso_auxiliaire_distribution_fr',
+        'conso_auxiliaire_ventilation',
+        'conso_totale_auxiliaire',
+        'conso_fr',
+        'conso_fr_depensier',
+        'conso_5_usages',
+        'conso_5_usages_m2'
+      ])('check "ef_conso.%s" value', (attr) => {
+        expect(dpeResult.logement.sortie.ef_conso[attr]).toBe(
+          dpeRequest.logement.sortie.ef_conso[attr]
+        );
+      });
+    });
+
+    describe.each(corpus)('check "ep_conso" values for file %s', (ademeId) => {
+      let dpeRequest, dpeResult;
+
+      beforeAll(() => {
+        dpeRequest = getAdemeFileJson(ademeId);
+        dpeResult = calcul_3cl(structuredClone(dpeRequest));
+      });
+
+      test.each([
+        'ep_conso_ch',
+        'ep_conso_ch_depensier',
+        'ep_conso_ecs',
+        'ep_conso_ecs_depensier',
+        'ep_conso_eclairage',
+        'ep_conso_auxiliaire_generation_ch',
+        'ep_conso_auxiliaire_generation_ch_depensier',
+        'ep_conso_auxiliaire_distribution_ch',
+        'ep_conso_auxiliaire_generation_ecs',
+        'ep_conso_auxiliaire_generation_ecs_depensier',
+        'ep_conso_auxiliaire_distribution_ecs',
+        'ep_conso_auxiliaire_distribution_fr',
+        'ep_conso_auxiliaire_ventilation',
+        'ep_conso_totale_auxiliaire',
+        'ep_conso_fr',
+        'ep_conso_fr_depensier',
+        'ep_conso_5_usages',
+        'ep_conso_5_usages_m2',
+        'classe_bilan_dpe'
+      ])('check "ep_conso.%s" value', (attr) => {
+        expect(dpeResult.logement.sortie.ep_conso[attr]).toBe(
+          dpeRequest.logement.sortie.ep_conso[attr]
+        );
+      });
+    });
+
+    describe.each(corpus)('check "emission_ges" values for file %s', (ademeId) => {
+      let dpeRequest, dpeResult;
+
+      beforeAll(() => {
+        dpeRequest = getAdemeFileJson(ademeId);
+        dpeResult = calcul_3cl(structuredClone(dpeRequest));
+      });
+
+      test.each([
+        'emission_ges_ch',
+        'emission_ges_ch_depensier',
+        'emission_ges_ecs',
+        'emission_ges_ecs_depensier',
+        'emission_ges_eclairage',
+        'emission_ges_auxiliaire_generation_ch',
+        'emission_ges_auxiliaire_generation_ch_depensier',
+        'emission_ges_auxiliaire_distribution_ch',
+        'emission_ges_auxiliaire_generation_ecs',
+        'emission_ges_auxiliaire_generation_ecs_depensier',
+        'emission_ges_auxiliaire_distribution_ecs',
+        'emission_ges_auxiliaire_distribution_fr',
+        'emission_ges_auxiliaire_ventilation',
+        'emission_ges_totale_auxiliaire',
+        'emission_ges_fr',
+        'emission_ges_fr_depensier',
+        'emission_ges_5_usages',
+        'emission_ges_5_usages_m2',
+        'classe_emission_ges'
+      ])('check "emission_ges.%s" value', (attr) => {
+        expect(dpeResult.logement.sortie.emission_ges[attr]).toBe(
+          dpeRequest.logement.sortie.emission_ges[attr]
+        );
+      });
+    });
+
+    describe.each(corpus)('check "cout" values for file %s', (ademeId) => {
+      let dpeRequest, dpeResult;
+
+      beforeAll(() => {
+        dpeRequest = getAdemeFileJson(ademeId);
+        dpeResult = calcul_3cl(structuredClone(dpeRequest));
+      });
+
+      test.each([
+        'cout_ch',
+        'cout_ch_depensier',
+        'cout_ecs',
+        'cout_ecs_depensier',
+        'cout_eclairage',
+        'cout_auxiliaire_generation_ch',
+        'cout_auxiliaire_generation_ch_depensier',
+        'cout_auxiliaire_distribution_ch',
+        'cout_auxiliaire_generation_ecs',
+        'cout_auxiliaire_generation_ecs_depensier',
+        'cout_auxiliaire_distribution_ecs',
+        'cout_auxiliaire_distribution_fr',
+        'cout_auxiliaire_ventilation',
+        'cout_total_auxiliaire',
+        'cout_fr',
+        'cout_fr_depensier',
+        'cout_5_usages'
+      ])('check "cout.%s" value', (attr) => {
+        expect(dpeResult.logement.sortie.cout[attr]).toBe(dpeRequest.logement.sortie.cout[attr]);
+      });
+    });
+
+    describe.each(corpus)('check "production_electricite" values for file %s', (ademeId) => {
+      let dpeRequest, dpeResult;
+
+      beforeAll(() => {
+        dpeRequest = getAdemeFileJson(ademeId);
+        dpeResult = calcul_3cl(structuredClone(dpeRequest));
+      });
+
+      test.each([
+        'production_pv',
+        'conso_elec_ac',
+        'conso_elec_ac_ch',
+        'conso_elec_ac_ecs',
+        'conso_elec_ac_fr',
+        'conso_elec_ac_eclairage',
+        'conso_elec_ac_auxiliaire',
+        'conso_elec_ac_autre_usage'
+      ])('check "production_electricite.%s" value', (attr) => {
+        expect(dpeResult.logement.sortie.production_electricite[attr]).toBe(
+          dpeRequest.logement.sortie.production_electricite[attr]
+        );
+      });
+    });
+
+    describe.each(corpus)('check "sortie_par_energie_collection" values for file %s', (ademeId) => {
+      let dpeRequest, dpeResult;
+
+      beforeAll(() => {
+        dpeRequest = getAdemeFileJson(ademeId);
+        dpeResult = calcul_3cl(structuredClone(dpeRequest));
+      });
+
+      // @todo: check correct test
+      test.each([
+        'sortie_par_energie',
+        'conso_elec_ac',
+        'conso_elec_ac_ch',
+        'conso_elec_ac_ecs',
+        'conso_elec_ac_fr',
+        'conso_elec_ac_eclairage',
+        'conso_elec_ac_auxiliaire',
+        'conso_elec_ac_autre_usage'
+      ])('check "sortie_par_energie_collection.%s" value', (attr) => {
+        expect(
+          dpeResult.logement.sortie.sortie_par_energie_collection.sortie_par_energie
+        ).toHaveLength(
+          dpeRequest.logement.sortie.sortie_par_energie_collection.sortie_par_energie.length
+        );
+
+        dpeRequest.logement.sortie.sortie_par_energie_collection.sortie_par_energie.forEach(
+          (sortie_par_energie, idx) => {
+            expect(sortie_par_energie[attr]).toBe(
+              dpeRequest.logement.sortie.sortie_par_energie_collection.sortie_par_energie[idx][attr]
+            );
+          }
+        );
+      });
+    });
+
+    describe.each(corpus)('check "confort_ete" values for file %s', (ademeId) => {
+      let dpeRequest, dpeResult;
+
+      beforeAll(() => {
+        dpeRequest = getAdemeFileJson(ademeId);
+        dpeResult = calcul_3cl(structuredClone(dpeRequest));
+      });
+
+      test.each([
+        'isolation_toiture',
+        'protection_solaire_exterieure',
+        'aspect_traversant',
+        'brasseur_air',
+        'inertie_lourde',
+        'enum_indicateur_confort_ete_id'
+      ])('check "confort_ete.%s" value', (attr) => {
+        expect(dpeResult.logement.sortie.confort_ete[attr]).toBe(
+          dpeRequest.logement.sortie.confort_ete[attr]
+        );
+      });
+    });
+
+    describe.each(corpus)('check "qualite_isolation" values for file %s', (ademeId) => {
+      let dpeRequest, dpeResult;
+
+      beforeAll(() => {
+        dpeRequest = getAdemeFileJson(ademeId);
+        dpeResult = calcul_3cl(structuredClone(dpeRequest));
+      });
+
+      test.each([
+        'ubat',
+        'qualite_isol_enveloppe',
+        'qualite_isol_mur',
+        'qualite_isol_plancher_haut_toit_terrasse',
+        'qualite_isol_plancher_haut_comble_perdu',
+        'qualite_isol_plancher_haut_comble_amenage',
+        'qualite_isol_plancher_bas',
+        'qualite_isol_menuiserie'
+      ])('check "qualite_isolation.%s" value', (attr) => {
+        expect(dpeResult.logement.sortie.qualite_isolation[attr]).toBe(
+          dpeRequest.logement.sortie.qualite_isolation[attr]
+        );
+      });
+    });
+  });
 });
