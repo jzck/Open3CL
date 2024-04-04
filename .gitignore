@@ -6,3 +6,4 @@ bun.lockb
 /node_modules/
 /duplicate/
 /coverage/
+/test/fixtures/*.json
