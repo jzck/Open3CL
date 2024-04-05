@@ -6,6 +6,7 @@
   "directories": {
     "test": "test"
   },
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "qa:lint": "prettier --plugin-search-dir . --check . && eslint .",
@@ -14,7 +15,8 @@
     "qa:format": "prettier --plugin-search-dir . --write .",
     "release": "semantic-release",
     "release:dry": "semantic-release --dry-run",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "assets:sync": "node scripts/synchronize_assets.js"
   },
   "repository": {
     "type": "git",
@@ -34,6 +36,8 @@
     "@commitlint/cz-commitlint": "^19.2.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/github": "^10.0.2",
+    "@types/node": "^20.12.4",
+    "deep-object-diff": "^1.1.9",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard": "^17.1.0",
@@ -45,7 +49,8 @@
     "jscpd": "^3.5.10",
     "prettier": "^3.2.5",
     "pretty-quick": "^4.0.0",
-    "semantic-release": "^23.0.6"
+    "semantic-release": "^23.0.6",
+    "xlsx": "^0.18.5"
   },
   "author": "Jack Halford",
   "license": "GPL-3.0",

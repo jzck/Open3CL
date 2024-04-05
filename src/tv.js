@@ -4655,8 +4655,8 @@ export const tvs = {
       enum_type_generateur_ecs_id: '54|101',
       type_generateur: 'Chaudière gaz à condensation 1981-1985',
       pn: 'Pn',
-      rpn: '91 + 1 logPn',
-      rpint: '97 + 1 logPn',
+      rpn: '91 + logPn',
+      rpint: '97 + logPn',
       qp0_perc: '0.01',
       pveil: '150'
     },
@@ -4666,8 +4666,8 @@ export const tvs = {
       enum_type_generateur_ecs_id: '55|102',
       type_generateur: 'Chaudière gaz à condensation 1986-2000',
       pn: 'Pn',
-      rpn: '91 + 1 logPn',
-      rpint: '97 + 1 logPn',
+      rpn: '91 + logPn',
+      rpint: '97 + logPn',
       pveil: '120'
     },
     {
@@ -4676,8 +4676,8 @@ export const tvs = {
       enum_type_generateur_ecs_id: '56|103|120|132',
       type_generateur: 'Chaudière gaz à condensation 2001-2015',
       pn: 'Pn',
-      rpn: '91 + 1 logPn',
-      rpint: '97 + 1 logPn'
+      rpn: '91 + logPn',
+      rpint: '97 + logPn'
     },
     {
       tv_generateur_combustion_id: '13',
@@ -4797,8 +4797,8 @@ export const tvs = {
       enum_type_generateur_ecs_id: '43|122',
       type_generateur: 'Chaudière fioul à condensation 1996-2015',
       pn: 'Pn',
-      rpn: '91 + 1 logPn',
-      rpint: '97 + 1 logPn',
+      rpn: '91 + logPn',
+      rpint: '97 + logPn',
       qp0_perc: '0.01'
     },
     {
@@ -4819,7 +4819,7 @@ export const tvs = {
       type_generateur: 'Chaudière fioul à condensation après 2015',
       critere_pn: 'Pn≤70',
       pn: 'Pn',
-      rpn: '94 + 1 logPn',
+      rpn: '94 + logPn',
       rpint: '100 + logPn',
       qp0_perc: '0.006'
     },
@@ -5368,7 +5368,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée avant 1980',
       critere_pn: 'Pn≤10',
       rpn: '70',
-      qp0_perc: '4.0 %',
+      qp0_perc: '0.04',
       pveil: '150'
     },
     {
@@ -5377,7 +5377,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée 1981-1989',
       critere_pn: 'Pn≤10',
       rpn: '75',
-      qp0_perc: '2.0 %',
+      qp0_perc: '0.02',
       pveil: '120'
     },
     {
@@ -5386,7 +5386,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée 1990-2000',
       critere_pn: 'Pn≤10',
       rpn: '81',
-      qp0_perc: '1.2 %',
+      qp0_perc: '0.012',
       pveil: '120'
     },
     {
@@ -5395,7 +5395,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée 2001-2015',
       critere_pn: 'Pn≤10',
       rpn: '82',
-      qp0_perc: '1.0 %',
+      qp0_perc: '0.01',
       pveil: '100'
     },
     {
@@ -5404,7 +5404,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée après  2015',
       critere_pn: 'Pn≤10',
       rpn: '82',
-      qp0_perc: '1.0 %'
+      qp0_perc: '0.01'
     },
     {
       tv_generateur_combustion_id: '89',
@@ -5412,7 +5412,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée avant 1980',
       critere_pn: 'Pn>10',
       rpn: '70',
-      qp0_perc: '4.0 %',
+      qp0_perc: '0.04',
       pveil: '150'
     },
     {
@@ -5421,7 +5421,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée 1981-1989',
       critere_pn: 'Pn>10',
       rpn: '75',
-      qp0_perc: '2.0 %',
+      qp0_perc: '0.02',
       pveil: '120'
     },
     {
@@ -5430,7 +5430,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée 1990-2000',
       critere_pn: 'Pn>10',
       rpn: '82',
-      qp0_perc: '1.2 %',
+      qp0_perc: '0.012',
       pveil: '120'
     },
     {
@@ -5439,7 +5439,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée 2001-2015',
       critere_pn: 'Pn>10',
       rpn: '84',
-      qp0_perc: '1.0 %',
+      qp0_perc: '0.01',
       pveil: '100'
     },
     {
@@ -5448,7 +5448,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée après  2015',
       critere_pn: 'Pn>10',
       rpn: '84',
-      qp0_perc: '0.6 %'
+      qp0_perc: '0.006'
     }
   ],
   intermittence: [
@@ -67082,5 +67082,5 @@ export const tvs = {
       }
     }
   }
-}
-export default tvs
+};
+export default tvs;
