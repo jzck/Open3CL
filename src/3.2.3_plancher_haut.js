@@ -70,7 +70,7 @@ function calc_uph0(di, de, du) {
     case 'u0 non saisi car le u est saisi connu et justifié.':
       break;
     default:
-      console.warn('methode_saisie_u0 inconnue');
+      console.warn('methode_saisie_u0 inconnue:', methode_saisie_u0);
   }
 }
 
