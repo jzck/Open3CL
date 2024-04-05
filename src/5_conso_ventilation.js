@@ -30,6 +30,21 @@ const pvent_immeuble = {
   }
 };
 
+/**
+ * Retourne le coefficient en fonction du type d'habitation et du type de ventilation
+ * @param {string} th Type d'habitation (maison ou autre)
+ * @param {boolean} hybride Ventilation hybride ou pas
+ *
+ * @return {number}
+ */
+function getCoefficient(th, hybride) {
+  if (!hybride) {
+    return 1;
+  }
+  const ratio = th === 'maison' ? 14 : 28;
+  return +parseFloat(ratio / (24 * 7)).toFixed(3);
+}
+
 export default function calc_pvent(di, de, du, th) {
   const tv = requestInput(de, du, 'type_ventilation');
   let post_2012 = requestInput(de, du, 'ventilation_post_2012', 'bool');
@@ -58,6 +73,12 @@ export default function calc_pvent(di, de, du, th) {
     case "ventilation hybride avec entrées d'air hygro après 2012":
       hybride = true;
       post_2012 = 0;
+      /**
+       * @see Methode_de_calcul_3CL_DPE_2021-338.pdf, pages 41-42
+       * Les consommations d’auxiliaires pour une VMC hybride correspondent aux consommations d’une VMC
+       * classique autoréglable de 2001 à 2012 multipliées par le ratio du temps d’utilisation
+       */
+      type = 'simple flux auto';
       break;
     case 'ventilation mécanique sur conduit existant avant 2013':
     case 'ventilation mécanique sur conduit existant à partir de 2013':
@@ -93,15 +114,13 @@ export default function calc_pvent(di, de, du, th) {
       break;
   }
 
-  let coef = 1;
+  const coef = getCoefficient(th, hybride);
   if (th === 'maison') {
-    if (hybride) coef = 14 / (24 * 7);
-    di.pvent_moy = pvent_moy_maison[type][post_2012] * coef;
+    di.pvent_moy = parseFloat(pvent_moy_maison[type][post_2012] * coef).toFixed(3);
   } else {
-    if (hybride) coef = 28 / (24 * 7);
     const pvent = pvent_immeuble[type][post_2012];
     const sv = requestInput(de, du, 'surface_ventile', 'float');
-    di.pvent_moy = pvent * di.qvarep_conv * sv * coef;
+    di.pvent_moy = parseFloat(pvent * di.qvarep_conv * sv * coef).toFixed(3);
   }
   di.conso_auxiliaire_ventilation = 8.76 * di.pvent_moy;
 }
