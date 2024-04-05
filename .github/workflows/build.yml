@@ -46,4 +46,4 @@ jobs:
         run: |
           cp package.json src/
           cp README.md src/
-          npm run release -- --r ${{secrets.REPO_URL}}
+          npm run release -- --r git@github.com:jzck/Open3CL.git
