@@ -1,9 +1,9 @@
-import enums from './enums.js'
-import { requestInput, requestInputID } from './utils.js'
-import { rendement_emission } from './9_emetteur_ch.js'
-import { calc_intermittence } from './8_intermittence.js'
+import enums from './enums.js';
+import { requestInput, requestInputID } from './utils.js';
+import { rendement_emission } from './9_emetteur_ch.js';
+import { calc_intermittence } from './8_intermittence.js';
 
-function coef_ch (Fch) {
+function coef_ch(Fch) {
   return {
     'installation de chauffage simple': {
       0: 1
@@ -51,31 +51,31 @@ function coef_ch (Fch) {
       0: 0.6,
       1: 0.4
     }
-  }
+  };
 }
 
-export function conso_ch (di, de, du, _pos, cfg_ch, em_list, GV, Sh, hsp, bch, bch_dep) {
-  const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur')
-  const gen_lge = enums.lien_generateur_emetteur[gen_lge_id]
-  const coef = coef_ch(0.5)[cfg_ch][_pos]
+export function conso_ch(di, de, du, _pos, cfg_ch, em_list, GV, Sh, hsp, bch, bch_dep) {
+  const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur');
+  const gen_lge = enums.lien_generateur_emetteur[gen_lge_id];
+  const coef = coef_ch(0.5)[cfg_ch][_pos];
 
   const em_filt = em_list.filter(
     (em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id
-  )
+  );
 
   const emetteur_eq = em_filt.reduce((acc, em) => {
-    const int = calc_intermittence(GV, Sh, hsp, em.donnee_intermediaire.i0)
-    const r_em = rendement_emission(em)
-    const em_de = em.donnee_entree
-    const em_du = em.donnee_utilisateur
-    const Sc = requestInput(em_de, em_du, 'surface_chauffee', 'float')
-    const ratio_s = Sc / Sh
-    const Ich = 1 / r_em
-    return acc + ratio_s * int * Ich
-  }, 0)
+    const int = calc_intermittence(GV, Sh, hsp, em.donnee_intermediaire.i0);
+    const r_em = rendement_emission(em);
+    const em_de = em.donnee_entree;
+    const em_du = em.donnee_utilisateur;
+    const Sc = requestInput(em_de, em_du, 'surface_chauffee', 'float');
+    const ratio_s = Sc / Sh;
+    const Ich = 1 / r_em;
+    return acc + ratio_s * int * Ich;
+  }, 0);
 
-  const Ich = emetteur_eq / di.rg
-  const Ich_dep = emetteur_eq / di.rg_dep
-  di.conso_ch = coef * Ich * bch
-  di.conso_ch_depensier = coef * Ich_dep * bch_dep
+  const Ich = emetteur_eq / di.rg;
+  const Ich_dep = emetteur_eq / di.rg_dep;
+  di.conso_ch = coef * Ich * bch;
+  di.conso_ch_depensier = coef * Ich_dep * bch_dep;
 }

@@ -1,33 +1,33 @@
-import enums from './enums.js'
-import b from './3.1_b.js'
-import { tv, requestInput } from './utils.js'
+import enums from './enums.js';
+import b from './3.1_b.js';
+import { tv, requestInput } from './utils.js';
 
-function tv_uporte (di, de, du) {
-  requestInput(de, du, 'type_porte')
+function tv_uporte(di, de, du) {
+  requestInput(de, du, 'type_porte');
   const matcher = {
     enum_type_porte_id: de.enum_type_porte_id
-  }
-  const row = tv('uporte', matcher, de)
+  };
+  const row = tv('uporte', matcher, de);
   if (row) {
-    di.uporte = Number(row.uporte)
-    de.tv_uporte_id = Number(row.tv_uporte_id)
+    di.uporte = Number(row.uporte);
+    de.tv_uporte_id = Number(row.tv_uporte_id);
   } else {
-    console.error('!! pas de valeur forfaitaire trouvée pour uporte !!')
+    console.error('!! pas de valeur forfaitaire trouvée pour uporte !!');
   }
 }
 
-export default function calc_porte (porte, zc) {
-  const de = porte.donnee_entree
-  const di = {}
-  const du = {}
+export default function calc_porte(porte, zc) {
+  const de = porte.donnee_entree;
+  const di = {};
+  const du = {};
 
-  requestInput(de, du, 'surface_porte', 'float')
+  requestInput(de, du, 'surface_porte', 'float');
 
-  b(di, de, du, zc)
-  const methode_saisie_uporte = requestInput(de, du, 'methode_saisie_uporte')
-  if (methode_saisie_uporte === 'valeur forfaitaire') tv_uporte(di, de, du)
-  else di.uporte = requestInput(de, du, 'uporte_saisi', 'float')
+  b(di, de, du, zc);
+  const methode_saisie_uporte = requestInput(de, du, 'methode_saisie_uporte');
+  if (methode_saisie_uporte === 'valeur forfaitaire') tv_uporte(di, de, du);
+  else di.uporte = requestInput(de, du, 'uporte_saisi', 'float');
 
-  porte.donnee_utilisateur = du
-  porte.donnee_intermediaire = di
+  porte.donnee_utilisateur = du;
+  porte.donnee_intermediaire = di;
 }

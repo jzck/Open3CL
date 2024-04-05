@@ -1143,6 +1143,6 @@ const enums = {
     2: 'moyen',
     3: 'bon'
   }
-}
+};
 
-export default enums
+export default enums;

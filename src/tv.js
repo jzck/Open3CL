@@ -67082,5 +67082,5 @@ export const tvs = {
       }
     }
   }
-}
-export default tvs
+};
+export default tvs;

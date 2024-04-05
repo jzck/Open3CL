@@ -1,4 +1,4 @@
-import enums from './enums.js'
+import enums from './enums.js';
 
 const Nh = {
   h1a: 1500,
@@ -9,13 +9,13 @@ const Nh = {
   h2c: 1566,
   h2d: 1566,
   h3: 1506
-}
+};
 
-export default function calc_conso_eclairage (zc_id) {
-  const zc = enums.zone_climatique[zc_id]
+export default function calc_conso_eclairage(zc_id) {
+  const zc = enums.zone_climatique[zc_id];
 
-  const C = 0.9
-  const Pecl = 1.4
-  const Cecl = (C * Pecl * Nh[zc]) / 1000
-  return Cecl
+  const C = 0.9;
+  const Pecl = 1.4;
+  const Cecl = (C * Pecl * Nh[zc]) / 1000;
+  return Cecl;
 }
