@@ -5,5 +5,7 @@ bun.lockb
 *.iml
 /node_modules/
 /duplicate/
+scripts/assets/enums.js
+scripts/assets/tv.js
 /coverage/
 /test/fixtures/*.json
