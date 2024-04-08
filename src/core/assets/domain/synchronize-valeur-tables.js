@@ -1,7 +1,6 @@
-import { addedDiff, diff } from 'deep-object-diff';
+import { diff } from 'deep-object-diff';
 import { tvs } from '../../../tv.js';
 import { ObjectUtil } from '../../util/infrastructure/object-util.js';
-import { SynchronizeSolicitationsTables } from './synchronize-solicitations-tables.js';
 
 /**
  * Download the `valeur_tables.xlsx` file from the official ademe repository and generates a new `enums.js` file

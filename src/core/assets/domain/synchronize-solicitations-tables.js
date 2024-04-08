@@ -50,11 +50,13 @@ export class SynchronizeSolicitationsTables {
 
             excelSheets[sheetName].forEach((sheetValue) => {
               // Group by "ilpa" property if it exists or "classe_altitude" otherwise
-              let groupKey = !!sheetValue.ilpa ? sheetValue.ilpa : sheetValue.classe_altitude;
+              let groupKey = sheetValue.hasOwnProperty(ILPA_PROPERTY)
+                ? sheetValue.ilpa
+                : sheetValue.classe_altitude;
 
               for (const sheetValueKey in sheetValue) {
                 if (!EXCLUDED_PROPERTIES.includes(sheetValueKey)) {
-                  const path = `${sheetName}.${groupKey}${!!sheetValue.ilpa ? '.' + sheetValue.classe_altitude : ''}.${sheetValue.mois}.${sheetValueKey}`;
+                  const path = `${sheetName}.${groupKey}${sheetValue.hasOwnProperty(ILPA_PROPERTY) ? '.' + sheetValue.classe_altitude : ''}.${sheetValue.mois}.${sheetValueKey}`;
                   set(output, path, parseFloat(sheetValue[sheetValueKey]));
                 }
               }
