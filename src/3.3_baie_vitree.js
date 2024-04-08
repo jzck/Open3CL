@@ -27,7 +27,10 @@ function tv_uw(di, de, du) {
     enum_type_baie_id: requestInputID(de, du, 'type_baie')
   };
 
-  if (matcher.enum_type_baie_id && !['1', '2', '3'].includes(matcher.enum_type_baie_id)) {
+  if (
+    matcher.enum_type_baie_id &&
+    !['1', '2', '3'].includes(matcher.enum_type_baie_id.toString())
+  ) {
     matcher.enum_type_materiaux_menuiserie_id = requestInputID(de, du, 'type_materiaux_menuiserie');
     matcher.ug = `^${di.ug}$`;
   }
