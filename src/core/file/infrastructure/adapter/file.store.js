@@ -11,15 +11,9 @@ export class FileStore {
    */
   async downloadXlsxFileAndConvertToJson(url) {
     const buffer = await fetch(url).then((res) => res.arrayBuffer());
-
-    const wb = XLSX.read(buffer, { type: 'string', raw: false });
-
-    const jsonOutput = {};
-    wb.SheetNames.forEach((sheetName) => {
-      jsonOutput[sheetName] = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { raw: false });
-    });
-
-    return Promise.resolve(jsonOutput);
+    return Promise.resolve(
+      this.#excelWorkBookToJson(XLSX.read(buffer, { type: 'string', raw: false }))
+    );
   }
 
   async readLocalOdsFileAndConvertToJson(filePath) {
@@ -31,14 +25,9 @@ export class FileStore {
           resolve(data);
         }
       });
-    }).then((fileContent) => {
-      const wb = XLSX.read(fileContent, { type: 'buffer' });
-      const jsonOutput = {};
-      wb.SheetNames.forEach((sheetName) => {
-        jsonOutput[sheetName] = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { raw: false });
-      });
-      return jsonOutput;
-    });
+    }).then((fileContent) =>
+      this.#excelWorkBookToJson(XLSX.read(fileContent, { type: 'buffer', raw: false }))
+    );
   }
 
   /**
@@ -56,5 +45,13 @@ export class FileStore {
         }
       });
     });
+  }
+
+  #excelWorkBookToJson(workBook) {
+    const jsonOutput = {};
+    workBook.SheetNames.forEach((sheetName) => {
+      jsonOutput[sheetName] = XLSX.utils.sheet_to_json(workBook.Sheets[sheetName], { raw: false });
+    });
+    return jsonOutput;
   }
 }
