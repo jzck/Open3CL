@@ -12,7 +12,7 @@ function tv_umur0(di, de, du) {
   const matcher = {
     enum_materiaux_structure_mur_id: de.enum_materiaux_structure_mur_id
   };
-  if (!['1', '20'].includes(de.enum_materiaux_structure_mur_id)) {
+  if (!['1', '20'].includes(de.enum_materiaux_structure_mur_id.toString())) {
     // 1: inconnu, 20: cloison de platree, pas concerné par les epaisseurs
     // TODO not float, get from csv
     matcher.epaisseur_structure = requestInput(de, du, 'epaisseur_structure', 'float');

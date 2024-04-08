@@ -1,4 +1,5 @@
 import { requestInput } from './utils.js';
+import { DECIMAL_PRECISION } from './constants.js';
 
 const pvent_moy_maison = {
   'simple flux auto': {
@@ -42,7 +43,7 @@ function getCoefficient(th, hybride) {
     return 1;
   }
   const ratio = th === 'maison' ? 14 : 28;
-  return +parseFloat(ratio / (24 * 7)).toFixed(3);
+  return +parseFloat(ratio / (24 * 7)).toFixed(DECIMAL_PRECISION);
 }
 
 export default function calc_pvent(di, de, du, th) {
@@ -116,11 +117,11 @@ export default function calc_pvent(di, de, du, th) {
 
   const coef = getCoefficient(th, hybride);
   if (th === 'maison') {
-    di.pvent_moy = parseFloat(pvent_moy_maison[type][post_2012] * coef).toFixed(3);
+    di.pvent_moy = parseFloat(pvent_moy_maison[type][post_2012] * coef).toFixed(DECIMAL_PRECISION);
   } else {
     const pvent = pvent_immeuble[type][post_2012];
     const sv = requestInput(de, du, 'surface_ventile', 'float');
-    di.pvent_moy = parseFloat(pvent * di.qvarep_conv * sv * coef).toFixed(3);
+    di.pvent_moy = parseFloat(pvent * di.qvarep_conv * sv * coef).toFixed(DECIMAL_PRECISION);
   }
   di.conso_auxiliaire_ventilation = 8.76 * di.pvent_moy;
 }
