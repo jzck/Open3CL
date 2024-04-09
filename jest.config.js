@@ -14,7 +14,10 @@ const config = {
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: 'v8',
   // Do not fail for the moment (time to make all the tests operational)
-  testFailureExitCode: 0
+  testFailureExitCode: 0,
+  // Add extra jest configuration
+  setupFilesAfterEnv: ['<rootDir>/test/setup-jest.js'],
+  transform: {}
 };
 
 export default config;

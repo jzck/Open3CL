@@ -35,7 +35,7 @@ export class SynchronizeSolicitationsTables {
   /**
    * @return {Promise<any>}
    */
-  async execute() {
+  execute() {
     return this.#fileStore
       .readLocalOdsFileAndConvertToJson(this.#appConfig.solicitationsExtFilePath)
       .then(
