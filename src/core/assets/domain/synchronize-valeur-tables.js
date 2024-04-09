@@ -1,5 +1,3 @@
-import { diff } from 'deep-object-diff';
-import { tvs } from '../../../tv.js';
 import { ObjectUtil } from '../../util/infrastructure/object-util.js';
 
 /**
@@ -45,7 +43,7 @@ export class SynchronizeValeurTables {
   /**
    * @return {Promise<void>}
    */
-  async execute() {
+  execute() {
     return this.#fileStore
       .downloadXlsxFileAndConvertToJson(this.#appConfig.ademeValeurTablesFileUrl)
       .then(
@@ -102,7 +100,7 @@ export class SynchronizeValeurTables {
           this.#synchronizeC1Tables.execute()
         ]).then((tablesValues) => {
           const solicitationsTablesValues = tablesValues[0];
-          const c1TablesValues = tablesValues[2];
+          const c1TablesValues = tablesValues[1];
 
           // Merge content from "valeur_tables.xlsx" file with "18.2_sollicitations_ext.ods" file
           const tableValues = Object.assign(
@@ -111,11 +109,6 @@ export class SynchronizeValeurTables {
             solicitationsTablesValues,
             c1TablesValues
           );
-          const jsonDiff = diff(tvs, tableValues);
-
-          if (Object.keys(jsonDiff).length > 0) {
-            console.warn(jsonDiff);
-          }
 
           // Overwrite the enum.js file in filesystem
           return this.#fileStore.writeFileToLocalSystem(

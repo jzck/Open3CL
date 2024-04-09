@@ -10,13 +10,14 @@ export class FileStore {
    * @return {Promise<any>}
    */
   async downloadXlsxFileAndConvertToJson(url) {
-    const buffer = await fetch(url).then((res) => res.arrayBuffer());
-    return Promise.resolve(
-      this.#excelWorkBookToJson(XLSX.read(buffer, { type: 'string', raw: false }))
-    );
+    return fetch(url)
+      .then((res) => res.arrayBuffer())
+      .then((buffer) =>
+        this.#excelWorkBookToJson(XLSX.read(buffer, { type: 'string', raw: false }))
+      );
   }
 
-  async readLocalOdsFileAndConvertToJson(filePath) {
+  readLocalOdsFileAndConvertToJson(filePath) {
     return new Promise((resolve, reject) => {
       readFile(filePath, (err, data) => {
         if (err) {
@@ -35,7 +36,7 @@ export class FileStore {
    * @param content {string}
    * @return {Promise<void>}
    */
-  async writeFileToLocalSystem(filePath, content) {
+  writeFileToLocalSystem(filePath, content) {
     return new Promise((resolve, reject) => {
       writeFile(filePath, content, { encoding: 'utf-8' }, (err) => {
         if (err) {

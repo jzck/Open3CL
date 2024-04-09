@@ -1,6 +1,3 @@
-import { diff } from 'deep-object-diff';
-import enums from '../../../enums.js';
-
 /**
  * Download the `enum_tables.xlsx` file from the official ademe repository and generates a new `enums.js` file
  * Please see @link https://gitlab.com/observatoire-dpe/observatoire-dpe/-/tree/master
@@ -30,8 +27,8 @@ export class SynchronizeEnumTables {
   /**
    * @return {Promise<void>}
    */
-  async execute() {
-    return await this.#fileStore
+  execute() {
+    return this.#fileStore
       .downloadXlsxFileAndConvertToJson(this.#appConfig.ademeEnumTablesFileUrl)
       .then(
         /** @param excelSheets {{[tabName: string]: {id: string, lib: string}[]}} xlsx content file grouped by tab */
@@ -68,16 +65,6 @@ export class SynchronizeEnumTables {
 
               enumsOutput[sheetName] = outputTabValues;
             });
-
-          // Verify that the generated file has no diff with the legacy `enum.js` file
-          const enumsDiff = diff(enums, enumsOutput);
-
-          if (Object.keys(enumsDiff).length > 0) {
-            console.error(enumsDiff);
-            return Promise.reject(
-              'Enums file from ademe repository is different from legacy file: enum.js'
-            );
-          }
 
           // Overwrite the enums.js file in filesystem
           return this.#fileStore.writeFileToLocalSystem(
