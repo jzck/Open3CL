@@ -19,6 +19,4 @@ const synchronizeValeurTables = new SynchronizeValeurTables(
 );
 const synchronizeAssets = new SynchronizeAssets(synchronizeEnumTables, synchronizeValeurTables);
 
-await synchronizeC1Tables.execute();
-
 await synchronizeAssets.execute();
