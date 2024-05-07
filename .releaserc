@@ -23,7 +23,7 @@
     ],
     "@semantic-release/release-notes-generator",
     ["@semantic-release/npm", {
-      "npmPublish": false,
+      "npmPublish": true,
       "pkgRoot": "src"
      }],
      ["@semantic-release/git", {
