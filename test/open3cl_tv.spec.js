@@ -12,5 +12,9 @@ describe('Open3cl table values unit tests', () => {
     expect(
       output.logement.enveloppe.baie_vitree_collection.baie_vitree[0].donnee_intermediaire
     ).toMatchObject({ ujn: 2 });
+
+    expect(
+      output.logement.enveloppe.pont_thermique_collection.pont_thermique[0].donnee_intermediaire
+    ).toMatchObject({ k: 0.08 });
   });
 });

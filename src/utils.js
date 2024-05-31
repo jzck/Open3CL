@@ -169,6 +169,13 @@ function tvMatch(row, key, matcher) {
   }
 
   let match_value = String(matcher[key]).toLowerCase();
+
+  // If the match value starts with ^, ends with $ and contains  + then we escape the +
+  // Ex: ^iti+ite$ becomes ^iti\\+ite$
+  if (/^\^(.*)\+(.*)\$$/g.test(match_value)) {
+    match_value = match_value.replace('+', '\\+');
+  }
+
   if (key.startsWith('enum_')) match_value = `^${String(matcher[key]).toLowerCase()}$`;
 
   if (row[key].includes('|')) {
