@@ -2,10 +2,7 @@ import enums from './enums.js';
 import b from './3.1_b.js';
 import { tv, requestInput, requestInputID, getKeyByValue, bug_for_bug_compat } from './utils.js';
 
-import * as path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
+const scriptName = new URL(import.meta.url).pathname.split('/').pop();
 
 function tv_upb0(di, de, du) {
   requestInput(de, du, 'type_plancher_bas');
@@ -192,7 +189,6 @@ export default function calc_pb(pb, zc, pc_id, ej, pb_list) {
       const tv_upb_avant = de.tv_upb_id;
       tv_upb(di, de, du, pi_id, zc, ej);
       if (de.tv_upb_id != tv_upb_avant && pi_id != pc_id) {
-        const scriptName = path.basename(__filename);
         console.warn(
           `BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 17)`
         );
