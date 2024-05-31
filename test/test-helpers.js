@@ -1,5 +1,5 @@
 import { XMLParser } from 'fast-xml-parser';
-import fs from 'fs';
+import fs from 'node:fs';
 import enums from '../src/enums.js';
 
 const xmlParser = new XMLParser({
