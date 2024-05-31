@@ -60,7 +60,7 @@ function tv_ujn(di, de, du) {
   tv_deltar(di, de, du);
   const matcher = {
     deltar: di.deltar,
-    uw: `^${di.uw}$`
+    uw: `^${Number(di.uw).toPrecision(2)}$`
   };
   const row = tv('ujn', matcher);
   if (row) {
