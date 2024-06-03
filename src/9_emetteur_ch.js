@@ -56,10 +56,17 @@ function tv_intermittence(di, de, inst_ch_de, map_id, inertie_id) {
     enum_equipement_intermittence_id: de.enum_equipement_intermittence_id,
     enum_type_regulation_id: de.enum_type_regulation_id,
     enum_type_emission_distribution_id: de.enum_type_emission_distribution_id,
-    enum_classe_inertie_id: inertie_id,
     /* TODO */
     comptage_individuel: 'Absence'
   };
+
+  // Pas de valeur d'inertie pour les méthodes d'applications différentes de "dpe maison individuelle"
+  // dans le fichier de table de valeur sur l'onglet "intermittence", si on le précise on ne trouve aucune correspondance
+  // et la mauvaise valeur est sélectionnée
+  if (map_id === '1') {
+    matcher.enum_classe_inertie_id = inertie_id;
+  }
+
   const row = tv('intermittence', matcher, de);
   if (row) {
     di.i0 = Number(row.i0);
