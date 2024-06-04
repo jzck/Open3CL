@@ -46,10 +46,6 @@ describe('Test Open3CL engine on corpus', () => {
 
       test.each([
         'surface_sud_equivalente',
-        'apport_solaire_fr',
-        'apport_interne_fr',
-        'apport_solaire_ch',
-        'apport_interne_ch',
         'fraction_apport_gratuit_ch',
         'fraction_apport_gratuit_depensier_ch',
         'pertes_distribution_ecs_recup',
@@ -73,6 +69,27 @@ describe('Test Open3CL engine on corpus', () => {
           exceptedDpe.logement.sortie.apport_et_besoin[attr],
           PRECISION
         );
+      });
+
+      test.each([
+        'apport_solaire_fr',
+        'apport_interne_fr',
+        'apport_solaire_ch',
+        'apport_interne_ch'
+      ])('check "apport_et_besoin.%s" value', (attr) => {
+        const exceptedDpe = getAdemeFileJson(ademeId);
+        const calculatedDpe = getResultFile(ademeId);
+        try {
+          expect(calculatedDpe.logement.sortie.apport_et_besoin[attr]).toBeCloseTo(
+            exceptedDpe.logement.sortie.apport_et_besoin[attr] * 1000,
+            PRECISION
+          );
+        } catch {
+          expect(calculatedDpe.logement.sortie.apport_et_besoin[attr]).toBeCloseTo(
+            exceptedDpe.logement.sortie.apport_et_besoin[attr],
+            PRECISION
+          );
+        }
       });
 
       test.each([

@@ -3,13 +3,19 @@ import { mois_liste } from './utils.js';
 import { calc_sse_j } from './6.2_surface_sud_equivalente.js';
 
 export function calc_ai_j(Sh, nadeq, nrefj) {
-  const Aij = (((3.18 + 0.34) * Sh + 90 * (132 / 168) * nadeq) * nrefj) / 1000;
-  return Aij;
+  /**
+   * L'unité retenue est le Wh conformément à la spécification, cependant
+   * il est possible de rencontrer des valeurs avec une unité en kWh dans les DPE.
+   */
+  return ((3.18 + 0.34) * Sh + 90 * (132 / 168) * nadeq) * nrefj;
 }
 
 export function calc_as_j(ssej, ej) {
-  const Asj = ssej * ej;
-  return Asj;
+  /**
+   * L'unité retenue est le Wh conformément à la spécification, cependant
+   * il est possible de rencontrer des valeurs avec une unité en kWh dans les DPE.
+   */
+  return 1000 * ssej * ej;
 }
 
 export function calc_ai(ilpa, ca, zc, Sh, nadeq) {
