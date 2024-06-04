@@ -2,6 +2,7 @@ import { calcul_3cl } from '../src/engine.js';
 import corpus from './corpus.json';
 import { getAdemeFileJson, getResultFile, saveResultFile } from './test-helpers.js';
 import { jest } from '@jest/globals';
+import { PRECISION } from './constant.js';
 
 describe('Test Open3CL engine compliance on corpus', () => {
   /**
@@ -36,7 +37,8 @@ describe('Test Open3CL engine compliance on corpus', () => {
       const exceptedDpe = getAdemeFileJson(ademeId);
       const calculatedDpe = getResultFile(ademeId);
       expect(calculatedDpe.logement.sortie.deperdition[attr]).toBeCloseTo(
-        exceptedDpe.logement.sortie.deperdition[attr]
+        exceptedDpe.logement.sortie.deperdition[attr],
+        PRECISION
       );
     });
   });
@@ -68,7 +70,8 @@ describe('Test Open3CL engine compliance on corpus', () => {
       const exceptedDpe = getAdemeFileJson(ademeId);
       const calculatedDpe = getResultFile(ademeId);
       expect(calculatedDpe.logement.sortie.apport_et_besoin[attr]).toBeCloseTo(
-        exceptedDpe.logement.sortie.apport_et_besoin[attr]
+        exceptedDpe.logement.sortie.apport_et_besoin[attr],
+        PRECISION
       );
     });
   });
@@ -97,7 +100,8 @@ describe('Test Open3CL engine compliance on corpus', () => {
       const exceptedDpe = getAdemeFileJson(ademeId);
       const calculatedDpe = getResultFile(ademeId);
       expect(calculatedDpe.logement.sortie.ef_conso[attr]).toBeCloseTo(
-        exceptedDpe.logement.sortie.ef_conso[attr]
+        exceptedDpe.logement.sortie.ef_conso[attr],
+        PRECISION
       );
     });
   });
@@ -127,7 +131,8 @@ describe('Test Open3CL engine compliance on corpus', () => {
       const exceptedDpe = getAdemeFileJson(ademeId);
       const calculatedDpe = getResultFile(ademeId);
       expect(calculatedDpe.logement.sortie.ep_conso[attr]).toBeCloseTo(
-        exceptedDpe.logement.sortie.ep_conso[attr]
+        exceptedDpe.logement.sortie.ep_conso[attr],
+        PRECISION
       );
     });
   });
@@ -157,7 +162,8 @@ describe('Test Open3CL engine compliance on corpus', () => {
       const exceptedDpe = getAdemeFileJson(ademeId);
       const calculatedDpe = getResultFile(ademeId);
       expect(calculatedDpe.logement.sortie.emission_ges[attr]).toBeCloseTo(
-        exceptedDpe.logement.sortie.emission_ges[attr]
+        exceptedDpe.logement.sortie.emission_ges[attr],
+        PRECISION
       );
     });
   });
@@ -185,7 +191,8 @@ describe('Test Open3CL engine compliance on corpus', () => {
       const exceptedDpe = getAdemeFileJson(ademeId);
       const calculatedDpe = getResultFile(ademeId);
       expect(calculatedDpe.logement.sortie.cout[attr]).toBeCloseTo(
-        exceptedDpe.logement.sortie.cout[attr]
+        exceptedDpe.logement.sortie.cout[attr],
+        PRECISION
       );
     });
   });
@@ -204,7 +211,8 @@ describe('Test Open3CL engine compliance on corpus', () => {
       const exceptedDpe = getAdemeFileJson(ademeId);
       const calculatedDpe = getResultFile(ademeId);
       expect(calculatedDpe.logement.sortie.production_electricite[attr]).toBeCloseTo(
-        exceptedDpe.logement.sortie.production_electricite[attr]
+        exceptedDpe.logement.sortie.production_electricite[attr],
+        PRECISION
       );
     });
   });
@@ -232,7 +240,8 @@ describe('Test Open3CL engine compliance on corpus', () => {
       calculatedDpe.logement.sortie.sortie_par_energie_collection.sortie_par_energie.forEach(
         (sortie_par_energie, idx) => {
           expect(sortie_par_energie[attr]).toBeCloseTo(
-            exceptedDpe.logement.sortie.sortie_par_energie_collection.sortie_par_energie[idx][attr]
+            exceptedDpe.logement.sortie.sortie_par_energie_collection.sortie_par_energie[idx][attr],
+            PRECISION
           );
         }
       );
@@ -251,7 +260,8 @@ describe('Test Open3CL engine compliance on corpus', () => {
       const exceptedDpe = getAdemeFileJson(ademeId);
       const calculatedDpe = getResultFile(ademeId);
       expect(calculatedDpe.logement.sortie.confort_ete[attr]).toBeCloseTo(
-        exceptedDpe.logement.sortie.confort_ete[attr]
+        exceptedDpe.logement.sortie.confort_ete[attr],
+        PRECISION
       );
     });
   });
@@ -270,7 +280,8 @@ describe('Test Open3CL engine compliance on corpus', () => {
       const exceptedDpe = getAdemeFileJson(ademeId);
       const calculatedDpe = getResultFile(ademeId);
       expect(calculatedDpe.logement.sortie.qualite_isolation[attr]).toBeCloseTo(
-        exceptedDpe.logement.sortie.qualite_isolation[attr]
+        exceptedDpe.logement.sortie.qualite_isolation[attr],
+        PRECISION
       );
     });
   });
