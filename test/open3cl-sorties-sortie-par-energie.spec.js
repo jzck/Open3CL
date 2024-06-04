@@ -2,6 +2,7 @@ import { calcul_3cl } from '../src/engine.js';
 import corpus from './corpus.json';
 import { getAdemeFileJson, getResultFile, saveResultFile } from './test-helpers.js';
 import { jest } from '@jest/globals';
+import { PRECISION } from './constant.js';
 
 describe('Test Open3CL engine compliance on corpus', () => {
   /**
@@ -43,7 +44,8 @@ describe('Test Open3CL engine compliance on corpus', () => {
       calculatedDpe.logement.sortie.sortie_par_energie_collection.sortie_par_energie.forEach(
         (sortie_par_energie, idx) => {
           expect(sortie_par_energie[attr]).toBeCloseTo(
-            exceptedDpe.logement.sortie.sortie_par_energie_collection.sortie_par_energie[idx][attr]
+            exceptedDpe.logement.sortie.sortie_par_energie_collection.sortie_par_energie[idx][attr],
+            PRECISION
           );
         }
       );
