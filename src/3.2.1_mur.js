@@ -143,17 +143,20 @@ export default function calc_mur(mur, zc, pc_id, ej) {
     }
     case 'année de construction saisie (table forfaitaire)': {
       calc_umur0(di, de, du);
-      let pi_id = pc_id;
-      const pc = enums.periode_construction[pc_id];
-      switch (pc) {
-        case 'avant 1948':
-        case '1948-1974':
-          pi_id = getKeyByValue(enums.periode_isolation, '1975-1977');
-          break;
+      // Si l'année d'isolation est connue, il faut l'utiliser et pas l'année de construction
+      let pi_id = de.enum_periode_isolation_id || pc_id;
+      if (!de.enum_periode_isolation_id) {
+        const pc = enums.periode_construction[pc_id];
+        switch (pc) {
+          case 'avant 1948':
+          case '1948-1974':
+            pi_id = parseInt(getKeyByValue(enums.periode_isolation, '1975-1977'), 10);
+            break;
+        }
       }
       const tv_umur_avant = de.tv_umur_id;
       tv_umur(di, de, du, pi_id, zc, ej);
-      if (de.tv_umur_id != tv_umur_avant && pi_id != pc_id) {
+      if (de.tv_umur_id !== tv_umur_avant && pi_id !== pc_id) {
         console.warn(
           `BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 13)`
         );
