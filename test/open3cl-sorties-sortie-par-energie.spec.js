@@ -22,14 +22,16 @@ describe('Test Open3CL engine compliance on corpus', () => {
   });
 
   describe.each([
-    'sortie_par_energie',
-    'conso_elec_ac',
-    'conso_elec_ac_ch',
-    'conso_elec_ac_ecs',
-    'conso_elec_ac_fr',
-    'conso_elec_ac_eclairage',
-    'conso_elec_ac_auxiliaire',
-    'conso_elec_ac_autre_usage'
+    'enum_type_energie_id',
+    'conso_ch',
+    'conso_ecs',
+    'conso_5_usages',
+    'emission_ges_ch',
+    'emission_ges_ecs',
+    'emission_ges_5_usages',
+    'cout_ch',
+    'cout_ecs',
+    'cout_5_usages'
   ])('check "sortie_par_energie_collection.%s" value', (attr) => {
     test.each(corpus)('dpe %s', (ademeId) => {
       const exceptedDpe = getAdemeFileJson(ademeId);
