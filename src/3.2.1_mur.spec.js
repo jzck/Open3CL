@@ -43,4 +43,37 @@ describe('Recherche de bugs dans le calcul de déperdition des murs', () => {
     expect(mur.donnee_intermediaire.umur).toBe(2.5);
     expect(mur.donnee_intermediaire.umur0).toBe(2.5);
   });
+
+  test('calcul de déperdition pour les murs de 2187E0982013C', () => {
+    const zc = 3;
+    const pc_id = 1;
+    const ej = 0;
+    const mur = {
+      donnee_entree: {
+        description:
+          "Mur Nord, Sud, Est, Ouest - Mur en pierre de taille et moellons avec remplissage tout venant d'épaisseur 50 cm non isolé donnant sur l'extérieur",
+        enum_type_adjacence_id: '1', // Extérieur
+        enum_orientation_id: '4', // Sud-Ouest
+        surface_paroi_totale: 134.76,
+        surface_paroi_opaque: 134.76,
+        tv_umur0_id: 15,
+        enum_materiaux_structure_mur_id: '3', // Murs en pierre de taille et moellons avec remplissage tout venant
+        enum_methode_saisie_u0_id: '2', // déterminé selon le matériau et épaisseur à partir de la table de valeur forfaitaire
+        paroi_ancienne: 1,
+        enum_type_doublage_id: '2', // absence de doublage
+        enum_type_isolation_id: '2', // Non isolé
+        enum_methode_saisie_u_id: '1' // non isolé
+      },
+      donnee_intermediaire: {
+        b: 1,
+        umur: 0.81545,
+        umur0: 0.81545
+      }
+    };
+    calc_mur(mur, zc, pc_id, ej);
+
+    expect(mur.donnee_intermediaire.b).toBe(1);
+    expect(mur.donnee_intermediaire.umur).toBe(1.9);
+    expect(mur.donnee_intermediaire.umur0).toBe(1.9);
+  });
 });
