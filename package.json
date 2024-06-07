@@ -73,7 +73,7 @@
       "html"
     ],
     "ignore": [
-      "**/*.test.js"
+      "**/*.spec.js"
     ],
     "path": [
       "src"
