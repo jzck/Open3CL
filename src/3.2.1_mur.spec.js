@@ -76,4 +76,54 @@ describe('Recherche de bugs dans le calcul de déperdition des murs', () => {
     expect(mur.donnee_intermediaire.umur).toBe(1.9);
     expect(mur.donnee_intermediaire.umur0).toBe(1.9);
   });
+
+  describe('calcul de déperdition pour les murs de 2387E0045247S', () => {
+    test('Mur  2 Est', () => {
+      const zc = 3;
+      const pc_id = 1;
+      const ej = 0;
+      const mur = {
+        donnee_entree: {
+          description:
+            "Mur  2 Est - Mur en pierre de taille et moellons avec remplissage tout venant d'épaisseur 50 cm avec un doublage rapporté non isolé donnant sur un garage",
+          reference: '2023_01_05_11_43_33_3939838001416257',
+          reference_lnc: 'LNC2023_01_05_11_43_33_3939838001416257',
+          tv_coef_reduction_deperdition_id: 105,
+          surface_aiu: 29,
+          surface_aue: 120,
+          enum_cfg_isolation_lnc_id: '2', // lc non isolé + lnc non isolé
+          enum_type_adjacence_id: '8', // Garage
+          enum_orientation_id: '3', // Est
+          surface_paroi_totale: 29,
+          surface_paroi_opaque: 29,
+          tv_umur0_id: 15,
+          epaisseur_structure: 50,
+          enum_materiaux_structure_mur_id: '3', // Mur en pierre de taille et moellons avec remplissage tout venant
+          enum_methode_saisie_u0_id: '2', // déterminé selon le matériau et épaisseur à partir de la table de valeur forfaitaire
+          paroi_ancienne: 1,
+          enum_type_doublage_id: '4', // doublage indéterminé avec lame d'air sup 15 mm
+          enum_type_isolation_id: '2', // Non isolé
+          enum_methode_saisie_u_id: '1' // Non isolé
+        },
+        donnee_intermediaire: {
+          b: 0.9,
+          umur: 0.6962300000000001,
+          umur0: 0.69623
+        }
+      };
+      calc_mur(mur, zc, pc_id, ej);
+
+      /**
+       * umur0 = 1.9 ++ Correction liée au doublage
+       *
+       * Pour un mur avec un doublage rapporté avec une lame d’air de plus de 15 mm ou avec un matériau de doublage
+       * connu (plâtre, brique, bois) : Rdoublage = 0,21 m2.K/W
+       * umur0_corrige = 1 / ((1 / 1.9) + 0.21) = 1,358112938
+       */
+
+      expect(mur.donnee_intermediaire.b).toBe(0.9);
+      expect(mur.donnee_intermediaire.umur).toBeCloseTo(1.3581129378127235);
+      expect(mur.donnee_intermediaire.umur0).toBeCloseTo(1.3581129378127235);
+    });
+  });
 });
