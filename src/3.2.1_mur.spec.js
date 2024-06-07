@@ -165,4 +165,164 @@ describe('Recherche de bugs dans le calcul de déperdition des murs', () => {
       expect(mur.donnee_intermediaire.umur0).toBe(1.9);
     });
   });
+
+  describe('calcul de déperdition pour les murs de 2287E1724516Y', () => {
+    test('Mur  3 Sud', () => {
+      const zc = 3;
+      const pc_id = 1;
+      const ej = 0;
+      const mur = {
+        donnee_entree: {
+          description:
+            "Mur  3 Sud - Mur en pierre de taille et moellons avec remplissage tout venant d'épaisseur 65 cm non isolé donnant sur l'extérieur",
+          reference: '2022_07_28_05_53_52_4113671002758088',
+          tv_coef_reduction_deperdition_id: 1,
+          enum_type_adjacence_id: '1',
+          enum_orientation_id: '1',
+          surface_paroi_totale: 16,
+          surface_paroi_opaque: 16,
+          tv_umur0_id: 18,
+          epaisseur_structure: 65,
+          enum_materiaux_structure_mur_id: '3',
+          enum_methode_saisie_u0_id: '2',
+          paroi_ancienne: 1,
+          enum_type_doublage_id: '2',
+          enum_type_isolation_id: '2',
+          enum_methode_saisie_u_id: '1'
+        },
+        donnee_intermediaire: {
+          b: 1,
+          umur: 1.5,
+          umur0: 1.5
+        }
+      };
+      calc_mur(mur, zc, pc_id, ej);
+
+      expect(mur.donnee_intermediaire.b).toBe(1);
+      expect(mur.donnee_intermediaire.umur).toBe(1.5);
+      expect(mur.donnee_intermediaire.umur0).toBe(1.5);
+    });
+
+    test('Mur  4 Nord, Sud (p1)', () => {
+      const zc = 3;
+      const pc_id = 1;
+      const ej = 0;
+      const mur = {
+        donnee_entree: {
+          description:
+            "Mur  4 Nord, Sud (p1) - Mur en pan de bois sans remplissage tout venant d'épaisseur 18 cm avec isolation intérieure (R=2.5m².K/W) donnant sur l'extérieur",
+          reference: '2022_07_28_05_58_44_4984876005871074',
+          tv_coef_reduction_deperdition_id: 1,
+          enum_type_adjacence_id: '1',
+          enum_orientation_id: '2',
+          surface_paroi_totale: 10.4,
+          surface_paroi_opaque: 10.4,
+          tv_umur0_id: 34,
+          epaisseur_structure: 18,
+          enum_materiaux_structure_mur_id: '5', // Murs en pan de bois sans remplissage tout venant
+          enum_methode_saisie_u0_id: '2', // déterminé selon le matériau et épaisseur à partir de la table de valeur forfaitaire
+          paroi_ancienne: 1,
+          enum_type_doublage_id: '2', // absence de doublage
+          enum_type_isolation_id: '3', // ITI
+          resistance_isolation: 2.5,
+          enum_methode_saisie_u_id: '6' // Resistance isolation saisie justifiée  à partir des documents justificatifs autorisés
+        },
+        donnee_intermediaire: {
+          b: 1,
+          umur: 0.26990177584075975,
+          umur0: 0.8298399999999999
+        }
+      };
+      calc_mur(mur, zc, pc_id, ej);
+
+      /**
+       * umur_nu = 1.98
+       * umur = 1 / ((1/1.98) + 2.5)
+       * 0,332773109
+       */
+
+      expect(mur.donnee_intermediaire.b).toBe(1);
+      expect(mur.donnee_intermediaire.umur).toBe(0.33277310924369746); // 0.33277310924369746
+      expect(mur.donnee_intermediaire.umur0).toBe(1.98); // 1.98
+    });
+
+    test('Mur  5 Nord, Sud, Ouest (p1)', () => {
+      const zc = 3;
+      const pc_id = 1;
+      const ej = 0;
+      const mur = {
+        donnee_entree: {
+          description:
+            "Mur  5 Nord, Sud, Ouest (p1) - Mur en pan de bois sans remplissage tout venant d'épaisseur 18 cm non isolé donnant sur l'extérieur",
+          reference: '2022_07_28_06_01_47_5625698002679778',
+          tv_coef_reduction_deperdition_id: 1,
+          enum_type_adjacence_id: '1',
+          enum_orientation_id: '2',
+          surface_paroi_totale: 8.93,
+          surface_paroi_opaque: 8.93,
+          tv_umur0_id: 34,
+          epaisseur_structure: 18,
+          enum_materiaux_structure_mur_id: '5',
+          enum_methode_saisie_u0_id: '2',
+          paroi_ancienne: 1,
+          enum_type_doublage_id: '2',
+          enum_type_isolation_id: '2',
+          enum_methode_saisie_u_id: '1'
+        },
+        donnee_intermediaire: {
+          b: 1,
+          umur: 0.8298399999999999,
+          umur0: 0.8298399999999999
+        }
+      };
+      calc_mur(mur, zc, pc_id, ej);
+
+      expect(mur.donnee_intermediaire.b).toBe(1);
+      expect(mur.donnee_intermediaire.umur).toBe(1.98); // 1.98
+      expect(mur.donnee_intermediaire.umur0).toBe(1.98); // 1.98
+    });
+
+    test('Mur  6 Nord', () => {
+      const zc = 3;
+      const pc_id = 1;
+      const ej = 0;
+      const mur = {
+        donnee_entree: {
+          description:
+            "Mur  6 Nord - Mur en pan de bois sans remplissage tout venant d'épaisseur 18 cm avec isolation intérieure (R=1.12m².K/W) donnant sur l'extérieur",
+          reference: '2022_07_28_06_12_33_8743390001467784',
+          tv_coef_reduction_deperdition_id: 1,
+          enum_type_adjacence_id: '1',
+          enum_orientation_id: '2',
+          surface_paroi_totale: 7.39,
+          surface_paroi_opaque: 7.39,
+          tv_umur0_id: 34,
+          epaisseur_structure: 18,
+          enum_materiaux_structure_mur_id: '5',
+          enum_methode_saisie_u0_id: '2',
+          paroi_ancienne: 1,
+          enum_type_doublage_id: '2',
+          enum_type_isolation_id: '3',
+          resistance_isolation: 1.12,
+          enum_methode_saisie_u_id: '6'
+        },
+        donnee_intermediaire: {
+          b: 1,
+          umur: 0.4300979858826027,
+          umur0: 0.8298399999999999
+        }
+      };
+      calc_mur(mur, zc, pc_id, ej);
+
+      /**
+       * umur_nu = 1.98
+       * umur = 1 / ((1/1.98) + 1.12)
+       * 0,61536549
+       */
+
+      expect(mur.donnee_intermediaire.b).toBe(1);
+      expect(mur.donnee_intermediaire.umur).toBe(0.6153654898060665);
+      expect(mur.donnee_intermediaire.umur0).toBe(1.98);
+    });
+  });
 });
