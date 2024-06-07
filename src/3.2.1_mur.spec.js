@@ -325,4 +325,58 @@ describe('Recherche de bugs dans le calcul de déperdition des murs', () => {
       expect(mur.donnee_intermediaire.umur0).toBe(1.98);
     });
   });
+
+  describe('calcul de déperdition pour les murs de 2287E1327399F', () => {
+    test('Mur  1 Nord', () => {
+      const zc = 3;
+      const pc_id = 1;
+      const ej = 0;
+      const mur = {
+        donnee_entree: {
+          description:
+            "Mur  1 Nord - Mur en pierre de taille et moellons avec remplissage tout venant d'épaisseur 60 cm avec isolation intérieure (R=3,7m².K/W) donnant sur un bâtiment ou local à usage autre que d'habitation",
+          reference: '2022_06_15_14_48_45_6578917004465132',
+          tv_coef_reduction_deperdition_id: 4,
+          enum_type_adjacence_id: '4', // Bâtiment ou local à usage autre que d'habitation
+          enum_orientation_id: '2', // Nord
+          surface_paroi_totale: 48.39,
+          surface_paroi_opaque: 48.39,
+          tv_umur0_id: 17,
+          epaisseur_structure: 60,
+          enum_materiaux_structure_mur_id: '3', // Murs en pierre de taille et moellons avec remplissage tout venant
+          enum_methode_saisie_u0_id: '2', // déterminé selon le matériau et épaisseur à partir de la table de valeur forfaitaire
+          paroi_ancienne: 1,
+          enum_type_doublage_id: '2', // absence de doublage
+          enum_type_isolation_id: '3', // ITI
+          resistance_isolation: 3.7,
+          enum_methode_saisie_u_id: '6' // Resistance isolation saisie justifiée  à partir des documents justificatifs autorisés
+        },
+        donnee_intermediaire: {
+          b: 0.2,
+          umur: 0.19900518501955455,
+          umur0: 0.7547200000000001
+        }
+      };
+      calc_mur(mur, zc, pc_id, ej);
+
+      /**
+       * A LA MAIN
+       * uMur0 = 1.6
+       * umur_nu = Min(uMur0; 2.5) = 1.6
+       * umur = 1 / ((1/umur_nu)+Risolant) = 1 / ((1 / 1.6) + 3.7) = 0,231213873
+       */
+
+      /**
+       * RETOUR CALCUL LIB
+       * "donnee_intermediaire": {
+       *  "umur0": 1.6,
+       *  "b": 0.2,
+       *  "umur": 0.23121387283236994
+       *  },
+       */
+      expect(mur.donnee_intermediaire.b).toBe(0.2);
+      expect(mur.donnee_intermediaire.umur).toBeCloseTo(0.231213873);
+      expect(mur.donnee_intermediaire.umur0).toBe(1.6);
+    });
+  });
 });

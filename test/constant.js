@@ -1,1 +1,1 @@
-export const PRECISION = 2;
+export const PRECISION = 1;
