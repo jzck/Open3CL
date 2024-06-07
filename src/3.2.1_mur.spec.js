@@ -126,4 +126,43 @@ describe('Recherche de bugs dans le calcul de déperdition des murs', () => {
       expect(mur.donnee_intermediaire.umur0).toBeCloseTo(1.3581129378127235);
     });
   });
+
+  describe('calcul de déperdition pour les murs de 2287E2336469P', () => {
+    test('Mur  1 Est', () => {
+      const zc = 3;
+      const pc_id = 1;
+      const ej = 0;
+      const mur = {
+        donnee_entree: {
+          description:
+            "Mur  1 Est - Mur en pierre de taille et moellons avec remplissage tout venant d'épaisseur 50 cm non isolé donnant sur l'extérieur",
+          reference: '2022_10_09_17_17_06_68960810009669888',
+          reference_lnc: '',
+          tv_coef_reduction_deperdition_id: 1,
+          enum_type_adjacence_id: '1', // Exterieur
+          enum_orientation_id: '3', // Est
+          surface_paroi_totale: 44.22,
+          surface_paroi_opaque: 44.22,
+          tv_umur0_id: 15,
+          epaisseur_structure: 50,
+          enum_materiaux_structure_mur_id: '3', // Mur en pierre de taille et moellons avec remplissage tout venant
+          enum_methode_saisie_u0_id: '2', // déterminé selon le matériau et épaisseur à partir de la table de valeur forfaitaire
+          paroi_ancienne: 1,
+          enum_type_doublage_id: '2', // absence de doublage
+          enum_type_isolation_id: '2', // Non isolé
+          enum_methode_saisie_u_id: '1' // non isolé
+        },
+        donnee_intermediaire: {
+          b: 1,
+          umur: 0.81545,
+          umur0: 0.81545
+        }
+      };
+      calc_mur(mur, zc, pc_id, ej);
+
+      expect(mur.donnee_intermediaire.b).toBe(1);
+      expect(mur.donnee_intermediaire.umur).toBe(1.9);
+      expect(mur.donnee_intermediaire.umur0).toBe(1.9);
+    });
+  });
 });
