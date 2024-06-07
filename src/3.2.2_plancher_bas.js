@@ -177,13 +177,16 @@ export default function calc_pb(pb, zc, pc_id, ej, pb_list) {
       break;
     }
     case 'année de construction saisie (table forfaitaire)': {
-      let pi_id = pc_id;
-      const pc = enums.periode_construction[pc_id];
-      switch (pc) {
-        case 'avant 1948':
-        case '1948-1974':
-          pi_id = getKeyByValue(enums.periode_isolation, '1975-1977');
-          break;
+      // Si l'année d'isolation est connue, il faut l'utiliser et pas l'année de construction
+      let pi_id = de.enum_periode_isolation_id || pc_id;
+      if (!de.enum_periode_isolation_id) {
+        const pc = enums.periode_construction[pc_id];
+        switch (pc) {
+          case 'avant 1948':
+          case '1948-1974':
+            pi_id = getKeyByValue(enums.periode_isolation, '1975-1977');
+            break;
+        }
       }
       calc_upb0(di, de, du);
       const tv_upb_avant = de.tv_upb_id;
