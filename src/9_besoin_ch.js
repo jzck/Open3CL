@@ -136,7 +136,7 @@ function calc_Fj(GV, asj, aij, dhj, inertie) {
   else if (inertie == 'moyenne') pow = 2.9;
   else if (inertie == 'légère') pow = 2.5;
 
-  const Xj = (1000 * (asj + aij)) / (GV * dhj);
+  const Xj = (asj + aij) / (GV * dhj);
   const Fj = (Xj - Xj ** pow) / (1 - Xj ** pow);
   /* console.warn(Fj) */
   return Fj;
