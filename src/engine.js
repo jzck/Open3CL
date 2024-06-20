@@ -9,7 +9,7 @@ import calc_chauffage from './9_chauffage.js';
 import calc_confort_ete from './2021_04_13_confort_ete.js';
 import calc_qualite_isolation from './2021_04_13_qualite_isolation.js';
 import calc_conso from './conso.js';
-import { add_references } from './utils.js';
+import { add_references, sanitize_dpe } from './utils.js';
 
 function calc_th(map_id) {
   const map = enums.methode_application_dpe_log[map_id];
@@ -20,6 +20,7 @@ function calc_th(map_id) {
 }
 
 export function calcul_3cl(dpe) {
+  sanitize_dpe(dpe);
   const modele = enums.modele_dpe[dpe.administratif.enum_modele_dpe_id];
   if (modele != 'dpe 3cl 2021 méthode logement') {
     console.error('Moteur dpe non implémenté pour le modèle: ' + modele);
