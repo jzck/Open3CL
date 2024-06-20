@@ -129,7 +129,7 @@ export default function calc_ph(ph, zc, pc_id, ej) {
     }
     case 'saisie direct u justifiée  (à partir des documents justificatifs autorisés)':
     case 'saisie direct u depuis rset/rsee( etude rt2012/re2020)':
-      di.uph = requestInput(de, du, 'uph_saisi');
+      di.uph = requestInput(de, du, 'uph_saisi', 'float');
       break;
     default:
       console.warn('methode_saisie_u inconnue:', methode_saisie_u);
