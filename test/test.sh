@@ -36,12 +36,13 @@ JSON_PATHS="
 _download_one() {
     ID=$1
     BEFORE=$TMPDIR/$ID.orig.json
+    USER_AGENT="Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0"
     # if the file already exists, don't download it again
     if [ -s $BEFORE ]; then
         return
     fi
     echo "downloading $ID"
-    curl --silent "https://observatoire-dpe-audit.ademe.fr/pub/dpe/${ID}/xml" | ./xml_to_json.js > $BEFORE
+    curl -A "${USER_AGENT}" --silent "https://observatoire-dpe-audit.ademe.fr/pub/dpe/${ID}/xml" | ./xml_to_json.js > $BEFORE
 }
 
 _index_many() {
