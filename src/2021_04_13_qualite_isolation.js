@@ -11,8 +11,8 @@ function qualite_isol(u, s1, s2, s3) {
 
 export default function calc_qualite_isolation(enveloppe, dp) {
   const mur_list = enveloppe.mur_collection.mur;
-  const pb_list = enveloppe.plancher_bas_collection.plancher_bas;
   const ph_list = enveloppe.plancher_haut_collection.plancher_haut || [];
+  const pb_list = enveloppe.plancher_bas_collection.plancher_bas || [];
   const bv_list = enveloppe.baie_vitree_collection.baie_vitree;
   const porte_list = enveloppe.porte_collection.porte || [];
   const plancher_haut_ca = ph_list.filter(

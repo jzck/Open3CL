@@ -40,7 +40,7 @@ export default function calc_inertie(enveloppe) {
   const inertie = {};
 
   // pb
-  const pb = enveloppe.plancher_bas_collection.plancher_bas;
+  const pb = enveloppe.plancher_bas_collection.plancher_bas || [];
   const s_pb_lourd = pb.reduce((acc, pb) => {
     const de = pb.donnee_entree;
     const du = pb.donnee_utilisateur;
