@@ -52,4 +52,13 @@ describe('Open3cl misc unit tests', () => {
       output.logement.enveloppe.plancher_haut_collection.plancher_haut[0].donnee_intermediaire
     ).toMatchObject({ b: 0, uph: 0.18 });
   });
+
+  it('should be able to process a dpe with empty plancher_bas_collection and plancher_haut_collection', () => {
+    const output = calcul_3cl(structuredClone(getAdemeFileJson('2421E0125604W')));
+
+    expect(output.logement.enveloppe.plancher_bas_collection).toBe('');
+    expect(output.logement.enveloppe.plancher_haut_collection).toBe('');
+
+    expect(output.logement.sortie.qualite_isolation.qualite_isol_plancher_bas).toBe(1);
+  });
 });
