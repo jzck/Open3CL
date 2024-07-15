@@ -111,3 +111,71 @@ describe('calcul de déperdition pont thermique avec plancher bas sur terre plei
     expect(pt.donnee_intermediaire.k).toBe(0.31);
   });
 });
+
+describe('calcul de déperdition pont thermique avec plancher bas et periode isolation', () => {
+  test('Mur  1 Nord / Plancher', () => {
+    const pt = {
+      donnee_entree: {
+        description: 'Mur  1 Nord / Plancher',
+        reference: 'PT_6',
+        reference_1: '2022_08_25_17_04_49_718313200482447',
+        reference_2: '2022_08_25_16_49_01_4622786008827003',
+        enum_methode_saisie_pont_thermique_id: '1',
+        enum_type_liaison_id: 1
+      }
+    };
+    const enveloppe = {
+      mur_collection: {
+        mur: [
+          {
+            donnee_entree: {
+              description:
+                "Mur  1 Nord - Mur en pierre de taille et moellons avec remplissage tout venant d'épaisseur 70 cm avec isolation intérieure (10 cm) donnant sur l'extérieur",
+              reference: '2022_08_25_16_49_01_4622786008827003',
+              enum_type_adjacence_id: '1',
+              enum_type_doublage_id: '2',
+              enum_type_isolation_id: '3'
+            },
+            donnee_utilisateur: {}
+          }
+        ]
+      },
+      plancher_bas_collection: {
+        plancher_bas: [
+          {
+            donnee_entree: {
+              description: "Plancher - Dalle béton donnant sur l'extérieur",
+              reference: '2022_08_25_17_04_49_718313200482447',
+              enum_type_adjacence_id: '1',
+              surface_paroi_opaque: 50.44,
+              enum_type_plancher_bas_id: '9',
+              enum_type_isolation_id: '1',
+              enum_periode_isolation_id: '8'
+            },
+            donnee_intermediaire: {},
+            donnee_utilisateur: {}
+          }
+        ]
+      },
+      plancher_haut_collection: {},
+      baie_vitree_collection: {},
+      porte_collection: {},
+      ets_collection: '',
+      pont_thermique_collection: {
+        pont_thermique: [
+          {
+            donnee_entree: {
+              description: 'Mur  1 Nord / Plancher',
+              reference: 'PT_6',
+              reference_1: '2022_08_25_17_04_49_718313200482447',
+              reference_2: '2022_08_25_16_49_01_4622786008827003',
+              enum_methode_saisie_pont_thermique_id: '1'
+            }
+          }
+        ]
+      }
+    };
+    calc_pont_thermique(pt, '2', enveloppe);
+    expect(pt.donnee_intermediaire.k).toBe(0.71);
+  });
+});
