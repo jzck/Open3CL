@@ -62,25 +62,27 @@ function tv_k(di, de, du, pc_id, enveloppe) {
       mur.donnee_entree.reference === de.reference_1 ||
       mur.donnee_entree.reference === de.reference_2
   );
-  if (!mur) {
-    console.error('Did not find mur reference:', de.reference_1, de.reference_2);
-    return;
-  }
-  let type_isolation_mur = requestInput(
-    mur.donnee_entree,
-    mur.donnee_utilisateur,
-    'type_isolation'
-  );
-  const pc = enums.periode_construction[pc_id];
-  if (type_isolation_mur === 'inconnu') {
-    if (['avant 1948', '1948-1974'].includes(pc)) type_isolation_mur = 'non isolé';
-    else type_isolation_mur = 'iti';
-  }
 
   const matcher = {
-    enum_type_liaison_id: de.enum_type_liaison_id,
-    isolation_mur: `^${type_isolation_mur}$` // prevent 'iti' from matching 'iti+ite
+    enum_type_liaison_id: de.enum_type_liaison_id
   };
+
+  const pc = enums.periode_construction[pc_id];
+
+  if (mur) {
+    let type_isolation_mur = requestInput(
+      mur.donnee_entree,
+      mur.donnee_utilisateur,
+      'type_isolation'
+    );
+
+    if (type_isolation_mur === 'inconnu') {
+      if (['avant 1948', '1948-1974'].includes(pc)) type_isolation_mur = 'non isolé';
+      else type_isolation_mur = 'iti';
+    }
+
+    matcher.isolation_mur = `^${type_isolation_mur}$`;
+  }
 
   switch (type_liaison) {
     case 'plancher bas / mur':
