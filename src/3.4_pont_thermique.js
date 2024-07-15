@@ -100,8 +100,12 @@ function tv_k(di, de, du, pc_id, enveloppe) {
       );
       matcher.isolation_plancher = `^${isolation_plancher}$`;
       if (matcher.isolation_plancher.includes('inconnu')) {
-        const type_adjacence_plancher =
-          enums.type_adjacence[plancher.donnee_entree.type_adjacence_id];
+        const type_adjacence_plancher = requestInput(
+          plancher.donnee_entree,
+          plancher.donnee_utilisateur,
+          'type_adjacence'
+        );
+
         let cutoff;
         if (type_adjacence_plancher === 'terre-plein') {
           cutoff = ['avant 1948', '1948-1974', '1975-1977', '1978-1982', '1983-1988', '1989-2000'];
