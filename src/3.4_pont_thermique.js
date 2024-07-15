@@ -67,8 +67,6 @@ function tv_k(di, de, du, pc_id, enveloppe) {
     enum_type_liaison_id: de.enum_type_liaison_id
   };
 
-  const pc = enums.periode_construction[pc_id];
-
   if (mur) {
     let type_isolation_mur = requestInput(
       mur.donnee_entree,
@@ -76,12 +74,20 @@ function tv_k(di, de, du, pc_id, enveloppe) {
       'type_isolation'
     );
 
-    if (type_isolation_mur === 'inconnu') {
-      if (['avant 1948', '1948-1974'].includes(pc)) type_isolation_mur = 'non isolé';
-      else type_isolation_mur = 'iti';
-    }
-
     matcher.isolation_mur = `^${type_isolation_mur}$`;
+
+    if (matcher.isolation_mur.includes('inconnu')) {
+      const periode_isolation = requestInput(
+        mur.donnee_entree,
+        mur.donnee_utilisateur,
+        'periode_isolation'
+      );
+
+      const pc = periode_isolation ?? enums.periode_construction[pc_id];
+
+      if (['avant 1948', '1948-1974'].includes(pc)) matcher.isolation_mur = 'non isolé';
+      else matcher.isolation_mur = 'iti';
+    }
   }
 
   switch (type_liaison) {
@@ -111,6 +117,14 @@ function tv_k(di, de, du, pc_id, enveloppe) {
           cutoff = ['avant 1948', '1948-1974', '1975-1977', '1978-1982', '1983-1988', '1989-2000'];
         } else cutoff = ['avant 1948', '1948-1974'];
 
+        const periode_isolation = requestInput(
+          plancher.donnee_entree,
+          plancher.donnee_utilisateur,
+          'periode_isolation'
+        );
+
+        const pc = periode_isolation ?? enums.periode_construction[pc_id];
+
         if (cutoff.includes(pc)) matcher.isolation_plancher = 'non isolé';
         else matcher.isolation_plancher = '^ite$';
       }
@@ -137,6 +151,28 @@ function tv_k(di, de, du, pc_id, enveloppe) {
       const mdu = menuiserie.donnee_utilisateur;
 
       matcher.type_pose = requestInput(mde, mdu, 'type_pose') || 'tunnel';
+
+      let type_isolation_mur = requestInput(
+        menuiserie.donnee_entree,
+        menuiserie.donnee_utilisateur,
+        'type_isolation'
+      );
+
+      matcher.isolation_mur = `^${type_isolation_mur}$`;
+
+      if (!type_isolation_mur || matcher.isolation_plancher.includes('inconnu')) {
+        const periode_isolation = requestInput(
+          menuiserie.donnee_entree,
+          menuiserie.donnee_utilisateur,
+          'periode_isolation'
+        );
+
+        const pc = periode_isolation ?? enums.periode_construction[pc_id];
+
+        if (['avant 1948', '1948-1974'].includes(pc)) matcher.isolation_mur = 'non isolé';
+        else matcher.isolation_mur = 'iti';
+      }
+
       matcher.presence_retour_isolation = requestInput(
         mde,
         mdu,
