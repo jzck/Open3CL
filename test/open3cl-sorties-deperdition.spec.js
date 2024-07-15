@@ -3,6 +3,7 @@ import corpus from './corpus.json';
 import { getAdemeFileJson, getResultFile, saveResultFile } from './test-helpers.js';
 import { jest } from '@jest/globals';
 import { PRECISION } from './constant.js';
+import calc_pont_thermique from '../src/3.4_pont_thermique.js';
 
 describe('Test Open3CL engine compliance on corpus', () => {
   /**
@@ -41,5 +42,72 @@ describe('Test Open3CL engine compliance on corpus', () => {
         PRECISION
       );
     });
+  });
+});
+
+describe('calcul de déperdition pont thermique avec plancher bas sur terre plein', () => {
+  test('Mur  1 Sud, Est, Ouest / Plancher', () => {
+    const pt = {
+      donnee_entree: {
+        description: 'Mur  1 Sud, Est, Ouest / Plancher',
+        reference: 'PT_10',
+        reference_1: '2023_03_02_16_36_57_5814466004550183',
+        reference_2: '2023_03_02_16_32_16_9560121001674471',
+        enum_methode_saisie_pont_thermique_id: '1'
+      }
+    };
+    const enveloppe = {
+      mur_collection: {
+        mur: [
+          {
+            donnee_entree: {
+              description:
+                "Mur  1 Sud, Est, Ouest (p1) - Mur en blocs de béton creux d'épaisseur ≥ 25 cm avec un doublage rapporté donnant sur l'extérieur",
+              reference: '2023_03_02_16_32_16_9560121001674471',
+              enum_type_adjacence_id: '1',
+              enum_type_isolation_id: '1',
+              enum_periode_isolation_id: '5'
+            },
+            donnee_utilisateur: {}
+          }
+        ]
+      },
+      plancher_bas_collection: {
+        plancher_bas: [
+          {
+            donnee_entree: {
+              description:
+                'Plancher - Plancher lourd type entrevous terre-cuite, poutrelles béton donnant sur un terre-plein',
+              reference: '2023_03_02_16_36_57_5814466004550183',
+              enum_type_adjacence_id: '5',
+              surface_paroi_opaque: 80.3,
+              enum_type_plancher_bas_id: '11',
+              enum_type_isolation_id: '1',
+              enum_periode_isolation_id: '5'
+            },
+            donnee_intermediaire: {},
+            donnee_utilisateur: {}
+          }
+        ]
+      },
+      plancher_haut_collection: {},
+      baie_vitree_collection: {},
+      porte_collection: {},
+      ets_collection: '',
+      pont_thermique_collection: {
+        pont_thermique: [
+          {
+            donnee_entree: {
+              description: 'Mur  1 Sud, Est, Ouest / Plancher',
+              reference: 'PT_10',
+              reference_1: '2023_03_02_16_36_57_5814466004550183',
+              reference_2: '2023_03_02_16_32_16_9560121001674471'
+            }
+          }
+        ]
+      }
+    };
+    calc_pont_thermique(pt, '5', enveloppe);
+    expect(pt.donnee_intermediaire.k).toBe(0.31);
   });
 });
