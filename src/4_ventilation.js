@@ -24,11 +24,13 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
   const surfaces = mur_list.concat(ph_list);
   const surface_isolee = surfaces.reduce((acc, s) => {
     const type_isolation = enums.type_isolation[s.donnee_entree.enum_type_isolation_id];
+    if (s.donnee_intermediaire.b === 0) return acc;
     if (['non isolé', 'inconnu'].includes(type_isolation)) return acc;
     else return acc + s.donnee_entree.surface_paroi_opaque;
   }, 0);
   const surface_non_isolee = surfaces.reduce((acc, s) => {
     const type_isolation = enums.type_isolation[s.donnee_entree.enum_type_isolation_id];
+    if (s.donnee_intermediaire.b === 0) return acc;
     if (['non isolé', 'inconnu'].includes(type_isolation)) {
       return acc + s.donnee_entree.surface_paroi_opaque;
     } else return acc;

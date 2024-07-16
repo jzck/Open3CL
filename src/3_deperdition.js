@@ -10,14 +10,18 @@ import calc_ventilation from './4_ventilation.js';
 function calc_Sdep(murs_list, porte_list, bv_list) {
   const Smurs_dep = murs_list.reduce((acc, mur) => {
     const type_adjacence = enums.type_adjacence[mur.donnee_entree.enum_type_adjacence_id];
+    if (mur.donnee_intermediaire.b === 0) return acc;
     if (type_adjacence.includes('local non déperditif')) return acc;
     else return acc + Number(mur.donnee_entree.surface_paroi_opaque);
   }, 0);
-  const Sporte = porte_list.reduce(
-    (acc, porte) => acc + Number(porte.donnee_entree.surface_porte),
-    0
-  );
-  const Sbv = bv_list.reduce((acc, bv) => acc + Number(bv.donnee_entree.surface_totale_baie), 0);
+  const Sporte = porte_list.reduce((acc, porte) => {
+    if (porte.donnee_intermediaire.b === 0) return acc;
+    return acc + Number(porte.donnee_entree.surface_porte);
+  }, 0);
+  const Sbv = bv_list.reduce((acc, bv) => {
+    if (bv.donnee_intermediaire.b === 0) return acc;
+    return acc + Number(bv.donnee_entree.surface_totale_baie);
+  }, 0);
   const Sdep = Smurs_dep + Sporte + Sbv;
   return Sdep;
 }
@@ -64,7 +68,7 @@ export default function calc_deperdition(cg, zc, th, ej, enveloppe, logement) {
   const mur_list = enveloppe.mur_collection.mur;
   const pb_list = enveloppe.plancher_bas_collection.plancher_bas || [];
   const ph_list = enveloppe.plancher_haut_collection.plancher_haut || [];
-  const bv_list = enveloppe.baie_vitree_collection.baie_vitree;
+  const bv_list = enveloppe.baie_vitree_collection.baie_vitree || [];
   const porte_list = enveloppe.porte_collection.porte || [];
   const pt_list = enveloppe.pont_thermique_collection.pont_thermique || [];
   const vt_list = logement.ventilation_collection.ventilation;
