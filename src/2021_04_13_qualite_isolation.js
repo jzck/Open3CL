@@ -105,7 +105,8 @@ export default function calc_qualite_isolation(enveloppe, dp) {
     dp.deperdition_plancher_haut +
     dp.deperdition_baie_vitree +
     dp.deperdition_porte +
-    dp.deperdition_pont_thermique;
+    dp.deperdition_pont_thermique
+    dp.deperdition_renouvellement_air;
   const sph = sph_ca + sph_cp + sph_tt;
   const sdep = smur + spb + sph + sbv + sporte;
   const ubat = dep / sdep;
