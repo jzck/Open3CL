@@ -46,7 +46,7 @@ export default function calc_confort_ete(inertie_id, bv, ph) {
   };
 
   const nv_bon =
-    confort_ete.inertie_lourde + confort_ete.logement_traversant + confort_ete.brasseur_air;
+    confort_ete.inertie_lourde + confort_ete.aspect_traversant + confort_ete.brasseur_air;
   let nv_confort_ete;
   if (confort_ete.protection_solaire_exterieure === 0 || confort_ete.isolation_toiture === 0) {
     nv_confort_ete = 'insuffisant';

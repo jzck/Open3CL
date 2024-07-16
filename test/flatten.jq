@@ -19,9 +19,9 @@
     ".logement.sortie.emission_ges.emission_ges_5_usages_m2": .logement.sortie.emission_ges.emission_ges_5_usages_m2,
     ".logement.sortie.ep_conso.ep_conso_5_usages_m2": .logement.sortie.ep_conso.ep_conso_5_usages_m2,
     ".logement.sortie.cout.cout_5_usages": .logement.sortie.cout.cout_5_usages,
+    # ".logement.sortie.confort_ete.enum_indicateur_confort_ete_id": .logement.sortie.confort_ete,
     # "": .logement.sortie.apport_et_besoin.apport_interne_ch,
     # "": .logement.sortie.apport_et_besoin.apport_solaire_ch,
     # "": .logement.enveloppe.inertie.enum_classe_inertie_id,
-    # "": .logement.sortie.confort_ete.enum_indicateur_confort_ete_id,
     # "": .logement.sortie.production_electricite.production_pv,
 }
