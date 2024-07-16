@@ -105,14 +105,17 @@ export default function calc_ph(ph, zc, pc_id, ej) {
       di.uph = Math.min(di.uph, di.uph0);
       break;
     case 'année de construction saisie (table forfaitaire)': {
-      // i.e l'année d'isolation n'est pas connue
       let pi_id = pc_id;
-      const pc = enums.periode_construction[pc_id];
-      switch (pc) {
-        case 'avant 1948':
-        case '1948-1974':
-          pi_id = getKeyByValue(enums.periode_isolation, '1975-1977');
-          break;
+      if (de.enum_periode_isolation_id) {
+        pi_id = de.enum_periode_isolation_id;
+      } else {
+        const pc = enums.periode_construction[pc_id];
+        switch (pc) {
+          case 'avant 1948':
+          case '1948-1974':
+            pi_id = getKeyByValue(enums.periode_isolation, '1975-1977');
+            break;
+        }
       }
       calc_uph0(di, de, du);
       const tv_uph_avant = de.tv_uph_id;
