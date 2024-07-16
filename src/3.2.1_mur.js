@@ -67,16 +67,14 @@ function calc_umur0(di, de, du) {
       console.warn('methode_saisie_u0 inconnue:', methode_saisie_u0);
   }
 
-  /* if (de.paroi_ancienne) { */
-  /*   // BUG: certains DPE utilisent le champs "paroi_ancienne" au lieu de "enduit_isolant_paroi_ancienne" */
-  /*   // 2187E0982013C: utilise paroi_ancienne mais a de l'enduit */
-  /*   // 2287E1923356Q: utilise paroi_ancienne mais n'a pas d'enduit */
-  /*   de.enduit_isolant_paroi_ancienne = de.paroi_ancienne */
-  /* } */
+  if (de.paroi_ancienne) {
+    // le champ `paroi_ancienne` a ete renomme en `enduit_isolant_paroi_ancienne`
+    de.enduit_isolant_paroi_ancienne = de.paroi_ancienne;
+  }
 
   if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1) {
-    // cf 2287E2336469P
     if (umur0_avant === di.umur0) {
+      // BUG: 2287E1923356Q utilise paroi_ancienne=1 mais le calcul est fait avec paroi_ancienne=0
       console.warn(`BUG(${scriptName}) correction isolation pour parois anciennes pas appliqué`);
       if (bug_for_bug_compat) di.umur0 = umur0_avant;
       else di.umur0 = 1 / (1 / di.umur0 + 0.7);
