@@ -111,3 +111,21 @@ describe('calcul de déperdition pont thermique avec plancher bas sur terre plei
     expect(pt.donnee_intermediaire.k).toBe(0.31);
   });
 });
+
+describe('calcul de déperdition pour les plancher haut', () => {
+  test("Plancher haut avec période d'isolation connue", () => {
+    const exceptedDpe = getAdemeFileJson('2287E1724516Y');
+
+    const deperdition =
+      calcul_3cl(exceptedDpe).logement.sortie.deperdition.deperdition_plancher_haut;
+    expect(deperdition).toBe(112.32);
+  });
+
+  test("Les plancher haut avec adjacence 'locaux non chauffés non accessible' doivent utiliser le paramètre type_toiture = 'terrasse'", () => {
+    const exceptedDpe = getAdemeFileJson('2287E2336469P');
+
+    const deperdition =
+      calcul_3cl(exceptedDpe).logement.sortie.deperdition.deperdition_plancher_haut;
+    expect(deperdition).toBe(29.4375);
+  });
+});
