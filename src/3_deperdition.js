@@ -65,11 +65,11 @@ export function Upt(o) {
 export default function calc_deperdition(cg, zc, th, ej, enveloppe, logement) {
   const pc = cg.enum_periode_construction_id;
 
-  const mur_list = enveloppe.mur_collection.mur;
+  const mur_list = enveloppe.mur_collection.mur || [];
   const pb_list = enveloppe.plancher_bas_collection.plancher_bas || [];
   const ph_list = enveloppe.plancher_haut_collection.plancher_haut || [];
-  const bv_list = enveloppe.baie_vitree_collection.baie_vitree || [];
   const porte_list = enveloppe.porte_collection.porte || [];
+  const bv_list = enveloppe.baie_vitree_collection.baie_vitree || [];
   const pt_list = enveloppe.pont_thermique_collection.pont_thermique || [];
   const vt_list = logement.ventilation_collection.ventilation;
 
