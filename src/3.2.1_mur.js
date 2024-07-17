@@ -134,7 +134,7 @@ export default function calc_mur(mur, zc, pc_id, ej) {
       break;
     case "année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)": {
       calc_umur0(di, de, du);
-      const pi_id = requestInputID(de, du, 'periode_isolation');
+      const pi_id = requestInputID(de, du, 'periode_isolation') || pc_id;
       tv_umur(di, de, du, pi_id, zc, ej);
       di.umur = Math.min(di.umur, di.umur0);
       break;

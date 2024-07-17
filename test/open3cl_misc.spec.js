@@ -61,4 +61,14 @@ describe('Open3cl misc unit tests', () => {
 
     expect(output.logement.sortie.qualite_isolation.qualite_isol_plancher_bas).toBe(1);
   });
+
+  it('should have a valid tv_umur_if if no periode_isolation', () => {
+    const input = structuredClone(getAdemeFileJson('2421E0125604W'));
+    const inputTvMurId = input.logement.enveloppe.mur_collection.mur[0].donnee_entree.tv_umur_id;
+
+    const output = calcul_3cl(input);
+
+    const outputTvMurId = output.logement.enveloppe.mur_collection.mur[0].donnee_entree.tv_umur_id;
+    expect(inputTvMurId).toBe(outputTvMurId);
+  });
 });
