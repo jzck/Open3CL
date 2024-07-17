@@ -125,13 +125,6 @@ export default function calc_ph(ph, zc, pc_id, ej) {
       const tv_uph_avant = de.tv_uph_id;
       tv_uph(di, de, du, pi_id, zc, ej);
       di.uph = Math.min(di.uph, di.uph0);
-      if (de.tv_uph_id != tv_uph_avant && pi_id != pc_id) {
-        console.warn(
-          `BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 21)`
-        );
-        if (bug_for_bug_compat) tv_uph(di, de, du, pc_id, zc, ej);
-      }
-      di.uph = Math.min(di.uph, di.uph0);
       break;
     }
     case 'saisie direct u justifiée  (à partir des documents justificatifs autorisés)':
