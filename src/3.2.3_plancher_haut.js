@@ -122,7 +122,6 @@ export default function calc_ph(ph, zc, pc_id, ej) {
         }
       }
       calc_uph0(di, de, du);
-      const tv_uph_avant = de.tv_uph_id;
       tv_uph(di, de, du, pi_id, zc, ej);
       di.uph = Math.min(di.uph, di.uph0);
       break;
