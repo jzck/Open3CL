@@ -75,9 +75,10 @@ function tv_k(di, de, du, pc_id, enveloppe) {
       mur.donnee_utilisateur,
       'type_isolation'
     );
+
     const pi = requestInput(mur.donnee_entree, mur.donnee_utilisateur, 'periode_isolation') || pc;
 
-    if (type_isolation_mur === 'inconnu') {
+    if (type_isolation_mur.includes('inconnu')) {
       if (['avant 1948', '1948-1974'].includes(pi)) type_isolation_mur = 'non isolé';
       else type_isolation_mur = 'iti';
     }
@@ -107,12 +108,16 @@ function tv_k(di, de, du, pc_id, enveloppe) {
           'type_adjacence'
         );
 
+        const pi =
+          requestInput(plancher.donnee_entree, plancher.donnee_utilisateur, 'periode_isolation') ||
+          pc;
+
         let cutoff;
         if (type_adjacence_plancher === 'terre-plein') {
           cutoff = ['avant 1948', '1948-1974', '1975-1977', '1978-1982', '1983-1988', '1989-2000'];
         } else cutoff = ['avant 1948', '1948-1974'];
 
-        if (cutoff.includes(pc)) matcher.isolation_plancher = 'non isolé';
+        if (cutoff.includes(pi)) matcher.isolation_plancher = 'non isolé';
         else matcher.isolation_plancher = '^ite$';
       }
       break;
