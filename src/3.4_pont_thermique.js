@@ -75,9 +75,10 @@ function tv_k(di, de, du, pc_id, enveloppe) {
       mur.donnee_utilisateur,
       'type_isolation'
     );
+    const pi = requestInput(mur.donnee_entree, mur.donnee_utilisateur, 'periode_isolation') || pc;
 
     if (type_isolation_mur === 'inconnu') {
-      if (['avant 1948', '1948-1974'].includes(pc)) type_isolation_mur = 'non isolé';
+      if (['avant 1948', '1948-1974'].includes(pi)) type_isolation_mur = 'non isolé';
       else type_isolation_mur = 'iti';
     }
 
