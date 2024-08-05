@@ -42,8 +42,9 @@ export function calcul_3cl(dpe) {
   add_references(logement.enveloppe);
 
   // TODO commit version to package.json during release process
-  const package_version = require('../package.json').version;
-  dpe.administratif.diagnostiqueur = { version_moteur_calcul: `Open3CL v${package_version}` };
+  /* const package_version = require('../package.json').version; */
+  const package_version = 'alpha';
+  dpe.administratif.diagnostiqueur = { version_moteur_calcul: `Open3CL ${package_version}` };
   const env = logement.enveloppe;
   let Sh;
   // TODO requestInput Sh
