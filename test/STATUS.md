@@ -10,6 +10,10 @@ On considère comme valable un écart jusqu'à 0,5% afin de compenser les arrond
 - Trouver des cas avec production d'energie
 - Trouver des cas avec de la production de froid
 
+## Exclusion de DPE
+
+Certains DPE sont manifestement erronés. Pour ne pas nuire aux tests automatisés, ils sont déplacés de `corpus.json` vers `wrong-corpus.json` afin de conserver une tracabilité.
+
 ## Résultats
 
 ### sorties.deperdition
