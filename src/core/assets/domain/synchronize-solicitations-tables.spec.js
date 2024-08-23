@@ -2,6 +2,7 @@ import { FileStore } from '../../file/infrastructure/adapter/file.store.js';
 import { ApplicationConfig } from '../../conf/infrastructure/application.config.js';
 import { SynchronizeSolicitationsTables } from './synchronize-solicitations-tables.js';
 import { SolicitationsTablesFixture } from '../../../../test/fixtures/core/assets/solicitations-tables.fixture.js';
+import { jest } from '@jest/globals';
 
 describe('SynchronizeSolicitationsTables unit tests', () => {
   it('should read and parse 18.2_sollicitations_ext.ods file', () => {

@@ -1,6 +1,7 @@
 import { SynchronizeAssets } from './synchronize-assets.js';
 import { SynchronizeEnumTables } from './synchronize-enum-tables.js';
 import { SynchronizeValeurTables } from './synchronize-valeur-tables.js';
+import { jest } from '@jest/globals';
 
 describe('SynchronizeAssets unit tests', () => {
   it('should synchronize xlsx and ods files', () => {

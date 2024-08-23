@@ -39,8 +39,7 @@ describe('Test Open3CL engine compliance on corpus', () => {
     'ep_conso_fr',
     'ep_conso_fr_depensier',
     'ep_conso_5_usages',
-    'ep_conso_5_usages_m2',
-    'classe_bilan_dpe'
+    'ep_conso_5_usages_m2'
   ])('check "ep_conso.%s" value', (attr) => {
     test.each(corpus)('dpe %s', (ademeId) => {
       const exceptedDpe = getAdemeFileJson(ademeId);
@@ -51,4 +50,24 @@ describe('Test Open3CL engine compliance on corpus', () => {
       );
     });
   });
+
+  test.each(corpus)('check "ep_conso.classe_bilan_dpe" value', (ademeId) => {
+    const exceptedDpe = getAdemeFileJson(ademeId);
+    const calculatedDpe = getResultFile(ademeId);
+    expect(calculatedDpe.logement.sortie.ep_conso['classe_bilan_dpe']).toBe(
+      exceptedDpe.logement.sortie.ep_conso['classe_bilan_dpe']
+    );
+  });
+
+  test.each(['2375E2453987C', '2375E2236932V'])(
+    '"classe_bilan_dpe" should be updated with new values if surface < 40m2',
+    (ademeId) => {
+      const exceptedDpe = getAdemeFileJson(ademeId);
+      const calculatedDpe = getResultFile(ademeId);
+
+      // classe_emission_ges should now be E instead of G with new values for surface <= 40m2
+      expect(calculatedDpe.logement.sortie.ep_conso['classe_bilan_dpe']).toBe('E');
+      expect(exceptedDpe.logement.sortie.ep_conso['classe_bilan_dpe']).toBe('G');
+    }
+  );
 });
