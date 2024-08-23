@@ -23,6 +23,10 @@ export class ApplicationConfig {
     return 'src/tv/18.5_c1.ods';
   }
 
+  get dpeGesLimitValuesFilePath() {
+    return 'src/tv/dpe_ges_limit_values.ods';
+  }
+
   get assetsOutputFolder() {
     return 'scripts/assets';
   }

@@ -2,6 +2,7 @@ import { FileStore } from '../../file/infrastructure/adapter/file.store.js';
 import { ApplicationConfig } from '../../conf/infrastructure/application.config.js';
 import { EnumTablesFixture } from '../../../../test/fixtures/core/assets/enum-tables.fixture.js';
 import { SynchronizeEnumTables } from './synchronize-enum-tables.js';
+import { jest } from '@jest/globals';
 
 describe('SynchronizeEnumTables', () => {
   it('should download, parse and convert enum_tables.xlsx file', () => {

@@ -2,6 +2,7 @@ import { SynchronizeC1Tables } from './synchronize-c1-tables.js';
 import { FileStore } from '../../file/infrastructure/adapter/file.store.js';
 import { ApplicationConfig } from '../../conf/infrastructure/application.config.js';
 import { C1TablesFixture } from '../../../../test/fixtures/core/assets/c1-tables.fixture.js';
+import { jest } from '@jest/globals';
 
 describe('SynchronizeC1Tables unit tests', () => {
   it('should read and parse 18.5_c1.ods file', () => {

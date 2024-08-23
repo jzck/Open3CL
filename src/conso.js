@@ -1,5 +1,6 @@
 import enums from './enums.js';
 import calc_conso_eclairage from './16_conso_eclairage.js';
+import tvs from './tv.js';
 
 const coef_ep = {
   'électricité ch': 2.3,
@@ -91,11 +92,17 @@ export default function calc_conso(Sh, zc_id, ca_id, vt, ch, ecs, fr) {
     emission_ges: calc_conso_pond(Sh, zc_id, vt, gen_ch, gen_ecs, fr, 'emission_ges', coef_ges),
     cout: calc_conso_pond(Sh, zc_id, vt, gen_ch, gen_ecs, fr, 'cout', coef_cout)
   };
-  ret.ep_conso.classe_bilan_dpe = classe_bilan_dpe(ret.ep_conso.ep_conso_5_usages_m2, zc_id, ca_id);
+  ret.ep_conso.classe_bilan_dpe = classe_bilan_dpe(
+    ret.ep_conso.ep_conso_5_usages_m2,
+    zc_id,
+    ca_id,
+    Sh
+  );
   ret.emission_ges.classe_emission_ges = classe_emission_ges(
     ret.emission_ges.emission_ges_5_usages_m2,
     zc_id,
-    ca_id
+    ca_id,
+    Sh
   );
 
   const energie_ids = [];
@@ -142,42 +149,48 @@ export default function calc_conso(Sh, zc_id, ca_id, vt, ch, ecs, fr) {
   return ret;
 }
 
-function classe_bilan_dpe(ep_conso_5_usages_m2, zc_id, ca_id) {
-  if (!ep_conso_5_usages_m2) return null;
-  if (ep_conso_5_usages_m2 < 70) return 'A';
-  if (ep_conso_5_usages_m2 < 110) return 'B';
-  if (ep_conso_5_usages_m2 < 180) return 'C';
-  if (ep_conso_5_usages_m2 < 250) return 'D';
-
-  const zc = enums.zone_climatique[zc_id];
+function classe_bilan_dpe(ep_conso_5_usages_m2, zc_id, ca_id, Sh) {
   const ca = enums.classe_altitude[ca_id];
 
+  const cut = tvs.dpe_class_limit[ca][Math.round(Sh)] ?? [];
+
+  if (!ep_conso_5_usages_m2) return null;
+  if (ep_conso_5_usages_m2 < (cut['A'] ?? 70)) return 'A';
+  if (ep_conso_5_usages_m2 < (cut['B'] ?? 110)) return 'B';
+  if (ep_conso_5_usages_m2 < (cut['C'] ?? 180)) return 'C';
+  if (ep_conso_5_usages_m2 < (cut['D'] ?? 250)) return 'D';
+
+  const zc = enums.zone_climatique[zc_id];
+
   if (['h1b', 'h1c', 'h2d'].includes(zc) && ca === 'supérieur à 800m') {
-    if (ep_conso_5_usages_m2 < 390) return 'E';
-    if (ep_conso_5_usages_m2 < 500) return 'F';
+    if (ep_conso_5_usages_m2 < (cut['E'] ?? 390)) return 'E';
+    if (ep_conso_5_usages_m2 < (cut['F'] ?? 500)) return 'F';
   } else {
-    if (ep_conso_5_usages_m2 < 330) return 'E';
-    if (ep_conso_5_usages_m2 < 420) return 'F';
+    if (ep_conso_5_usages_m2 < (cut['E'] ?? 330)) return 'E';
+    if (ep_conso_5_usages_m2 < (cut['F'] ?? 420)) return 'F';
   }
   return 'G';
 }
 
-function classe_emission_ges(emission_ges_5_usages_m2, zc_id, ca_id) {
-  if (!emission_ges_5_usages_m2) return null;
-  if (emission_ges_5_usages_m2 < 6) return 'A';
-  if (emission_ges_5_usages_m2 < 11) return 'B';
-  if (emission_ges_5_usages_m2 < 30) return 'C';
-  if (emission_ges_5_usages_m2 < 50) return 'D';
-
-  const zc = enums.zone_climatique[zc_id];
+function classe_emission_ges(emission_ges_5_usages_m2, zc_id, ca_id, Sh) {
   const ca = enums.classe_altitude[ca_id];
 
+  const cut = tvs.ges_class_limit[ca][Math.round(Sh)] ?? [];
+
+  if (!emission_ges_5_usages_m2) return null;
+  if (emission_ges_5_usages_m2 < (cut['A'] ?? 6)) return 'A';
+  if (emission_ges_5_usages_m2 < (cut['B'] ?? 11)) return 'B';
+  if (emission_ges_5_usages_m2 < (cut['C'] ?? 30)) return 'C';
+  if (emission_ges_5_usages_m2 < (cut['D'] ?? 50)) return 'D';
+
+  const zc = enums.zone_climatique[zc_id];
+
   if (['h1b', 'h1c', 'h2d'].includes(zc) && ca === 'supérieur à 800m') {
-    if (emission_ges_5_usages_m2 < 80) return 'E';
-    if (emission_ges_5_usages_m2 < 110) return 'F';
+    if (emission_ges_5_usages_m2 < (cut['E'] ?? 80)) return 'E';
+    if (emission_ges_5_usages_m2 < (cut['F'] ?? 110)) return 'F';
   } else {
-    if (emission_ges_5_usages_m2 < 70) return 'E';
-    if (emission_ges_5_usages_m2 < 100) return 'F';
+    if (emission_ges_5_usages_m2 < (cut['E'] ?? 70)) return 'E';
+    if (emission_ges_5_usages_m2 < (cut['F'] ?? 100)) return 'F';
   }
   return 'G';
 }

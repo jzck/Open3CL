@@ -23,6 +23,11 @@ export class SynchronizeValeurTables {
   #synchronizeSolicitationsTables;
 
   /**
+   * @type {SynchronizeDpeGesLimitValuesTables}
+   */
+  #synchronizeDpeGesLimitValuesTables;
+
+  /**
    * @type {SynchronizeC1Tables}
    */
   #synchronizeC1Tables;
@@ -31,12 +36,20 @@ export class SynchronizeValeurTables {
    * @param fileStore {FileStore}
    * @param appConfig {ApplicationConfig}
    * @param synchronizeSolicitationsTables {SynchronizeSolicitationsTables}
+   * @param synchronizeDpeGesLimitValuesTables {SynchronizeDpeGesLimitValuesTables}
    * @param synchronizeC1Tables {SynchronizeC1Tables}
    */
-  constructor(fileStore, appConfig, synchronizeSolicitationsTables, synchronizeC1Tables) {
+  constructor(
+    fileStore,
+    appConfig,
+    synchronizeSolicitationsTables,
+    synchronizeDpeGesLimitValuesTables,
+    synchronizeC1Tables
+  ) {
     this.#fileStore = fileStore;
     this.#appConfig = appConfig;
     this.#synchronizeSolicitationsTables = synchronizeSolicitationsTables;
+    this.#synchronizeDpeGesLimitValuesTables = synchronizeDpeGesLimitValuesTables;
     this.#synchronizeC1Tables = synchronizeC1Tables;
   }
 
@@ -97,6 +110,7 @@ export class SynchronizeValeurTables {
       .then((valeurTablesValues) => {
         return Promise.all([
           this.#synchronizeSolicitationsTables.execute(),
+          this.#synchronizeDpeGesLimitValuesTables.execute(),
           this.#synchronizeC1Tables.execute()
         ]).then((tablesValues) => {
           const solicitationsTablesValues = tablesValues[0];
