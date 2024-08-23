@@ -12,16 +12,16 @@ const Cin = {
 
 export function calc_besoin_fr_j(Sh, GV, inertie, aij_fr, asj_fr, nrefj, textmoy_clim_j, Tint) {
   if (nrefj == 0) return 0;
-  const Rbth = (1000 * (aij_fr + asj_fr)) / (GV * (textmoy_clim_j - Tint) * nrefj);
+  const Rbth = (aij_fr + asj_fr) / (GV * (textmoy_clim_j - Tint) * nrefj);
 
   if (Rbth < 1 / 2) return 0;
 
   const t = (Cin[inertie] * Sh) / (3600 * GV);
   const a = 1 + t / 15;
   let futj;
-  if (Rbth == 1) futj = a / (a + 1);
+  if (Rbth === 1) futj = a / (a + 1);
   else futj = (1 - Rbth ** -a) / (1 - Rbth ** (-a - 1));
-  const bfr = aij_fr + asj_fr - ((futj * GV) / 1000) * (Tint - textmoy_clim_j) * nrefj;
+  const bfr = (aij_fr + asj_fr) / 1000 - ((futj * GV) / 1000) * (Tint - textmoy_clim_j) * nrefj;
   return bfr;
 }
 
