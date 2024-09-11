@@ -78,6 +78,7 @@ export default function calc_ph(ph, zc, pc_id, ej) {
   const de = ph.donnee_entree;
   const du = {};
   const di = {};
+  di.uph0 = ph.donnee_intermediaire.uph0;
 
   b(di, de, du, zc);
 

@@ -47,10 +47,21 @@ describe('Open3cl misc unit tests', () => {
     input.logement.enveloppe.plancher_haut_collection.plancher_haut[0].donnee_entree.enum_methode_saisie_u_id = 9;
     input.logement.enveloppe.plancher_haut_collection.plancher_haut[0].donnee_entree.uph_saisi = 0.18;
 
-    const output = calcul_3cl(input);
+    const output = calcul_3cl(structuredClone(input));
     expect(
       output.logement.enveloppe.plancher_haut_collection.plancher_haut[0].donnee_intermediaire
     ).toMatchObject({ b: 0, uph: 0.18 });
+
+    expect(
+      input.logement.enveloppe.plancher_haut_collection.plancher_haut[0].donnee_intermediaire.uph0
+    ).toBe(
+      output.logement.enveloppe.plancher_haut_collection.plancher_haut[0].donnee_intermediaire.uph0
+    );
+    expect(
+      input.logement.enveloppe.plancher_bas_collection.plancher_bas[0].donnee_intermediaire.upb0
+    ).toBe(
+      output.logement.enveloppe.plancher_bas_collection.plancher_bas[0].donnee_intermediaire.upb0
+    );
   });
 
   it('should be able to process a dpe with empty plancher_bas_collection and plancher_haut_collection', () => {
@@ -66,7 +77,7 @@ describe('Open3cl misc unit tests', () => {
     const input = structuredClone(getAdemeFileJson('2421E0125604W'));
     const inputTvMurId = input.logement.enveloppe.mur_collection.mur[0].donnee_entree.tv_umur_id;
 
-    const output = calcul_3cl(input);
+    const output = calcul_3cl(structuredClone(input));
 
     const outputTvMurId = output.logement.enveloppe.mur_collection.mur[0].donnee_entree.tv_umur_id;
     expect(inputTvMurId).toBe(outputTvMurId);
