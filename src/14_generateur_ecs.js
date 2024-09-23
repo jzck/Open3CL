@@ -57,7 +57,7 @@ function calc_Qgw(di, de, du) {
   }
   const Vs = requestInput(de, du, 'volume_stockage', 'float');
   const gen_ecs_elec_ids = tvColumnIDs('pertes_stockage', 'type_generateur_ecs');
-  if (gen_ecs_elec_ids.includes(de.enum_type_generateur_ecs_id)) {
+  if (gen_ecs_elec_ids.includes(de.enum_type_generateur_ecs_id.toString())) {
     tv_pertes_stockage(di, de, du);
     di.Qgw = ((8592 * 45) / 24) * Vs * di.cr;
     delete di.cr;
