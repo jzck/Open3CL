@@ -103,7 +103,9 @@ export function calc_generateur_ch(
   const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ch');
   if (pac_ids.includes(type_gen_ch_id)) {
     const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur');
-    const em = em_ch.find((em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id);
+    const em = em_ch.find(
+      (em) => em.donnee_entree.enum_lien_generateur_emetteur_id.toString() === gen_lge_id
+    );
     const ed_id = em.donnee_entree.enum_type_emission_distribution_id;
     tv_scop(di, de, du, zc_id, ed_id, 'ch');
   } else if (combustion_ids.includes(type_gen_ch_id)) {

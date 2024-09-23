@@ -114,8 +114,9 @@ export default function calc_ventilation(vt, cg, th, Sdep, mur_list, ph_list, po
   let Sh = requestInput(de, du, 'surface_ventile', 'float');
 
   if (Sh === undefined) {
-    if (th === 'maison' || th === 'appartement') Sh = cg.surface_habitable_logement;
-    else if (th === 'immeuble') Sh = cg.surface_habitable_immeuble;
+    if (th.toString() === 'maison' || th.toString() === 'appartement')
+      Sh = cg.surface_habitable_logement;
+    else if (th.toString() === 'immeuble') Sh = cg.surface_habitable_immeuble;
   }
 
   const Hsp = cg.hsp;

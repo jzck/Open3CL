@@ -33,7 +33,7 @@ export default function b(di, de, du, zc_id) {
     enum_type_adjacence_id: requestInputID(de, du, 'type_adjacence')
   };
 
-  if (de.enum_type_adjacence_id === '10') {
+  if (de.enum_type_adjacence_id.toString() === '10') {
     matcher.zone_climatique = zc;
     matcher.enum_cfg_isolation_lnc_id = requestInputID(de, du, 'cfg_isolation_lnc');
     /* du.enum_cfg_isolation_lnc_id = ['6', '7', '8', '9', '10', '11'] */
@@ -50,7 +50,7 @@ export default function b(di, de, du, zc_id) {
       return;
     }
     matcher.enum_cfg_isolation_lnc_id = requestInputID(de, du, 'cfg_isolation_lnc');
-    if (matcher.enum_cfg_isolation_lnc_id === '1') {
+    if (matcher.enum_cfg_isolation_lnc_id.toString() === '1') {
       // local chauffé non accessible
       // aiu/aue non connu
       delete matcher.enum_type_adjacence_id;

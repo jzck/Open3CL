@@ -151,7 +151,7 @@ export function calc_generateur_combustion_ch(di, de, du, em_ch, GV, ca_id, zc_i
 
   tv_generateur_combustion(di, de, du, 'ch', GV, tbase);
   const type_gen_ch_list = tvColumnIDs('temp_fonc_30', 'type_generateur_ch');
-  if (type_gen_ch_list.includes(de.enum_type_generateur_ch_id)) {
+  if (type_gen_ch_list.includes(de.enum_type_generateur_ch_id.toString())) {
     tv_temp_fonc_30_100(di, de, du, em_ch, ac);
   }
 

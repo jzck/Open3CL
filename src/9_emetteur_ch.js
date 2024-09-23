@@ -64,7 +64,7 @@ function tv_intermittence(di, de, inst_ch_de, map_id, inertie_id) {
   // Pas de valeur d'inertie pour les méthodes d'applications différentes de "dpe maison individuelle"
   // dans le fichier de table de valeur sur l'onglet "intermittence", si on le précise on ne trouve aucune correspondance
   // et la mauvaise valeur est sélectionnée
-  if (map_id === '1') {
+  if (map_id.toString() === '1') {
     matcher.enum_classe_inertie_id = inertie_id;
   }
 
