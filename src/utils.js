@@ -7,6 +7,15 @@ export function set_bug_for_bug_compat() {
   bug_for_bug_compat = true;
 }
 
+export let tv_match_new_version = false;
+export function set_tv_match_optimized_version() {
+  tv_match_new_version = true;
+}
+
+export function unset_tv_match_optimized_version() {
+  tv_match_new_version = false;
+}
+
 export const Tbase = {
   'inférieur à 400m': {
     h1: -9.5,
@@ -162,6 +171,9 @@ export function tvColumnLines(filePath, column, matcher) {
 }
 
 function tvMatch(row, key, matcher) {
+  if (tv_match_new_version) {
+    return tvMatchOptimized(row, key, matcher);
+  }
   if (!row.hasOwnProperty(key)) {
     // for empty csv columns
     // for q4pa_conv
@@ -187,6 +199,38 @@ function tvMatch(row, key, matcher) {
     return false;
   }
   return true;
+}
+
+function tvMatchOptimized(row, key, matcher) {
+  if (!row[key]) {
+    // for empty csv columns
+    // for q4pa_conv
+    return false;
+  }
+
+  let row_value = row[key].toLowerCase();
+  let match_value = String(matcher[key]).toLowerCase();
+
+  if (row_value === match_value) {
+    return true;
+  }
+
+  if (match_value.startsWith('^')) {
+    const match_value_no_regex = match_value.replace('^', '').replace('$', '');
+    if (row_value === match_value_no_regex) {
+      return true;
+    }
+  }
+
+  if (isNaN(matcher[key]) && row_value.includes(match_value)) {
+    return true;
+  }
+
+  if (row_value.includes('|')) {
+    return row_value.split('|').includes(match_value);
+  }
+
+  return row_value.includes(match_value);
 }
 
 export function tv(filePath, matcher) {
