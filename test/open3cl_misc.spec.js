@@ -82,4 +82,22 @@ describe('Open3cl misc unit tests', () => {
     const outputTvMurId = output.logement.enveloppe.mur_collection.mur[0].donnee_entree.tv_umur_id;
     expect(inputTvMurId).toBe(outputTvMurId);
   });
+
+  it('should have the same tv_rendement_distribution_ch_id', () => {
+    const input = getAdemeFileJson('2432E0658897O');
+
+    /**
+     * @type {FullDpe}
+     */
+    const output = calcul_3cl(structuredClone(input));
+    expect(
+      output.logement.installation_chauffage_collection.installation_chauffage[0]
+        .emetteur_chauffage_collection.emetteur_chauffage[0].donnee_entree
+        .tv_rendement_distribution_ch_id
+    ).toBe(
+      input.logement.installation_chauffage_collection.installation_chauffage[0]
+        .emetteur_chauffage_collection.emetteur_chauffage[0].donnee_entree
+        .tv_rendement_distribution_ch_id
+    );
+  });
 });

@@ -1,19 +1,20 @@
 import { tv } from './utils.js';
+import { TvsStore } from './core/tv/infrastructure/tvs.store.js';
+
+const tvsStore = new TvsStore();
 
 export function rendement_emission(em) {
   const re = em.donnee_intermediaire.rendement_emission;
   const rd = em.donnee_intermediaire.rendement_distribution;
   const rr = em.donnee_intermediaire.rendement_regulation;
-  const rendement_em = re * rd * rr;
-  return rendement_em;
+  return re * rd * rr;
 }
 
 function tv_rendement_distribution_ch(di, de) {
-  const matcher = {
-    enum_type_emission_distribution_id: de.enum_type_emission_distribution_id,
-    reseau_distribution_isole: de.reseau_distribution_isole
-  };
-  const row = tv('rendement_distribution_ch', matcher, de);
+  const row = tvsStore.getRendementDistributionCh(
+    de.enum_type_emission_distribution_id,
+    de.reseau_distribution_isole
+  );
   if (row) {
     di.rendement_distribution = Number(row.rd);
     de.tv_rendement_distribution_ch_id = Number(row.tv_rendement_distribution_ch_id);
