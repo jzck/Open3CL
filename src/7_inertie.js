@@ -74,13 +74,13 @@ export default function calc_inertie(enveloppe) {
     inertie.inertie_plancher_haut_lourd +
     inertie.inertie_paroi_verticale_lourd;
 
-  if (nb_inertie_lourde == 0) {
+  if (nb_inertie_lourde === 0) {
     inertie.enum_classe_inertie_id = getKeyByValue(enums.classe_inertie, 'légère');
-  } else if (nb_inertie_lourde == 1) {
+  } else if (nb_inertie_lourde === 1) {
     inertie.enum_classe_inertie_id = getKeyByValue(enums.classe_inertie, 'moyenne');
-  } else if (nb_inertie_lourde == 2) {
+  } else if (nb_inertie_lourde === 2) {
     inertie.enum_classe_inertie_id = getKeyByValue(enums.classe_inertie, 'lourde');
-  } else if (nb_inertie_lourde == 3) {
+  } else if (nb_inertie_lourde === 3) {
     inertie.enum_classe_inertie_id = getKeyByValue(enums.classe_inertie, 'très lourde');
   }
 
