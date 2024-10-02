@@ -11,10 +11,18 @@ export function rendement_emission(em) {
 }
 
 function tv_rendement_distribution_ch(di, de) {
-  const row = tvsStore.getRendementDistributionCh(
-    de.enum_type_emission_distribution_id,
-    de.reseau_distribution_isole
-  );
+  // Find rendement distribution by id if it exists
+  let row;
+
+  if (de.tv_rendement_distribution_ch_id) {
+    row = tvsStore.getRendementDistributionChById(de.tv_rendement_distribution_ch_id);
+  } else {
+    row = tvsStore.getRendementDistributionCh(
+      de.enum_type_emission_distribution_id,
+      de.reseau_distribution_isole
+    );
+  }
+
   if (row) {
     di.rendement_distribution = Number(row.rd);
     de.tv_rendement_distribution_ch_id = Number(row.tv_rendement_distribution_ch_id);
