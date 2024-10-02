@@ -17,22 +17,21 @@ export default function calc_qualite_isolation(enveloppe, dp) {
   const porte_list = enveloppe.porte_collection.porte || [];
   const plancher_haut_ca = ph_list.filter(
     (ph) =>
-      ph.donnee_entree.enum_type_adjacence_id.toString() ===
+      ph.donnee_entree.enum_type_adjacence_id ===
         getKeyByValue(enums.type_adjacence, 'extérieur') &&
-      ph.donnee_entree.enum_type_plancher_haut.toString() ===
+      ph.donnee_entree.enum_type_plancher_haut ===
         getKeyByValue(enums.type_plancher_haut, 'combles aménagés sous rampant')
   );
   const plancher_haut_tt = ph_list.filter(
     (ph) =>
-      ph.donnee_entree.enum_type_adjacence_id.toString() ===
+      ph.donnee_entree.enum_type_adjacence_id ===
         getKeyByValue(enums.type_adjacence, 'extérieur') &&
-      ph.donnee_entree.enum_type_plancher_haut.toString() !==
+      ph.donnee_entree.enum_type_plancher_haut !=
         getKeyByValue(enums.type_plancher_haut, 'combles aménagés sous rampant')
   );
   const plancher_haut_cp = ph_list.filter(
     (ph) =>
-      ph.donnee_entree.enum_type_adjacence_id.toString() !==
-      getKeyByValue(enums.type_adjacence, 'extérieur')
+      ph.donnee_entree.enum_type_adjacence_id != getKeyByValue(enums.type_adjacence, 'extérieur')
   );
 
   // mur

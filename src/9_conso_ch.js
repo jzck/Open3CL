@@ -58,7 +58,7 @@ export function conso_ch(di, de, du, _pos, cfg_ch, em_list, GV, Sh, hsp, bch, bc
   const coef = coef_ch(0.5)[cfg_ch][_pos];
 
   const em_filt = em_list.filter(
-    (em) => em.donnee_entree.enum_lien_generateur_emetteur_id.toString() === gen_lge_id.toString()
+    (em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id
   );
 
   const emetteur_eq = em_filt.reduce((acc, em) => {

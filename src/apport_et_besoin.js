@@ -23,8 +23,8 @@ export default function calc_apport_et_besoin(
 
   const bv = enveloppe.baie_vitree_collection.baie_vitree;
   let nadeq;
-  if (th.toString() === 'maison') nadeq = calc_nadeq_individuel(Sh, Nb_lgt);
-  else if (th.toString() === 'appartement') nadeq = calc_nadeq_collectif(Sh, 1);
+  if (th == 'maison') nadeq = calc_nadeq_individuel(Sh, Nb_lgt);
+  else if (th == 'appartement') nadeq = calc_nadeq_collectif(Sh, 1);
   else nadeq = calc_nadeq_collectif(Sh, Nb_lgt);
   const besoin_ecs = calc_besoin_ecs(ilpa, ca, zc, Sh, nadeq);
   const besoin_fr = calc_besoin_fr(ilpa, ca, zc, Sh, nadeq, GV, inertie, bv);

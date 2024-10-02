@@ -7,14 +7,14 @@ export function calc_sse_j(bv_list, zc, mois) {
 
   const ssej = bv_list.reduce((acc, bv) => {
     const type_adjacence = enums.type_adjacence[bv.donnee_entree.enum_type_adjacence_id];
-    if (type_adjacence !== 'extérieur') return acc;
+    if (type_adjacence != 'extérieur') return acc;
     const de = bv.donnee_entree;
     const di = bv.donnee_intermediaire;
 
     const orientation = enums.orientation[de.enum_orientation_id];
     const inclinaison = enums.inclinaison_vitrage[de.enum_inclinaison_vitrage_id];
     let oi = `${orientation} ${inclinaison}`;
-    if (inclinaison === 'horizontal') oi = 'horizontal';
+    if (inclinaison == 'horizontal') oi = 'horizontal';
     const c1j = c1[zc][mois][oi];
 
     const fe1 = di.fe1;

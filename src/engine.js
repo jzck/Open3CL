@@ -22,7 +22,7 @@ function calc_th(map_id) {
 export function calcul_3cl(dpe) {
   sanitize_dpe(dpe);
   const modele = enums.modele_dpe[dpe.administratif.enum_modele_dpe_id];
-  if (modele !== 'dpe 3cl 2021 méthode logement') {
+  if (modele != 'dpe 3cl 2021 méthode logement') {
     console.error('Moteur dpe non implémenté pour le modèle: ' + modele);
     return null;
   }
@@ -56,8 +56,8 @@ export function calcul_3cl(dpe) {
 
   const instal_ch = logement.installation_chauffage_collection.installation_chauffage;
   const ej =
-    instal_ch[0].generateur_chauffage_collection.generateur_chauffage[0].donnee_entree.enum_type_energie_id.toString() ===
-    '1'
+    instal_ch[0].generateur_chauffage_collection.generateur_chauffage[0].donnee_entree
+      .enum_type_energie_id === '1'
       ? '1'
       : '0';
 
@@ -68,9 +68,7 @@ export function calcul_3cl(dpe) {
   const inertie_id = env.inertie.enum_classe_inertie_id;
   const inertie = enums.classe_inertie[inertie_id];
   const ilpa =
-    logement.meteo.batiment_materiaux_anciens.toString() === '1' && inertie.includes('lourde')
-      ? '1'
-      : '0';
+    logement.meteo.batiment_materiaux_anciens === 1 && inertie.includes('lourde') ? '1' : '0';
 
   const ecs = logement.installation_ecs_collection.installation_ecs || [];
   const Nb_lgt = cg.nombre_appartement || 1;
