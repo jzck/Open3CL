@@ -118,7 +118,7 @@ function tv_ue(di, de, du, pc_id, pb_list) {
   const delta_ue = Number(row_2.ue) - Number(row_1.ue);
   const delta_upb = upb2 - upb1;
   let ue;
-  if (delta_upb === 0) ue = Number(row_1.ue);
+  if (delta_upb == 0) ue = Number(row_1.ue);
   else ue = Number(row_1.ue) + (delta_ue * (di.upb - upb1)) / delta_upb;
   de.ue = ue;
 }
@@ -192,7 +192,7 @@ export default function calc_pb(pb, zc, pc_id, ej, pb_list) {
       calc_upb0(di, de, du);
       const tv_upb_avant = de.tv_upb_id;
       tv_upb(di, de, du, pi_id, zc, ej);
-      if (de.tv_upb_id !== tv_upb_avant && pi_id !== pc_id) {
+      if (de.tv_upb_id != tv_upb_avant && pi_id != pc_id) {
         console.warn(
           `BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 17)`
         );

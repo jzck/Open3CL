@@ -24,9 +24,9 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
   let type_toiture;
 
   // From "3CL-DPE 2021" page 21 => "Lorsque le local au-dessus du logement est un local non chauffé, ou un local autre que d’habitation., Uph_tab est pris dans la catégorie « Terrasse »."
-  if (type_adjacence === 'locaux non chauffés non accessible') {
+  if (type_adjacence == 'locaux non chauffés non accessible') {
     type_toiture = 'terrasse';
-  } else if (type_adjacence !== 'extérieur') {
+  } else if (type_adjacence != 'extérieur') {
     type_toiture = 'combles';
   } else {
     if (type_ph === 'combles aménagés sous rampant') type_toiture = 'combles';
