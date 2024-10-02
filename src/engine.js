@@ -22,7 +22,7 @@ function calc_th(map_id) {
 export function calcul_3cl(dpe) {
   sanitize_dpe(dpe);
   const modele = enums.modele_dpe[dpe.administratif.enum_modele_dpe_id];
-  if (modele != 'dpe 3cl 2021 méthode logement') {
+  if (modele !== 'dpe 3cl 2021 méthode logement') {
     console.error('Moteur dpe non implémenté pour le modèle: ' + modele);
     return null;
   }

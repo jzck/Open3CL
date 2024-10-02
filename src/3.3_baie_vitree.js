@@ -6,7 +6,7 @@ function tv_ug(di, de, du) {
     enum_type_vitrage_id: requestInputID(de, du, 'type_vitrage')
   };
 
-  if (matcher.enum_type_vitrage_id && matcher.enum_type_vitrage_id != '1') {
+  if (matcher.enum_type_vitrage_id && matcher.enum_type_vitrage_id !== '1') {
     // inside if because simple vitrage does not have these fields
     matcher.enum_type_gaz_lame_id = requestInputID(de, du, 'type_gaz_lame');
     matcher.enum_inclinaison_vitrage_id = requestInputID(de, du, 'inclinaison_vitrage');
@@ -150,7 +150,7 @@ export default function calc_bv(bv, zc) {
   else tv_uw(di, de, du);
 
   const type_fermeture = requestInput(de, du, 'type_fermeture');
-  if (type_fermeture != 'abscence de fermeture pour la baie vitrée') {
+  if (type_fermeture !== 'abscence de fermeture pour la baie vitrée') {
     tv_ujn(di, de, du);
     di.u_menuiserie = di.ujn;
   } else {
