@@ -13,9 +13,9 @@ import { add_references, sanitize_dpe } from './utils.js';
 
 function calc_th(map_id) {
   const map = enums.methode_application_dpe_log[map_id];
-  if (map.includes('dpe maison individuelle')) return 'maison';
-  else if (map.includes('dpe appartement individuel')) return 'appartement';
-  else if (map.includes('dpe immeuble collectif')) return 'immeuble';
+  if (map.includes('maison')) return 'maison';
+  else if (map.includes('appartement')) return 'appartement';
+  else if (map.includes('immeuble')) return 'immeuble';
   return null;
 }
 
