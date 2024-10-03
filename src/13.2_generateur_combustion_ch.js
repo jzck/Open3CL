@@ -83,7 +83,7 @@ function QPx(x, de, di) {
   const pn = di.pn / 1000;
   const rpn = (100 * di.rpn) / k;
   const rpint = (100 * di.rpint) / k;
-  const qp0 = (di.qp0 * k) / 1000;
+  let qp0 = (di.qp0 * k) / 1000;
   const tf30 = di.temp_fonc_30;
   const tf100 = di.temp_fonc_100;
 
@@ -121,6 +121,15 @@ function QPx(x, de, di) {
       if (x < 30) QPx = 0.15 * qp0 + ((QP30 - 0.15 * qp0) * x) / 0.3;
       else QPx = QP30 + ((QP100 - QP30) * (x - 0.3)) / 0.7;
     }
+  } else if (type_gen_ch.includes('générateur à air chaud')) {
+    // Change QP0 to be in decimal
+    di.qp0 = di.qp0 / 100;
+    qp0 = (di.qp0 * k) / 1000;
+
+    const QP50 = (0.5 * pn * (100 - rpint)) / rpint;
+    const QP100 = (pn * (100 - rpn)) / rpn;
+    if (x < 50) QPx = 0.15 * qp0 + ((QP50 - 0.15 * qp0) * x) / 0.5;
+    else QPx = 2 * QP50 - QP100 + ((QP100 - QP50) * x) / 0.5;
   } else {
     console.warn('!! type_generateur_ch n’est pas connu !!');
   }
@@ -135,8 +144,7 @@ function Px(x, di, Cdimref) {
 
 function Pfou(x, di, Cdimref) {
   // find coef_pond[x] in coef_pond where x is closest to x_final
-  const Pfou = Px(x, di, Cdimref) * coef_pond[x];
-  return Pfou;
+  return Px(x, di, Cdimref) * coef_pond[x];
 }
 
 function Pcons(x, de, di, Cdimref) {
