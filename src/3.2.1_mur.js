@@ -72,17 +72,6 @@ function calc_umur0(di, de, du) {
     de.enduit_isolant_paroi_ancienne = de.paroi_ancienne;
   }
 
-  if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1) {
-    if (umur0_avant === di.umur0) {
-      // BUG: 2287E1923356Q utilise paroi_ancienne=1 mais le calcul est fait avec paroi_ancienne=0
-      console.warn(`BUG(${scriptName}) correction isolation pour parois anciennes pas appliqué`);
-      if (bug_for_bug_compat) di.umur0 = umur0_avant;
-      else di.umur0 = 1 / (1 / di.umur0 + 0.7);
-    } else {
-      di.umur0 = 1 / (1 / di.umur0 + 0.7);
-    }
-  }
-
   const type_doublage = requestInput(de, du, 'type_doublage');
   switch (type_doublage) {
     case "doublage indéterminé ou lame d'air inf 15 mm":
@@ -93,6 +82,18 @@ function calc_umur0(di, de, du) {
       di.umur0 = 1 / (1 / di.umur0 + 0.21);
       break;
   }
+
+  if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1) {
+    if (parseFloat(umur0_avant.toFixed(3)) === parseFloat(di.umur0.toFixed(3))) {
+      // BUG: 2287E1923356Q utilise paroi_ancienne=1 mais le calcul est fait avec paroi_ancienne=0
+      console.warn(`BUG(${scriptName}) correction isolation pour parois anciennes pas appliqué`);
+      if (bug_for_bug_compat) di.umur0 = umur0_avant;
+      else di.umur0 = 1 / (1 / di.umur0 + 0.7);
+    } else {
+      di.umur0 = 1 / (1 / di.umur0 + 0.7);
+    }
+  }
+
   di.umur0 = Math.min(2.5, di.umur0);
 }
 

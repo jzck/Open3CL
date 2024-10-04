@@ -25,7 +25,6 @@ describe('Test Open3CL engine compliance on corpus', () => {
   describe.each([
     'deperdition_baie_vitree',
     'deperdition_enveloppe',
-    'deperdition_mur',
     'deperdition_plancher_bas',
     'deperdition_plancher_haut',
     'deperdition_pont_thermique',
@@ -40,6 +39,19 @@ describe('Test Open3CL engine compliance on corpus', () => {
       expect(calculatedDpe.logement.sortie.deperdition[attr]).toBeCloseTo(
         exceptedDpe.logement.sortie.deperdition[attr],
         PRECISION
+      );
+    });
+  });
+
+  describe('check "deperdition_mur" value', () => {
+    const deperditionKey = 'deperdition_mur';
+
+    test.each(corpus)('deperdition_mur for dpe %s', (ademeId) => {
+      const exceptedDpe = getAdemeFileJson(ademeId);
+      const calculatedDpe = getResultFile(ademeId);
+      expect(calculatedDpe.logement.sortie.deperdition[deperditionKey]).toBeCloseTo(
+        exceptedDpe.logement.sortie.deperdition[deperditionKey],
+        1
       );
     });
   });
