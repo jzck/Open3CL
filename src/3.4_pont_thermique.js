@@ -142,7 +142,12 @@ function tv_k(di, de, du, pc_id, enveloppe) {
       const mde = menuiserie.donnee_entree;
       const mdu = menuiserie.donnee_utilisateur;
 
-      matcher.type_pose = requestInput(mde, mdu, 'type_pose') || 'tunnel';
+      let type_pose = requestInput(mde, mdu, 'type_pose') || 'tunnel';
+      if (type_pose.includes('sans objet')) {
+        type_pose = 'tunnel';
+      }
+
+      matcher.type_pose = type_pose;
       matcher.presence_retour_isolation = requestInput(
         mde,
         mdu,
