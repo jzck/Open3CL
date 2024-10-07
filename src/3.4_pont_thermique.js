@@ -101,7 +101,7 @@ function tv_k(di, de, du, pc_id, enveloppe) {
         'type_isolation'
       );
       matcher.isolation_plancher = `^${isolation_plancher}$`;
-      if (matcher.isolation_plancher.includes('inconnu')) {
+      if (isolation_plancher === 'inconnu') {
         const type_adjacence_plancher = requestInput(
           plancher.donnee_entree,
           plancher.donnee_utilisateur,
@@ -119,6 +119,8 @@ function tv_k(di, de, du, pc_id, enveloppe) {
 
         if (cutoff.includes(pi)) matcher.isolation_plancher = 'non isolé';
         else matcher.isolation_plancher = '^ite$';
+      } else if (isolation_plancher === "isolé mais type d'isolation inconnu") {
+        matcher.isolation_plancher = '^ite$';
       }
       break;
     }
