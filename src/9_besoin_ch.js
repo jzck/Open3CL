@@ -52,9 +52,12 @@ export default function calc_besoin_ch(
     // pertes stockage
     const Qgw_total = instal_ecs.reduce((acc, instal_ecs) => {
       const gen_ecs = instal_ecs.generateur_ecs_collection.generateur_ecs;
-      return gen_ecs.reduce((acc, gen_ecs) => {
-        return acc + (gen_ecs.donnee_intermediaire.Qgw || 0);
-      }, 0);
+      return (
+        acc +
+        gen_ecs.reduce((acc, gen_ecs) => {
+          return acc + (gen_ecs.donnee_intermediaire.Qgw || 0);
+        }, 0)
+      );
     }, 0);
     const Qrec_stock_19 = (0.48 * nref19 * Qgw_total) / (24 * 365);
     const Qrec_stock_21 = (0.48 * nref21 * Qgw_total) / (24 * 365);
@@ -132,9 +135,9 @@ function calc_Fj(GV, asj, aij, dhj, inertie) {
   if (dhj == 0) return 0;
 
   let pow;
-  if (inertie == 'très lourde' || inertie == 'lourde') pow = 3.6;
-  else if (inertie == 'moyenne') pow = 2.9;
-  else if (inertie == 'légère') pow = 2.5;
+  if (inertie === 'très lourde' || inertie === 'lourde') pow = 3.6;
+  else if (inertie === 'moyenne') pow = 2.9;
+  else if (inertie === 'légère') pow = 2.5;
 
   const Xj = (asj + aij) / (GV * dhj);
   const Fj = (Xj - Xj ** pow) / (1 - Xj ** pow);
