@@ -1,7 +1,6 @@
 import enums from './enums.js';
 import calc_deperdition from './3_deperdition.js';
 import calc_apport_et_besoin from './apport_et_besoin.js';
-import calc_inertie from './7_inertie.js';
 import calc_clim from './10_clim.js';
 import calc_ecs from './11_ecs.js';
 import calc_besoin_ch from './9_besoin_ch.js';
@@ -10,6 +9,7 @@ import calc_confort_ete from './2021_04_13_confort_ete.js';
 import calc_qualite_isolation from './2021_04_13_qualite_isolation.js';
 import calc_conso from './conso.js';
 import { add_references, sanitize_dpe } from './utils.js';
+import { Inertie } from './7_inertie.js';
 
 function calc_th(map_id) {
   const map = enums.methode_application_dpe_log[map_id];
@@ -18,6 +18,8 @@ function calc_th(map_id) {
   else if (map.includes('immeuble')) return 'immeuble';
   return null;
 }
+
+const inertie = new Inertie();
 
 export function calcul_3cl(dpe) {
   sanitize_dpe(dpe);
@@ -64,11 +66,16 @@ export function calcul_3cl(dpe) {
   const deperdition = calc_deperdition(cg, zc_id, th, ej, env, logement);
   const GV = deperdition.deperdition_enveloppe;
 
-  env.inertie = calc_inertie(env);
+  env.inertie = inertie.calculateInertie(env);
   const inertie_id = env.inertie.enum_classe_inertie_id;
-  const inertie = enums.classe_inertie[inertie_id];
+
+  /**
+   * Inertie ID
+   * 1 - Très lourde
+   * 2 - Lourde
+   */
   const ilpa =
-    logement.meteo.batiment_materiaux_anciens === 1 && inertie.includes('lourde') ? '1' : '0';
+    logement.meteo.batiment_materiaux_anciens === 1 && ['1', '2'].includes(inertie_id) ? '1' : '0';
 
   const ecs = logement.installation_ecs_collection.installation_ecs || [];
   const Nb_lgt = cg.nombre_appartement || 1;

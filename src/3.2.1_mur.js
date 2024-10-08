@@ -1,5 +1,12 @@
 import enums from './enums.js';
-import { tv, requestInput, requestInputID, getKeyByValue, bug_for_bug_compat } from './utils.js';
+import {
+  tv,
+  requestInput,
+  requestInputID,
+  getKeyByValue,
+  bug_for_bug_compat,
+  getThicknessFromDescription
+} from './utils.js';
 import b from './3.1_b.js';
 
 const scriptName = new URL(import.meta.url).pathname.split('/').pop();
@@ -17,8 +24,7 @@ function tv_umur0(di, de, du) {
       // il faut aller le chercher dans description
       // if desc is "Mur en blocs de béton creux d'épaisseur ≥ 25 cm non isolé donnant sur l'extérieur"
       // retrive just "≥ 25" with a regex
-      const desc = de.description;
-      matcher.epaisseur_structure = desc.match(/(\d+) cm/)[1];
+      matcher.epaisseur_structure = getThicknessFromDescription(de.description);
     }
   }
   const row = tv('umur0', matcher, de);
