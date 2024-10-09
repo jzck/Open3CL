@@ -93,7 +93,7 @@ function QPx(x, de, di) {
   } else if (type_gen_ch.includes('chaudière bois') || type_gen_ch.includes('chaudière charbon')) {
     const QP50 = (0.5 * pn * (100 - rpint)) / rpint;
     const QP100 = (pn * (100 - rpn)) / rpn;
-    if (x < 50) QPx = 0.15 * qp0 + ((QP50 - 0.15 * qp0) * x) / 0.5;
+    if (x < 0.5) QPx = 0.15 * qp0 + ((QP50 - 0.15 * qp0) * x) / 0.5;
     else QPx = 2 * QP50 - QP100 + ((QP100 - QP50) * x) / 0.5;
   } else if (type_gen_ch.includes('chaudière')) {
     let tf;
@@ -114,11 +114,11 @@ function QPx(x, de, di) {
     const QP100 = (pn * (100 - (rpn + 0.1 * (70 - tf100)))) / (rpn + 0.1 * (70 - tf100));
     const QP15 = QP30 / 2;
     if (type_gen_ch.includes('basse température') || type_gen_ch.includes('condensation')) {
-      if (x < 20) QPx = 0.15 * qp0 + ((QP15 - 0.15 * qp0) * x) / 0.15;
-      else if (x < 30) QPx = QP15 + ((QP30 - QP15) * (x - 0.15)) / 0.15;
+      if (x < 0.15) QPx = 0.15 * qp0 + ((QP15 - 0.15 * qp0) * x) / 0.15;
+      else if (x < 0.3) QPx = QP15 + ((QP30 - QP15) * (x - 0.15)) / 0.15;
       else QPx = QP30 + ((QP100 - QP30) * (x - 0.3)) / 0.7;
     } else {
-      if (x < 30) QPx = 0.15 * qp0 + ((QP30 - 0.15 * qp0) * x) / 0.3;
+      if (x < 0.3) QPx = 0.15 * qp0 + ((QP30 - 0.15 * qp0) * x) / 0.3;
       else QPx = QP30 + ((QP100 - QP30) * (x - 0.3)) / 0.7;
     }
   } else if (type_gen_ch.includes('générateur à air chaud')) {
@@ -128,7 +128,7 @@ function QPx(x, de, di) {
 
     const QP50 = (0.5 * pn * (100 - rpint)) / rpint;
     const QP100 = (pn * (100 - rpn)) / rpn;
-    if (x < 50) QPx = 0.15 * qp0 + ((QP50 - 0.15 * qp0) * x) / 0.5;
+    if (x < 0.5) QPx = 0.15 * qp0 + ((QP50 - 0.15 * qp0) * x) / 0.5;
     else QPx = 2 * QP50 - QP100 + ((QP100 - QP50) * x) / 0.5;
   } else {
     console.warn('!! type_generateur_ch n’est pas connu !!');
