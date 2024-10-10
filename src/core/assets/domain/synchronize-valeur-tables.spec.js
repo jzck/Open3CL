@@ -11,9 +11,12 @@ describe('SynchronizeValeurTables unit tests', () => {
   it('should download, parse and convert valeur_tables.xlsx file', () => {
     const fileStore = new FileStore();
     const appConfig = new ApplicationConfig();
-    const synchronizeC1Tables = new SynchronizeC1Tables(null, null);
-    const synchronizeSolicitationTables = new SynchronizeSolicitationsTables(null, null);
-    const synchronizeDpeGesLimitValuesTables = new SynchronizeDpeGesLimitValuesTables(null, null);
+    const synchronizeC1Tables = new SynchronizeC1Tables(fileStore, appConfig);
+    const synchronizeSolicitationTables = new SynchronizeSolicitationsTables(fileStore, appConfig);
+    const synchronizeDpeGesLimitValuesTables = new SynchronizeDpeGesLimitValuesTables(
+      fileStore,
+      appConfig
+    );
     const synchronizeValeurTables = new SynchronizeValeurTables(
       fileStore,
       appConfig,

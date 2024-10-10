@@ -51,7 +51,24 @@ export class FileStore {
   #excelWorkBookToJson(workBook) {
     const jsonOutput = {};
     workBook.SheetNames.forEach((sheetName) => {
-      jsonOutput[sheetName] = XLSX.utils.sheet_to_json(workBook.Sheets[sheetName], { raw: false });
+      /**
+       * @type {import('xlsx').WorkSheet}
+       */
+      const sheet = workBook.Sheets[sheetName];
+      if (sheet['!merges']) {
+        sheet['!merges'].forEach((merge) => {
+          const columnStart = XLSX.utils.encode_col(merge.s.c);
+          const rowStart = XLSX.utils.encode_row(merge.s.r);
+
+          const nbMergedRows = merge.e.r - merge.s.r;
+          const firstCell = sheet[`${columnStart}${rowStart}`];
+          for (let i = 0; i < nbMergedRows; i++) {
+            const newRowStart = XLSX.utils.encode_row(merge.s.r + i + 1);
+            sheet[`${columnStart}${newRowStart}`] = firstCell;
+          }
+        });
+      }
+      jsonOutput[sheetName] = XLSX.utils.sheet_to_json(sheet, { raw: false });
     });
     return jsonOutput;
   }

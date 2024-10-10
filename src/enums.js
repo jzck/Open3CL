@@ -1,11 +1,13 @@
+/** @type {TableEnum} **/
 const enums = {
   version: {
     1: 'version du 1er juillet 2021',
-    1.1: 'version corrective du 1er novembre',
     2: 'version avec modèle complet sans contrôle de cohérence',
+    1.1: 'version corrective du 1er novembre',
     2.1: 'version de fin de validation incluant les contrôles de cohérences',
     2.2: 'version de préparation de compatibilité audit/dpe',
-    2.3: 'version corrective de janvier 2023'
+    2.3: 'version corrective de janvier 2023',
+    2.4: "version correspondant à l'arrêté des seuils pour les petites surfaces"
   },
   modele_dpe: {
     1: 'dpe 3cl 2021 méthode logement',
@@ -105,6 +107,12 @@ const enums = {
     6: 'dpe tertiaire bâtiment neuf dans un bâtiment de logement',
     7: 'dpe tertiaire vierge dans un bâtiment de logement',
     8: 'dpe tertiaire vierge neuf dans un bâtiment de logement'
+  },
+  sous_modele_dpe_ter: {
+    1: 'bureaux, services administratifs, enseignement',
+    2: 'bâtiments à occupation continue',
+    3: 'autres',
+    4: 'centre commercial'
   },
   calcul_echantillonnage: {
     1: 'absence de méthode d’échantillonnage',
@@ -1144,5 +1152,4 @@ const enums = {
     3: 'bon'
   }
 };
-
 export default enums;
