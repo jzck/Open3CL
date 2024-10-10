@@ -1,6 +1,6 @@
 export class ApplicationConfig {
   get ademeRepositoryVersion() {
-    return 'dpe-2.4-audit-2.2';
+    return 'dpe-mdd-v8.2.1-controle-1.21.8-audit-mdd-v4.4.0-controle-1.9.9-ajout-nom-organisme-qualification';
   }
 
   get ademeRepositoryUrl() {
@@ -8,11 +8,11 @@ export class ApplicationConfig {
   }
 
   get ademeEnumTablesFileUrl() {
-    return `${this.ademeRepositoryUrl}/-/raw/${this.ademeRepositoryVersion}/modele_donnee/enum_tables.xlsx?ref_type=heads&inline=false`;
+    return `${this.ademeRepositoryUrl}/-/raw/${this.ademeRepositoryVersion}/modele_donnee/enum_tables.xlsx?ref_type=tags&inline=false`;
   }
 
   get ademeValeurTablesFileUrl() {
-    return `${this.ademeRepositoryUrl}/-/raw/${this.ademeRepositoryVersion}/modele_donnee/valeur_tables.xlsx?ref_type=heads&inline=false`;
+    return `${this.ademeRepositoryUrl}/-/raw/${this.ademeRepositoryVersion}/modele_donnee/valeur_tables.xlsx?ref_type=tags&inline=false`;
   }
 
   get solicitationsExtFilePath() {
@@ -28,6 +28,6 @@ export class ApplicationConfig {
   }
 
   get assetsOutputFolder() {
-    return 'scripts/assets';
+    return 'src';
   }
 }

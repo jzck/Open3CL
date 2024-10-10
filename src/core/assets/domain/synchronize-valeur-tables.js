@@ -127,7 +127,7 @@ export class SynchronizeValeurTables {
           // Overwrite the enum.js file in filesystem
           return this.#fileStore.writeFileToLocalSystem(
             `${this.#appConfig.assetsOutputFolder}/tv.js`,
-            `/** @type {TableValeur} **/\nexport const tvs = ${JSON.stringify(tableValues, null, 2)}`
+            `/** @type {TableValeur} **/\nexport const tvs = ${JSON.stringify(tableValues, null, 2)};\n export default tvs;`
           );
         });
       });

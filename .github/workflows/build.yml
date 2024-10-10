@@ -32,6 +32,9 @@ jobs:
           path: ~/.npm
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
 
+      - name: Generate assets
+        run: npm run assets:sync
+
       - name: Run unit tests
         run: npm run test
 
