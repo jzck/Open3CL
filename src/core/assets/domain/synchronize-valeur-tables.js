@@ -114,13 +114,15 @@ export class SynchronizeValeurTables {
           this.#synchronizeC1Tables.execute()
         ]).then((tablesValues) => {
           const solicitationsTablesValues = tablesValues[0];
-          const c1TablesValues = tablesValues[1];
+          const dpeGesLimitTablesValues = tablesValues[1];
+          const c1TablesValues = tablesValues[2];
 
           // Merge content from "valeur_tables.xlsx" file with "18.2_sollicitations_ext.ods" file
           const tableValues = Object.assign(
             {},
             valeurTablesValues,
             solicitationsTablesValues,
+            dpeGesLimitTablesValues,
             c1TablesValues
           );
 
