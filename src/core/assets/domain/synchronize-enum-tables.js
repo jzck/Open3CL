@@ -69,7 +69,7 @@ export class SynchronizeEnumTables {
           // Overwrite the enums.js file in filesystem
           return this.#fileStore.writeFileToLocalSystem(
             `${this.#appConfig.assetsOutputFolder}/enums.js`,
-            `/** @type {TableEnum} **/\nexport default ${JSON.stringify(enumsOutput, null, 2)}`
+            `/** @type {TableEnum} **/\nconst enums = ${JSON.stringify(enumsOutput, null, 2)};\n export default enums;`
           );
         }
       );

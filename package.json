@@ -20,7 +20,7 @@
     "qa:format": "prettier --plugin-search-dir . --write .",
     "release": "semantic-release",
     "release:dry": "semantic-release --dry-run",
-    "prepare": "husky install",
+    "prepare": "husky install && npm run assets:sync",
     "assets:sync": "node scripts/synchronize_assets.js"
   },
   "repository": {
