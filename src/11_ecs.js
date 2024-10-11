@@ -16,7 +16,12 @@ function tv_rendement_distribution_ecs(di, de, du, pvc) {
     } else configuration_logement = 'production hors volume habitable';
   } else if (type_installation.includes('collective')) {
     let type_reseau_collectif;
-    configuration_logement = 'majorité des logements avec pièces alimentées contiguës';
+
+    if (type_installation.includes('multi-bâtiment')) {
+      configuration_logement = 'majorité des logements avec pièces alimentées non contiguës';
+    } else {
+      configuration_logement = 'majorité des logements avec pièces alimentées contiguës';
+    }
     const isole = requestInput(de, du, 'reseau_distribution_isole', 'bool');
     if (isole === 0) {
       type_reseau_collectif = 'Réseau collectif non isolé';
@@ -24,7 +29,6 @@ function tv_rendement_distribution_ecs(di, de, du, pvc) {
       const type_bouclage = requestInput(de, du, 'bouclage_reseau_ecs');
       if (type_bouclage === "réseau d'ecs bouclé") {
         type_reseau_collectif = 'Réseau collectif isolé bouclé';
-        matcher;
       } else {
         configuration_logement = null;
         type_reseau_collectif =
@@ -55,7 +59,7 @@ export default function calc_ecs(ecs, becs, becs_dep, GV, ca_id, zc_id) {
   tv_rendement_distribution_ecs(di, de, du, pvc);
 
   const gen_ecs_list = ecs.generateur_ecs_collection.generateur_ecs;
-  gen_ecs_list.forEach((gen_ecs) => calc_gen_ecs(gen_ecs, di, GV, ca_id, zc_id));
+  gen_ecs_list.forEach((gen_ecs) => calc_gen_ecs(gen_ecs, di, de, GV, ca_id, zc_id));
 
   di.conso_ecs = gen_ecs_list.reduce(
     (acc, gen_ecs) => acc + gen_ecs.donnee_intermediaire.conso_ecs,
