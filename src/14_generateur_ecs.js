@@ -38,7 +38,7 @@ export function calc_Qdw_j(instal_ecs, becs_j) {
     const Rat_ecs = 1;
     const Lvc = 0.2 * Sh * Rat_ecs;
     Qdw_j = ((0.5 * Lvc) / Sh) * becs_j;
-  } else if (type_installation === 'installation collective') {
+  } else if (type_installation.includes('installation collective')) {
     Qdw_j = (0.028 + 0.112) * becs_j;
   } else {
     console.warn(`!! calc_Qdw_j: ${type_installation} non pris en compte !!`);
@@ -113,7 +113,14 @@ function rg_accumulateur_gaz(di, besoin_ecs) {
   return rg;
 }
 
-export default function calc_gen_ecs(gen_ecs, ecs_di, GV, ca_id, zc_id) {
+function rgrsReseauUrbain(de) {
+  if (de.reseau_distribution_isole === 1) {
+    return 0.9;
+  }
+  return 0.75;
+}
+
+export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id) {
   const de = gen_ecs.donnee_entree;
   const di = gen_ecs.donnee_intermediaire || {};
   const du = {};
@@ -122,7 +129,7 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, GV, ca_id, zc_id) {
   const type_generateur_id = type_generateur_ecs(di, de, du, usage_generateur);
   const type_energie = requestInput(de, du, 'type_energie');
 
-  calc_Qgw(di, de, du, ecs_di);
+  calc_Qgw(di, de, du);
 
   const pac_ids = tvColumnIDs('scop', 'generateur_ecs');
   const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ecs');
@@ -181,6 +188,12 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, GV, ca_id, zc_id) {
     } else {
       console.warn(`!! type_generateur_ecs ${type_generateur} non implémenté !!`);
     }
+  } else if (type_energie === 'réseau de chauffage urbain') {
+    di.rendement_generation = rgrsReseauUrbain(ecs_de);
+    di.rendement_generation_depensier = rgrsReseauUrbain(ecs_de);
+
+    Iecs = 1 / di.rendement_generation;
+    Iecs_dep = 1 / di.rendement_generation_depensier;
   } else {
     Iecs = 1;
     Iecs_dep = 1;
