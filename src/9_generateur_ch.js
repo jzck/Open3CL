@@ -99,7 +99,7 @@ export function calc_generateur_ch(
   const usage_generateur = requestInput(de, du, 'usage_generateur');
   const type_gen_ch_id = type_generateur_ch(di, de, du, usage_generateur);
 
-  const pac_ids = tvColumnIDs('scop', 'generateur_ch');
+  const pac_ids = tvColumnIDs('scop', 'type_generateur_ch');
   const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ch');
   if (pac_ids.includes(type_gen_ch_id)) {
     const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur');

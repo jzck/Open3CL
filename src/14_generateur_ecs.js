@@ -131,7 +131,7 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id) 
 
   calc_Qgw(di, de, du);
 
-  const pac_ids = tvColumnIDs('scop', 'generateur_ecs');
+  const pac_ids = tvColumnIDs('scop', 'type_generateur_ch');
   const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ecs');
   let Iecs, Iecs_dep;
   if (pac_ids.includes(type_generateur_id)) {
