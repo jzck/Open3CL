@@ -48,22 +48,21 @@ export default function calc_besoin_ch(
   let fraction_apport_gratuit_ch = 0;
   let fraction_apport_gratuit_depensier_ch = 0;
 
-  for (const mois of mois_liste) {
-    /* console.warn(mois) */
+  // pertes stockage
+  const Qgw_total = instal_ecs.reduce((acc, instal_ecs) => {
+    const gen_ecs = instal_ecs.generateur_ecs_collection.generateur_ecs;
+    return (
+      acc +
+      gen_ecs.reduce((acc, gen_ecs) => {
+        return acc + (gen_ecs.donnee_intermediaire.Qgw || 0);
+      }, 0)
+    );
+  }, 0);
 
+  for (const mois of mois_liste) {
     const nref19 = Nref19[ca][mois][zc];
     const nref21 = Nref21[ca][mois][zc];
 
-    // pertes stockage
-    const Qgw_total = instal_ecs.reduce((acc, instal_ecs) => {
-      const gen_ecs = instal_ecs.generateur_ecs_collection.generateur_ecs;
-      return (
-        acc +
-        gen_ecs.reduce((acc, gen_ecs) => {
-          return acc + (gen_ecs.donnee_intermediaire.Qgw || 0);
-        }, 0)
-      );
-    }, 0);
     const Qrec_stock_19 = (0.48 * nref19 * Qgw_total) / (24 * 365);
     const Qrec_stock_21 = (0.48 * nref21 * Qgw_total) / (24 * 365);
     pertes_stockage_ecs_recup += Qrec_stock_19 / 1000;
@@ -75,8 +74,15 @@ export default function calc_besoin_ch(
 
     sumNref19 += nref19;
     sumNref21 += nref21;
-    QrecDistr += instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j), 0);
-    QrecDistrDepensier += instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j_dep), 0);
+
+    // If several ECS installations, we consider a contribution of half for each (&15.2.3)
+    const Rat_ecs = instal_ecs.length > 1 ? 0.5 : 1;
+
+    QrecDistr += instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j, Rat_ecs), 0);
+    QrecDistrDepensier += instal_ecs.reduce(
+      (acc, ecs) => acc + calc_Qdw_j(ecs, becs_j_dep, Rat_ecs),
+      0
+    );
 
     // bvj
     const dh19j = dh19[ca][mois][zc];
