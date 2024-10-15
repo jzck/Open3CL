@@ -32,6 +32,11 @@ export default function calc_besoin_ch(
   const dh19 = tvs.dh19[ilpa];
   const Nref21 = tvs.nref21[ilpa];
   const Nref19 = tvs.nref19[ilpa];
+
+  let sumNref19 = 0;
+  let sumNref21 = 0;
+  let QrecDistr = 0;
+  let QrecDistrDepensier = 0;
   const e = tvs.e[ilpa];
 
   let pertes_distribution_ecs_recup = 0;
@@ -67,13 +72,11 @@ export default function calc_besoin_ch(
     // pertes distribution
     const becs_j = calc_besoin_ecs_j(ilpa, ca, mois, zc, nadeq, false);
     const becs_j_dep = calc_besoin_ecs_j(ilpa, ca, mois, zc, nadeq, true);
-    const Qrec_distr = instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j), 0);
-    const Qrec_distr_dep = instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j_dep), 0);
-    pertes_distribution_ecs_recup += (0.48 * nref19 * Qrec_distr) / Njj[mois];
-    pertes_distribution_ecs_recup_depensier += (0.48 * nref21 * Qrec_distr_dep) / Njj[mois];
-    /* pertes_distribution_ecs_recup += 0.48 * nref19 * Qrec_distr */
-    /* pertes_distribution_ecs_recup_depensier += 0.48 * nref21 * Qrec_distr_dep */
-    /* console.warn(pertes_distribution_ecs_recup) */
+
+    sumNref19 += nref19;
+    sumNref21 += nref21;
+    QrecDistr += instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j), 0);
+    QrecDistrDepensier += instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j_dep), 0);
 
     // bvj
     const dh19j = dh19[ca][mois][zc];
@@ -101,9 +104,9 @@ export default function calc_besoin_ch(
     besoin_ch_depensier += (bvj_dep * dh21j) / 1000;
   }
 
-  pertes_distribution_ecs_recup /= 24;
-  pertes_distribution_ecs_recup_depensier /= 24;
-  /* console.warn(pertes_distribution_ecs_recup) */
+  pertes_distribution_ecs_recup = (0.48 * sumNref19 * QrecDistr) / 8760;
+  pertes_distribution_ecs_recup_depensier = (0.48 * sumNref21 * QrecDistrDepensier) / 8760;
+
   const recup =
     pertes_distribution_ecs_recup + pertes_stockage_ecs_recup + pertes_generateur_ch_recup;
   const recup_depensier =
