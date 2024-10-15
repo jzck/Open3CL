@@ -26,7 +26,7 @@ function tv_pertes_stockage(di, de) {
 }
 
 // 15.2.3
-export function calc_Qdw_j(instal_ecs, becs_j) {
+export function calc_Qdw_j(instal_ecs, becs_j, Rat_ecs) {
   const de = instal_ecs.donnee_entree;
   const du = instal_ecs.donnee_utilisateur || {};
 
@@ -35,7 +35,6 @@ export function calc_Qdw_j(instal_ecs, becs_j) {
   let Qdw_j;
   if (type_installation === 'installation individuelle') {
     const Sh = de.surface_habitable;
-    const Rat_ecs = 1;
     const Lvc = 0.2 * Sh * Rat_ecs;
     Qdw_j = ((0.5 * Lvc) / Sh) * becs_j;
   } else if (type_installation === 'installation collective') {
