@@ -12,7 +12,7 @@ export function calc_besoin_ecs_j(ilpa, ca, mois, zc, nadeq, depensier) {
   }
 }
 
-export default function calc_besoin_ecs(ilpa, ca, zc, Sh, nadeq) {
+export default function calc_besoin_ecs(ilpa, ca, zc, nadeq) {
   const ret = {
     besoin_ecs: 0,
     besoin_ecs_depensier: 0

@@ -82,7 +82,7 @@ export function calcul_3cl(dpe) {
   const hsp = cg.hsp;
   const clim = logement.climatisation_collection.climatisation || [];
   let apport_et_besoin = calc_apport_et_besoin(
-    env,
+    logement,
     th,
     ecs,
     clim,
