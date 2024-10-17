@@ -1,6 +1,6 @@
 import enums from './enums.js';
 import b from './3.1_b.js';
-import { tv, requestInput, requestInputID, getKeyByValue, bug_for_bug_compat } from './utils.js';
+import { tv, requestInput, getKeyByValue, bug_for_bug_compat } from './utils.js';
 
 const scriptName = new URL(import.meta.url).pathname.split('/').pop();
 
@@ -171,9 +171,8 @@ export default function calc_pb(pb, zc, pc_id, ej, pb_list) {
     }
     case 'isolation inconnue  (table forfaitaire)':
     case "année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)": {
-      const pi = requestInputID(de, du, 'periode_isolation');
       calc_upb0(di, de, du);
-      tv_upb(di, de, du, pi, zc, ej);
+      tv_upb(di, de, du, de.enum_periode_isolation_id || pc_id, zc, ej);
       di.upb = Math.min(di.upb, di.upb0);
       break;
     }
