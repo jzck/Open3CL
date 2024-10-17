@@ -71,7 +71,7 @@ export default function calc_deperdition(cg, zc, th, ej, enveloppe, logement) {
   const porte_list = enveloppe.porte_collection.porte || [];
   const bv_list = enveloppe.baie_vitree_collection.baie_vitree || [];
   const pt_list = enveloppe.pont_thermique_collection.pont_thermique || [];
-  const vt_list = logement.ventilation_collection.ventilation;
+  const vt_list = logement.ventilation_collection.ventilation || [];
 
   mur_list.forEach((mur) => calc_mur(mur, zc, pc, ej));
   pb_list.forEach((pb) => calc_pb(pb, zc, pc, ej, pb_list));
@@ -87,14 +87,14 @@ export default function calc_deperdition(cg, zc, th, ej, enveloppe, logement) {
     calc_ventilation(vt, cg, th, Sdep, mur_list, ph_list, porte_list, bv_list);
   });
 
-  const d_mur = mur_list.reduce((acc, mur) => acc + Umur(mur), 0);
-  const d_pb = pb_list.reduce((acc, pb) => acc + Upb(pb), 0);
-  const d_ph = ph_list.reduce((acc, ph) => acc + Uph(ph), 0);
-  const d_bv = bv_list.reduce((acc, bv) => acc + Ubv(bv), 0);
-  const d_porte = porte_list.reduce((acc, porte) => acc + Uporte(porte), 0);
-  const d_pt = pt_list.reduce((acc, pt) => acc + Upt(pt), 0);
-  const hvent = vt_list.reduce((acc, vt) => acc + vt.donnee_intermediaire.hvent, 0);
-  const hperm = vt_list.reduce((acc, vt) => acc + vt.donnee_intermediaire.hperm, 0);
+  const d_mur = mur_list.reduce((acc, mur) => acc + Umur(mur) || 0, 0);
+  const d_pb = pb_list.reduce((acc, pb) => acc + Upb(pb) || 0, 0);
+  const d_ph = ph_list.reduce((acc, ph) => acc + Uph(ph) || 0, 0);
+  const d_bv = bv_list.reduce((acc, bv) => acc + Ubv(bv) || 0, 0);
+  const d_porte = porte_list.reduce((acc, porte) => acc + Uporte(porte) || 0, 0);
+  const d_pt = pt_list.reduce((acc, pt) => acc + Upt(pt) || 0, 0);
+  const hvent = vt_list.reduce((acc, vt) => acc + vt.donnee_intermediaire.hvent || 0, 0);
+  const hperm = vt_list.reduce((acc, vt) => acc + vt.donnee_intermediaire.hperm || 0, 0);
 
   return {
     hvent,
