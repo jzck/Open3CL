@@ -105,7 +105,7 @@ export default function calc_ph(ph, zc, pc_id, ej) {
     }
     case 'isolation inconnue  (table forfaitaire)':
     case "année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)":
-      tv_uph(di, de, du, de.enum_periode_isolation_id, zc, ej);
+      tv_uph(di, de, du, de.enum_periode_isolation_id || pc_id, zc, ej);
       calc_uph0(di, de, du);
       di.uph = Math.min(di.uph, di.uph0);
       break;
