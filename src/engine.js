@@ -36,8 +36,14 @@ export function calcul_3cl(dpe) {
   if (logement.enveloppe === undefined) {
     console.warn('vide: logement.enveloppe');
     return null;
-  } else if (logement.enveloppe.mur_collection === undefined) {
+  } else if (!logement.enveloppe.mur_collection) {
     console.warn('vide: logement.enveloppe.mur_collection');
+    return null;
+  } else if (!logement.enveloppe.plancher_haut_collection) {
+    console.warn('vide: logement.enveloppe.plancher_haut_collection');
+    return null;
+  } else if (!logement.enveloppe.plancher_bas_collection) {
+    console.warn('vide: logement.enveloppe.plancher_bas_collection');
     return null;
   }
 

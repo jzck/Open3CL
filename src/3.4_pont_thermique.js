@@ -19,7 +19,7 @@ function tv_k(di, de, du, pc_id, enveloppe) {
     if (desc.match(/(.+) \/ (.+)/)) {
       desc_1 = desc.match(/(.+) \/ (.+)/)[1];
       desc_2 = desc.match(/(.+) \/ (.+)/)[2];
-    } else if (desc.match(/(.+)-(.+)/)[1]) {
+    } else if (desc.match(/(.+)-(.+)/)) {
       desc_1 = desc.match(/(.+)-(.+)/)[1];
       desc_2 = desc.match(/(.+)-(.+)/)[2];
     } else {
@@ -27,11 +27,20 @@ function tv_k(di, de, du, pc_id, enveloppe) {
       return;
     }
 
-    de.reference_1 = mur_list.find(
+    let ptMur = mur_list.find(
       (mur) =>
         mur.donnee_entree.description.includes(desc_1) ||
         mur.donnee_entree.description.includes(desc_2)
-    ).donnee_entree.reference;
+    );
+    if (ptMur) {
+      de.reference_1 = ptMur.donnee_entree.reference;
+    } else {
+      console.error(
+        `BUG: descriptions '${desc_1}' ou '${desc_2}' du pont thermique non reconnue dans les descriptions des murs`
+      );
+      return;
+    }
+
     let list_2;
     switch (type_liaison) {
       case 'refend / mur':
@@ -49,11 +58,19 @@ function tv_k(di, de, du, pc_id, enveloppe) {
         break;
     }
     if (list_2) {
-      de.reference_2 = list_2.find(
+      ptMur = list_2.find(
         (men) =>
           men.donnee_entree.description.includes(desc_2) ||
           men.donnee_entree.description.includes(desc_1)
-      ).donnee_entree.reference;
+      );
+      if (ptMur) {
+        de.reference_2 = ptMur.donnee_entree.reference;
+      } else {
+        console.error(
+          `BUG: descriptions '${desc_1}' ou '${desc_2}' du pont thermique non reconnue dans '${type_liaison}'`
+        );
+        return;
+      }
     }
   }
 
@@ -95,6 +112,10 @@ function tv_k(di, de, du, pc_id, enveloppe) {
           plancher.donnee_entree.reference === de.reference_1 ||
           plancher.donnee_entree.reference === de.reference_2
       );
+      if (!plancher) {
+        console.error('Did not find plancher reference:', de.reference_1, de.reference_2);
+        return;
+      }
       const isolation_plancher = requestInput(
         plancher.donnee_entree,
         plancher.donnee_utilisateur,
