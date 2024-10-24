@@ -51,4 +51,4 @@ jobs:
         run: |
           cp package.json src/
           cp README.md src/
-          npm run release -- --r git@github.com:jzck/Open3CL.git
+          npm run release -- --r git@github.com:jzck/Open3CL.git --ignore-scripts
