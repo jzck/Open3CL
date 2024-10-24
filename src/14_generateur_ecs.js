@@ -25,6 +25,23 @@ function tv_pertes_stockage(di, de) {
   }
 }
 
+function tv_facteur_couverture_solaire(di, de, zc_id, th) {
+  const matcher = {
+    enum_zone_climatique_id: zc_id,
+    type_installation_solaire:
+      enums.type_installation_solaire[de.enum_type_installation_solaire_id],
+    type_batiment: th === 'maison' ? 'maison' : 'immeuble'
+  };
+
+  const row = tv('facteur_couverture_solaire', matcher);
+  if (row) {
+    di.fecs = Number(row.facteur_couverture_solaire);
+    de.tv_facteur_couverture_solaire_id = Number(row.tv_facteur_couverture_solaire_id);
+  } else {
+    console.error('!! pas de valeur forfaitaire trouvée pour facteur_couverture_solaire !!');
+  }
+}
+
 // 15.2.3
 export function calc_Qdw_j(instal_ecs, becs_j, Rat_ecs) {
   const de = instal_ecs.donnee_entree;
@@ -119,7 +136,7 @@ function rgrsReseauUrbain(de) {
   return 0.75;
 }
 
-export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id) {
+export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, th) {
   const de = gen_ecs.donnee_entree;
   const di = gen_ecs.donnee_intermediaire || {};
   const du = {};
@@ -204,8 +221,17 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id) 
   Iecs_dep = Iecs_dep / rd;
 
   di.ratio_besoin_ecs = 1;
-  di.conso_ecs = ecs_di.besoin_ecs * Iecs;
-  di.conso_ecs_depensier = ecs_di.besoin_ecs_depensier * Iecs_dep;
+
+  // Système ECS avec solaire (paragraphe 11.3 de la doc Méthode de calcul 3CL-DPE 2021)
+  if (ecs_de.enum_type_installation_solaire_id) {
+    tv_facteur_couverture_solaire(ecs_di, ecs_de, zc_id, th);
+
+    di.conso_ecs = ecs_di.besoin_ecs * (1 - ecs_di.fecs) * Iecs;
+    di.conso_ecs_depensier = ecs_di.besoin_ecs_depensier * (1 - ecs_di.fecs) * Iecs_dep;
+  } else {
+    di.conso_ecs = ecs_di.besoin_ecs * Iecs;
+    di.conso_ecs_depensier = ecs_di.besoin_ecs_depensier * Iecs_dep;
+  }
 
   gen_ecs.donnee_intermediaire = di;
   gen_ecs.donnee_utilisateur = du;
