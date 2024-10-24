@@ -1,5 +1,12 @@
 import enums from './enums.js';
-import { tv, tvColumnIDs, requestInput, requestInputID, Tbase } from './utils.js';
+import {
+  tv,
+  tvColumnIDs,
+  requestInput,
+  requestInputID,
+  Tbase,
+  bug_for_bug_compat
+} from './utils.js';
 import { tv_scop } from './12.4_pac.js';
 import { tv_generateur_combustion } from './13.2_generateur_combustion.js';
 import { conso_aux_gen } from './15_conso_aux.js';
@@ -43,7 +50,7 @@ function tv_facteur_couverture_solaire(di, de, zc_id, th) {
 }
 
 // 15.2.3
-export function calc_Qdw_j(instal_ecs, becs_j, Rat_ecs) {
+export function calc_Qdw_j(instal_ecs, becs_j) {
   const de = instal_ecs.donnee_entree;
   const du = instal_ecs.donnee_utilisateur || {};
 
@@ -52,6 +59,7 @@ export function calc_Qdw_j(instal_ecs, becs_j, Rat_ecs) {
   let Qdw_j;
   if (type_installation === 'installation individuelle') {
     const Sh = de.surface_habitable;
+    const Rat_ecs = 1;
     const Lvc = 0.2 * Sh * Rat_ecs;
     Qdw_j = ((0.5 * Lvc) / Sh) * becs_j;
   } else if (type_installation.includes('installation collective')) {
@@ -70,9 +78,14 @@ function calc_Qgw(di, de, du) {
   // stockage
   if (type_stockage_ecs === "abscence de stockage d'ecs (production instantanée)") {
     di.Qgw = 0;
+    return;
   }
-  const Vs = requestInput(de, du, 'volume_stockage', 'float');
+  let Vs = requestInput(de, du, 'volume_stockage', 'float');
   const gen_ecs_elec_ids = tvColumnIDs('pertes_stockage', 'type_generateur_ecs');
+
+  // Si virtualisation des besoins ECS, le volume du ballon à prendre en compte est le volume total du ballon collectif
+  Vs = Number.parseFloat(Vs) / de.ratio_virtualisation;
+
   if (gen_ecs_elec_ids.includes(de.enum_type_generateur_ecs_id)) {
     tv_pertes_stockage(di, de, du);
     di.Qgw = ((8592 * 45) / 24) * Vs * di.cr;
@@ -107,26 +120,28 @@ function type_generateur_ecs(di, de, du, usage_generateur) {
 }
 
 function rg_chauffe_eau_gaz(di, besoin_ecs) {
-  const rg =
-    1 / (1 / di.rpn + 1790 * (di.qp0 / (besoin_ecs * 1000)) + 6970 * (di.pveil / besoin_ecs));
-  di.rendement_generation = rg;
-  return rg;
+  return (
+    1 /
+    (1 / di.rpn + 1790 * (di.qp0 / (besoin_ecs * 1000)) + 6970 * (di.pveil / (besoin_ecs * 1000)))
+  );
 }
 
 function rgrs_chaudiere(di, besoin_ecs) {
-  const rgrs =
+  return (
     1 /
     (1 / di.rpn +
       (1790 * di.qp0 + di.Qgw) / (besoin_ecs * 1000) +
-      (6970 * 0.5 * di.pveil) / (besoin_ecs * 1000));
-  return rgrs;
+      (6970 * 0.5 * di.pveil) / (besoin_ecs * 1000))
+  );
 }
 
 function rg_accumulateur_gaz(di, besoin_ecs) {
-  const rg =
+  return (
     1 /
-    (1 / di.rpn + (8592 * di.qp0 + di.Qgw) / (besoin_ecs * 1000) + (6970 * di.pveil) / besoin_ecs);
-  return rg;
+    (1 / di.rpn +
+      (8592 * di.qp0 + di.Qgw) / (besoin_ecs * 1000) +
+      (6970 * di.pveil) / (besoin_ecs * 1000))
+  );
 }
 
 function rgrsReseauUrbain(de) {
@@ -141,13 +156,20 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
   const di = gen_ecs.donnee_intermediaire || {};
   const du = {};
 
+  // Ratio de virtualisation à prendre en compte sur le rendement (17.2.1 Génération d’un DPE à l’appartement)
+  de.ratio_virtualisation = ecs_de.ratio_virtualisation || 1;
+
+  const besoin_ecs = ecs_di.besoin_ecs;
+  const besoin_ecs_dep = ecs_di.besoin_ecs_depensier;
+
   const usage_generateur = requestInput(de, du, 'usage_generateur');
   const type_generateur_id = type_generateur_ecs(di, de, du, usage_generateur);
   const type_energie = requestInput(de, du, 'type_energie');
 
   calc_Qgw(di, de, du);
+  di.Qgw *= de.ratio_virtualisation;
 
-  const pac_ids = tvColumnIDs('scop', 'type_generateur_ch');
+  const pac_ids = tvColumnIDs('scop', 'type_generateur_ecs');
   const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ecs');
   let Iecs, Iecs_dep;
   if (pac_ids.includes(type_generateur_id)) {
@@ -157,9 +179,8 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
     Iecs_dep = 1 / cop;
   } else if (type_energie === 'électricité') {
     const rd = ecs_di.rendement_distribution;
-    di.rendement_stockage = 1 / (1 + (di.Qgw * rd) / (ecs_di.besoin_ecs * 1000));
-    di.rendement_stockage_depensier =
-      1 / (1 + (di.Qgw * rd) / (ecs_di.besoin_ecs_depensier * 1000));
+    di.rendement_stockage = 1 / (1 + (di.Qgw * rd) / (besoin_ecs * 1000));
+    di.rendement_stockage_depensier = 1 / (1 + (di.Qgw * rd) / (besoin_ecs_dep * 1000));
     const type_generateur = enums.type_generateur_ecs[type_generateur_id];
     if (type_generateur === 'ballon électrique à accumulation vertical catégorie c ou 3 étoiles') {
       di.rendement_stockage *= 1.08;
@@ -171,9 +192,27 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
     const ca = enums.classe_altitude[ca_id];
     const zc = enums.zone_climatique[zc_id];
     const tbase = Tbase[ca][zc.slice(0, 2)];
-    tv_generateur_combustion(di, de, du, 'ecs', GV, tbase);
-    const besoin_ecs = ecs_di.besoin_ecs * di.ratio_besoin_ecs;
-    const besoin_ecs_dep = ecs_di.besoin_ecs_depensier * di.ratio_besoin_ecs;
+
+    /**
+     * Si la méthode de saisie n'est pas "Valeur forfaitaire" mais "saisies"
+     * Documentation 3CL : "Pour les installations récentes ou recommandées, les caractéristiques réelles des chaudières présentées sur les bases
+     * de données professionnelles peuvent être utilisées."
+     */
+    if (de.enum_methode_saisie_carac_sys_id === '1') {
+      tv_generateur_combustion(di, de, du, 'ecs', GV, tbase);
+    } else {
+      if (bug_for_bug_compat) {
+        if (di.qp0 < 1) {
+          di.qp0 *= 1000;
+          console.warn(`Correction di.qp0 pour le générateur ECS. Passage de la valeur en W`);
+        }
+      }
+    }
+
+    // La puissance de la veilleuse est à prendre en compte seulement si elle est présente dans l'installation
+    if (!di.pveilleuse) {
+      di.pveil = 0;
+    }
 
     const type_generateur = enums.type_generateur_ecs[type_generateur_id];
     if (
@@ -185,7 +224,7 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
       Iecs = 1 / di.rendement_generation;
       Iecs_dep = 1 / di.rendement_generation_depensier;
     } else if (type_generateur.includes('chaudière')) {
-      if (di.Qgw == 0) {
+      if (di.Qgw === 0) {
         di.rendement_generation = rgrs_chaudiere(di, besoin_ecs);
         di.rendement_generation_depensier = rgrs_chaudiere(di, besoin_ecs_dep);
         Iecs = 1 / di.rendement_generation;
@@ -205,22 +244,29 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
       console.warn(`!! type_generateur_ecs ${type_generateur} non implémenté !!`);
     }
   } else if (type_energie === 'réseau de chauffage urbain') {
-    di.rendement_generation = rgrsReseauUrbain(ecs_de);
-    di.rendement_generation_depensier = rgrsReseauUrbain(ecs_de);
+    if (bug_for_bug_compat) {
+      if (di.rendement_generation_stockage === 0.9 && ecs_de.reseau_distribution_isole === 0) {
+        ecs_de.reseau_distribution_isole = 1;
+        console.warn(
+          `Correction reseau_distribution_isole pour le générateur ECS (1 au lieu de 0 en fonction de la valeur de rendement_generation_stockage saisi)`
+        );
+      }
+    }
 
-    Iecs = 1 / di.rendement_generation;
-    Iecs_dep = 1 / di.rendement_generation_depensier;
+    di.rendement_generation_stockage = rgrsReseauUrbain(ecs_de);
+    di.rendement_generation_stockage_depensier = rgrsReseauUrbain(ecs_de);
+
+    Iecs = 1 / di.rendement_generation_stockage;
+    Iecs_dep = 1 / di.rendement_generation_stockage_depensier;
   } else {
     Iecs = 1;
     Iecs_dep = 1;
   }
-  conso_aux_gen(di, de, 'ecs', ecs_di.besoin_ecs, ecs_di.besoin_ecs_depensier);
+  conso_aux_gen(di, de, 'ecs', besoin_ecs, besoin_ecs_dep);
 
   const rd = ecs_di.rendement_distribution;
   Iecs = Iecs / rd;
   Iecs_dep = Iecs_dep / rd;
-
-  di.ratio_besoin_ecs = 1;
 
   // Système ECS avec solaire (paragraphe 11.3 de la doc Méthode de calcul 3CL-DPE 2021)
   if (ecs_de.enum_type_installation_solaire_id) {
@@ -229,8 +275,8 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
     di.conso_ecs = ecs_di.besoin_ecs * (1 - ecs_di.fecs) * Iecs;
     di.conso_ecs_depensier = ecs_di.besoin_ecs_depensier * (1 - ecs_di.fecs) * Iecs_dep;
   } else {
-    di.conso_ecs = ecs_di.besoin_ecs * Iecs;
-    di.conso_ecs_depensier = ecs_di.besoin_ecs_depensier * Iecs_dep;
+    di.conso_ecs = besoin_ecs * Iecs;
+    di.conso_ecs_depensier = besoin_ecs_dep * Iecs_dep;
   }
 
   gen_ecs.donnee_intermediaire = di;
