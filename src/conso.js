@@ -76,21 +76,39 @@ function getConso(coef, type_energie, conso) {
   return conso;
 }
 
-export default function calc_conso(Sh, zc_id, ca_id, vt, ch, ecs, fr) {
+export default function calc_conso(Sh, zc_id, ca_id, vt, ch, ecs, fr, prorataECS) {
   const gen_ch = ch.reduce(
     (acc, ch) => acc.concat(ch.generateur_chauffage_collection.generateur_chauffage),
     []
   );
-  const gen_ecs = ecs.reduce(
-    (acc, ecs) => acc.concat(ecs.generateur_ecs_collection.generateur_ecs),
-    []
-  );
+  const gen_ecs = ecs.reduce((acc, ecs) => {
+    const generateur_ecs = ecs.generateur_ecs_collection.generateur_ecs;
+    if (prorataECS === 1) {
+      // S'il existe une clé de repartition ECS, utilisation de celle-ci pour répartir la conso ECS collective à l'appartement
+      generateur_ecs.forEach(
+        (value) =>
+          (value.donnee_entree.cle_repartition_ecs =
+            (ecs.donnee_entree.cle_repartition_ecs || 1) * (ecs.donnee_entree.rdim || 1))
+      );
+    }
+    return acc.concat(generateur_ecs);
+  }, []);
 
   const ret = {
-    ef_conso: calc_conso_pond(Sh, zc_id, vt, gen_ch, gen_ecs, fr, 'conso', null),
-    ep_conso: calc_conso_pond(Sh, zc_id, vt, gen_ch, gen_ecs, fr, 'ep_conso', coef_ep),
-    emission_ges: calc_conso_pond(Sh, zc_id, vt, gen_ch, gen_ecs, fr, 'emission_ges', coef_ges),
-    cout: calc_conso_pond(Sh, zc_id, vt, gen_ch, gen_ecs, fr, 'cout', coef_cout)
+    ef_conso: calc_conso_pond(Sh, zc_id, vt, gen_ch, gen_ecs, fr, 'conso', null, prorataECS),
+    ep_conso: calc_conso_pond(Sh, zc_id, vt, gen_ch, gen_ecs, fr, 'ep_conso', coef_ep, prorataECS),
+    emission_ges: calc_conso_pond(
+      Sh,
+      zc_id,
+      vt,
+      gen_ch,
+      gen_ecs,
+      fr,
+      'emission_ges',
+      coef_ges,
+      prorataECS
+    ),
+    cout: calc_conso_pond(Sh, zc_id, vt, gen_ch, gen_ecs, fr, 'cout', coef_cout, prorataECS)
   };
   ret.ep_conso.classe_bilan_dpe = classe_bilan_dpe(
     ret.ep_conso.ep_conso_5_usages_m2,
@@ -195,7 +213,27 @@ function classe_emission_ges(emission_ges_5_usages_m2, zc_id, ca_id, Sh) {
   return 'G';
 }
 
-function calc_conso_pond(Sh, zc_id, vt_list, gen_ch, gen_ecs, fr_list, prefix, coef) {
+/**
+ * @param gen_ecs {Generateur_ecs_collection}
+ * @param field {string}
+ * @param coef {number}
+ * @param prorataECS {number}
+ * @returns {*}
+ */
+function getEcsConso(gen_ecs, field, coef, prorataECS) {
+  return gen_ecs.reduce((acc, gen_ecs) => {
+    const conso = gen_ecs.donnee_intermediaire[field];
+    let type_energie = enums.type_energie[gen_ecs.donnee_entree.enum_type_energie_id];
+    if (type_energie === 'électricité') type_energie = 'électricité ecs';
+    return (
+      acc +
+      getConso(coef, type_energie, conso) *
+        (gen_ecs.donnee_entree.cle_repartition_ecs || prorataECS)
+    );
+  }, 0);
+}
+
+function calc_conso_pond(Sh, zc_id, vt_list, gen_ch, gen_ecs, fr_list, prefix, coef, prorataECS) {
   const ret = {};
   ret.auxiliaire_ventilation = vt_list.reduce((acc, vt) => {
     const conso = vt.donnee_intermediaire.conso_auxiliaire_ventilation || 0;
@@ -231,7 +269,6 @@ function calc_conso_pond(Sh, zc_id, vt_list, gen_ch, gen_ecs, fr_list, prefix, c
     return acc + getConso(coef, type_energie, conso);
   }, 0);
 
-  // ecs
   ret.auxiliaire_generation_ecs = gen_ecs.reduce((acc, gen_ecs) => {
     const conso = gen_ecs.donnee_intermediaire.conso_auxiliaire_generation_ecs || 0;
     return acc + getConso(coef, 'électricité auxiliaire', conso);
@@ -244,19 +281,9 @@ function calc_conso_pond(Sh, zc_id, vt_list, gen_ch, gen_ecs, fr_list, prefix, c
 
   ret.auxiliaire_distribution_ecs = 0;
 
-  ret.ecs = gen_ecs.reduce((acc, gen_ecs) => {
-    const conso = gen_ecs.donnee_intermediaire.conso_ecs;
-    let type_energie = enums.type_energie[gen_ecs.donnee_entree.enum_type_energie_id];
-    if (type_energie === 'électricité') type_energie = 'électricité ecs';
-    return acc + getConso(coef, type_energie, conso);
-  }, 0);
+  ret.ecs = getEcsConso(gen_ecs, 'conso_ecs', coef, prorataECS);
 
-  ret.ecs_depensier = gen_ecs.reduce((acc, gen_ecs) => {
-    const conso = gen_ecs.donnee_intermediaire.conso_ecs_depensier;
-    let type_energie = enums.type_energie[gen_ecs.donnee_entree.enum_type_energie_id];
-    if (type_energie === 'électricité') type_energie = 'électricité ecs';
-    return acc + getConso(coef, type_energie, conso);
-  }, 0);
+  ret.ecs_depensier = getEcsConso(gen_ecs, 'conso_ecs_depensier', coef, prorataECS);
 
   ret.fr = fr_list.reduce((acc, fr) => {
     const conso = fr.donnee_intermediaire.conso_fr;
