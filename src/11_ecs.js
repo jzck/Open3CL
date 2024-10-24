@@ -47,7 +47,7 @@ function tv_rendement_distribution_ecs(di, de, du, pvc) {
   }
 }
 
-export default function calc_ecs(ecs, becs, becs_dep, GV, ca_id, zc_id) {
+export default function calc_ecs(ecs, becs, becs_dep, GV, ca_id, zc_id, th) {
   const de = ecs.donnee_entree;
   const di = {};
   const du = {};
@@ -59,7 +59,7 @@ export default function calc_ecs(ecs, becs, becs_dep, GV, ca_id, zc_id) {
   tv_rendement_distribution_ecs(di, de, du, pvc);
 
   const gen_ecs_list = ecs.generateur_ecs_collection.generateur_ecs;
-  gen_ecs_list.forEach((gen_ecs) => calc_gen_ecs(gen_ecs, di, de, GV, ca_id, zc_id));
+  gen_ecs_list.forEach((gen_ecs) => calc_gen_ecs(gen_ecs, di, de, GV, ca_id, zc_id, th));
 
   di.conso_ecs = gen_ecs_list.reduce(
     (acc, gen_ecs) => acc + gen_ecs.donnee_intermediaire.conso_ecs,
