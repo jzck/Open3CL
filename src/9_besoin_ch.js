@@ -69,8 +69,8 @@ export default function calc_besoin_ch(
     pertes_stockage_ecs_recup_depensier += Qrec_stock_21 / 1000;
 
     // pertes distribution
-    const becs_j = calc_besoin_ecs_j(ilpa, ca, mois, zc, nadeq, false);
-    const becs_j_dep = calc_besoin_ecs_j(ilpa, ca, mois, zc, nadeq, true);
+    const becs_j = calc_besoin_ecs_j(ca, mois, zc, nadeq, false);
+    const becs_j_dep = calc_besoin_ecs_j(ca, mois, zc, nadeq, true);
 
     sumNref19 += nref19;
     sumNref21 += nref21;
