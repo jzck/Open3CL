@@ -62,7 +62,7 @@ export function Upt(o) {
   return de.l * di.k * (de.pourcentage_valeur_pont_thermique || 1);
 }
 
-export default function calc_deperdition(cg, zc, th, ej, enveloppe, logement) {
+export default function calc_deperdition(cg, zc, th, ej, enveloppe, logement, Sh) {
   const pc = cg.enum_periode_construction_id;
 
   const mur_list = enveloppe.mur_collection.mur || [];
@@ -84,7 +84,7 @@ export default function calc_deperdition(cg, zc, th, ej, enveloppe, logement) {
   const Sdep = calc_Sdep(murs_list, porte_list, bv_list);
 
   vt_list.forEach((vt) => {
-    calc_ventilation(vt, cg, th, Sdep, mur_list, ph_list, porte_list, bv_list);
+    calc_ventilation(vt, cg, th, Sdep, Sh, mur_list, ph_list, porte_list, bv_list);
   });
 
   const d_mur = mur_list.reduce((acc, mur) => acc + Umur(mur) || 0, 0);

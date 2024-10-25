@@ -106,16 +106,28 @@ function calc_hperm(di, Sh, Hsp, Sdep, pfe) {
   di.hperm = 0.34 * Qvinf;
 }
 
-export default function calc_ventilation(vt, cg, th, Sdep, mur_list, ph_list, porte_list, bv_list) {
+export default function calc_ventilation(
+  vt,
+  cg,
+  th,
+  Sdep,
+  Sh,
+  mur_list,
+  ph_list,
+  porte_list,
+  bv_list
+) {
   const de = vt.donnee_entree;
   const du = {};
   const di = {};
 
-  let Sh = requestInput(de, du, 'surface_ventile', 'float');
+  let surface_ventile = requestInput(de, du, 'surface_ventile', 'float');
 
-  if (Sh === undefined) {
-    if (th === 'maison' || th === 'appartement') Sh = cg.surface_habitable_logement;
-    else if (th === 'immeuble') Sh = cg.surface_habitable_immeuble;
+  if (!surface_ventile) {
+    surface_ventile = Sh;
+  } else if (surface_ventile !== Sh) {
+    // S'il y a une répartition alors c'est que la vmc est collective. La surface à prendre en compte est la surface de l'immeuble
+    surface_ventile /= de.cle_repartition_ventilation || 1;
   }
 
   const Hsp = cg.hsp;
@@ -123,10 +135,10 @@ export default function calc_ventilation(vt, cg, th, Sdep, mur_list, ph_list, po
   tv_debits_ventilation(di, de, du);
   tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list);
 
-  di.hvent = 0.34 * di.qvarep_conv * Sh;
+  di.hvent = 0.34 * di.qvarep_conv * surface_ventile;
 
   const pfe = requestInput(de, du, 'plusieurs_facade_exposee', 'bool');
-  calc_hperm(di, Sh, Hsp, Sdep, pfe);
+  calc_hperm(di, surface_ventile, Hsp, Sdep, pfe);
   calc_pvent(di, de, du, th);
 
   delete di.qvarep_conv;

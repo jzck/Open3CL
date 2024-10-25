@@ -117,7 +117,7 @@ export function calcul_3cl(dpe) {
       ? '1'
       : '0';
 
-  const deperdition = calc_deperdition(cg, zc_id, th, ej, env, logement);
+  const deperdition = calc_deperdition(cg, zc_id, th, ej, env, logement, ShEcs);
   const GV = deperdition.deperdition_enveloppe;
 
   env.inertie = inertie.calculateInertie(env);
