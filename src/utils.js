@@ -329,3 +329,17 @@ export function collectionCanBeEmpty(logement, type, enum_type_liaison_id) {
 
   return pontsThermiquesWithLiaison.length === 0 && deperdition === 0;
 }
+
+/**
+ * Retrieve a number describing a volume from the description
+ * @param description string in which to get the number
+ * @returns {number} if found, 0 otherwise
+ */
+export function getVolumeStockageFromDescription(description) {
+  if (!description) {
+    return 0;
+  }
+
+  const matching = description.split('contenance ballon ');
+  return matching && matching.length > 1 ? parseInt(matching[1], 10) : 0;
+}

@@ -59,6 +59,12 @@ export default function calc_besoin_ch(
     );
   }, 0);
 
+  /**
+   * 11.4 Plusieurs systèmes d’ECS (limité à 2 systèmes différents par logement)
+   * Les besoins en ECS pour chaque générateur sont / 2
+   */
+  const prorataEcs = instal_ecs.length > 1 ? 0.5 : 1;
+
   for (const mois of mois_liste) {
     const nref19 = Nref19[ca][mois][zc];
     const nref21 = Nref21[ca][mois][zc];
@@ -69,20 +75,13 @@ export default function calc_besoin_ch(
     pertes_stockage_ecs_recup_depensier += Qrec_stock_21 / 1000;
 
     // pertes distribution
-    const becs_j = calc_besoin_ecs_j(ca, mois, zc, nadeq, false);
-    const becs_j_dep = calc_besoin_ecs_j(ca, mois, zc, nadeq, true);
-
+    const becs_j = calc_besoin_ecs_j(ca, mois, zc, nadeq, false) * prorataEcs;
+    const becs_j_dep = calc_besoin_ecs_j(ca, mois, zc, nadeq, true) * prorataEcs;
     sumNref19 += nref19;
     sumNref21 += nref21;
 
-    // If several ECS installations, we consider a contribution of half for each (&15.2.3)
-    const Rat_ecs = instal_ecs.length > 1 ? 0.5 : 1;
-
-    QrecDistr += instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j, Rat_ecs), 0);
-    QrecDistrDepensier += instal_ecs.reduce(
-      (acc, ecs) => acc + calc_Qdw_j(ecs, becs_j_dep, Rat_ecs),
-      0
-    );
+    QrecDistr += instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j), 0);
+    QrecDistrDepensier += instal_ecs.reduce((acc, ecs) => acc + calc_Qdw_j(ecs, becs_j_dep), 0);
 
     // bvj
     const dh19j = dh19[ca][mois][zc];
