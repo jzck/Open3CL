@@ -52,7 +52,7 @@ function tv_umur(di, de, du, pc_id, zc, ej) {
 }
 
 function calc_umur0(di, de, du) {
-  const umur0_avant = di.umur0;
+  const umur0_avant = du.umur0_avant;
   const methode_saisie_u0 = requestInput(de, du, 'methode_saisie_u0');
   switch (methode_saisie_u0) {
     case 'type de paroi inconnu (valeur par défaut)':
@@ -90,7 +90,10 @@ function calc_umur0(di, de, du) {
   }
 
   if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1) {
-    if (umur0_avant !== undefined && parseFloat(umur0_avant.toFixed(3)) === parseFloat(di.umur0.toFixed(3))) {
+    if (
+      umur0_avant !== undefined &&
+      parseFloat(umur0_avant.toFixed(3)) === parseFloat(di.umur0.toFixed(3))
+    ) {
       // BUG: 2287E1923356Q utilise paroi_ancienne=1 mais le calcul est fait avec paroi_ancienne=0
       console.warn(`BUG(${scriptName}) correction isolation pour parois anciennes pas appliqué`);
       if (bug_for_bug_compat) di.umur0 = umur0_avant;
@@ -107,7 +110,7 @@ export default function calc_mur(mur, zc, pc_id, ej) {
   const de = mur.donnee_entree;
   const du = {};
   const di = {};
-  di.umur0 = mur.donnee_intermediaire.umur0; // pour comparaison
+  du.umur0_avant = mur.donnee_intermediaire?.umur0; // pour comparaison
 
   requestInput(de, du, 'surface_paroi_totale', 'float');
   requestInput(de, du, 'orientation');
