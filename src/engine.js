@@ -8,7 +8,7 @@ import calc_chauffage from './9_chauffage.js';
 import calc_confort_ete from './2021_04_13_confort_ete.js';
 import calc_qualite_isolation from './2021_04_13_qualite_isolation.js';
 import calc_conso from './conso.js';
-import { add_references, sanitize_dpe } from './utils.js';
+import { add_references, collectionCanBeEmpty, sanitize_dpe } from './utils.js';
 import { Inertie } from './7_inertie.js';
 
 function calc_th(map_id) {
@@ -39,12 +39,42 @@ export function calcul_3cl(dpe) {
   } else if (!logement.enveloppe.mur_collection) {
     console.warn('vide: logement.enveloppe.mur_collection');
     return null;
-  } else if (!logement.enveloppe.plancher_haut_collection) {
-    console.warn('vide: logement.enveloppe.plancher_haut_collection');
-    return null;
-  } else if (!logement.enveloppe.plancher_bas_collection) {
-    console.warn('vide: logement.enveloppe.plancher_bas_collection');
-    return null;
+  } else if (
+    !logement.enveloppe.plancher_haut_collection ||
+    !logement.enveloppe.plancher_haut_collection.plancher_haut.length
+  ) {
+    /**
+     * Vérification si le plancher haut est considéré comme non déperditif et peut donc être vide
+     * - Pas de pont thermique ou pas de pont thermique de type murs / plancher haut
+     * (enum_type_liaison_id === 1 : liaison 'plancher haut / mur').
+     * - Déperdition plancher_haut === 0 (donne probablement sur un autre local chauffé)
+     */
+    if (collectionCanBeEmpty(logement, 'plancher_haut', 3)) {
+      logement.enveloppe.plancher_haut_collection = {
+        plancher_haut: []
+      };
+    } else {
+      console.error('plancher_bas_collection should not be empty');
+      return null;
+    }
+  } else if (
+    !logement.enveloppe.plancher_bas_collection ||
+    !logement.enveloppe.plancher_bas_collection.plancher_bas.length
+  ) {
+    /**
+     * Vérification si le plancher bas est considéré comme non déperditif et peut donc être vide
+     * - Pas de pont thermique ou pas de pont thermique de type murs / plancher bas
+     * (enum_type_liaison_id === 1 : liaison 'plancher bas / mur').
+     * - Déperdition plancher_bas === 0 (donne probablement sur un autre local chauffé)
+     */
+    if (collectionCanBeEmpty(logement, 'plancher_bas', 1)) {
+      logement.enveloppe.plancher_bas_collection = {
+        plancher_bas: []
+      };
+    } else {
+      console.error('plancher_bas_collection should not be empty');
+      return null;
+    }
   }
 
   add_references(logement.enveloppe);
