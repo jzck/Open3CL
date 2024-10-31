@@ -11,7 +11,7 @@ function tv_k(di, de, du, pc_id, enveloppe) {
   const type_liaison = requestInput(de, du, 'type_liaison');
 
   if (!de.reference_1) {
-    console.warn('BUG: pas de reference pour le pont thermique...');
+    console.warn(`BUG: pas de reference pour le pont thermique ${de.description}...`);
     // on trouve les references grace a la description
     const desc = de.description;
     let desc_1, desc_2;
@@ -48,6 +48,7 @@ function tv_k(di, de, du, pc_id, enveloppe) {
         break;
       case 'plancher intermédiaire lourd / mur':
         // TODO
+        console.warn(`Pont thermique ${type_liaison} non supporté`);
         break;
       case 'plancher bas / mur':
       case 'plancher haut lourd / mur':
@@ -147,9 +148,9 @@ function tv_k(di, de, du, pc_id, enveloppe) {
     }
     case 'plancher intermédiaire lourd / mur':
       // TODO
+      console.warn(`Pont thermique ${type_liaison} non supporté`);
       break;
     case 'refend / mur':
-      // TODO
       break;
     case 'menuiserie / mur': {
       const menuiserie_list = bv_list.concat(porte_list);
