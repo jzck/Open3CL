@@ -281,10 +281,12 @@ export function clean_dpe(dpe_in) {
 
 export function sanitize_dpe(dpe_in) {
   const collection_paths = [
+    'logement.plancher_bas_collection.plancher_bas',
+    'logement.plancher_haut_collection.plancher_haut',
     'logement.ventilation_collection.ventilation',
     'logement.climatisation_collection.climatisation',
-    'logement.enveloppe.porte_collection.porte'
-    /* 'logement.enveloppe.pont_thermique_collection.pont_thermique' */
+    'logement.enveloppe.porte_collection.porte',
+    'logement.enveloppe.pont_thermique_collection.pont_thermique'
   ];
   for (const path of collection_paths) {
     if (!_.has(dpe_in, path)) {
@@ -305,4 +307,25 @@ export function getThicknessFromDescription(description) {
 
   const matching = description.match(/(\d+) cm/);
   return matching && matching.length > 1 ? Number.parseFloat(matching[1]) : 0;
+}
+
+/**
+ * Return true si la collection $type peut être vide
+ * - Pas de pont thermique ou pas de pont thermique de type enum_type_liaison_id
+ * - Déperdition pour $type === 0 (donne probablement sur un autre local chauffé)
+ * @param logement {Logement}
+ * @param type {string}
+ * @param enum_type_liaison_id {number}
+ * @returns {boolean}
+ */
+export function collectionCanBeEmpty(logement, type, enum_type_liaison_id) {
+  const pontsThermiques = logement.enveloppe.pont_thermique_collection.pont_thermique || [];
+
+  const pontsThermiquesWithLiaison = pontsThermiques.filter(
+    (pontThermique) => pontThermique.donnee_entree.enum_type_liaison_id === enum_type_liaison_id
+  );
+
+  const deperdition = logement.sortie.deperdition[`deperdition_${type}`];
+
+  return pontsThermiquesWithLiaison.length === 0 && deperdition === 0;
 }
