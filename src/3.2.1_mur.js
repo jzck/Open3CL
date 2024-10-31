@@ -90,7 +90,7 @@ function calc_umur0(di, de, du) {
   }
 
   if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1) {
-    if (parseFloat(umur0_avant.toFixed(3)) === parseFloat(di.umur0.toFixed(3))) {
+    if (umur0_avant !== undefined && parseFloat(umur0_avant.toFixed(3)) === parseFloat(di.umur0.toFixed(3))) {
       // BUG: 2287E1923356Q utilise paroi_ancienne=1 mais le calcul est fait avec paroi_ancienne=0
       console.warn(`BUG(${scriptName}) correction isolation pour parois anciennes pas appliqué`);
       if (bug_for_bug_compat) di.umur0 = umur0_avant;
