@@ -5,7 +5,8 @@ import {
   requestInput,
   requestInputID,
   Tbase,
-  bug_for_bug_compat
+  bug_for_bug_compat,
+  getVolumeStockageFromDescription
 } from './utils.js';
 import { tv_scop } from './12.4_pac.js';
 import { tv_generateur_combustion } from './13.2_generateur_combustion.js';
@@ -56,23 +57,23 @@ export function calc_Qdw_j(instal_ecs, becs_j) {
 
   const type_installation = requestInput(de, du, 'type_installation');
 
-  let Qdw_j;
-  if (type_installation === 'installation individuelle') {
-    const Sh = de.surface_habitable;
-    const Rat_ecs = 1;
-    const Lvc = 0.2 * Sh * Rat_ecs;
-    Qdw_j = ((0.5 * Lvc) / Sh) * becs_j;
-  } else if (type_installation.includes('installation collective')) {
-    Qdw_j = (0.028 + 0.112) * becs_j;
-  } else {
-    console.warn(`!! calc_Qdw_j: ${type_installation} non pris en compte !!`);
+  let Qdw_ind_vc_j;
+  let Qdw_col_vc_j = 0;
+
+  const Rat_ecs = 1;
+  const Lvc = 0.2 * Rat_ecs;
+
+  Qdw_ind_vc_j = 0.5 * Lvc * becs_j;
+
+  if (type_installation.includes('installation collective')) {
+    Qdw_col_vc_j = 0.112 * becs_j;
   }
 
   instal_ecs.donnee_utilisateur = du;
-  return Qdw_j;
+  return Qdw_col_vc_j + Qdw_ind_vc_j;
 }
 
-function calc_Qgw(di, de, du) {
+function calc_Qgw(di, de, du, ecs_de) {
   const type_stockage_ecs = requestInput(de, du, 'type_stockage_ecs');
 
   // stockage
@@ -83,8 +84,18 @@ function calc_Qgw(di, de, du) {
   let Vs = requestInput(de, du, 'volume_stockage', 'float');
   const gen_ecs_elec_ids = tvColumnIDs('pertes_stockage', 'type_generateur_ecs');
 
-  // Si virtualisation des besoins ECS, le volume du ballon à prendre en compte est le volume total du ballon collectif
-  Vs = Number.parseFloat(Vs) / de.ratio_virtualisation;
+  if (bug_for_bug_compat) {
+    /**
+     * Dans certains cas, le volume annoncé pour le ballon est proratisé à l'appartement
+     * alors qu'il est d'autres fois affiché pour l'immeuble.
+     * le volume étant souvent décrit dans la description, on vérifie si le volume a été proratisé
+     */
+    const VsFromDescription = getVolumeStockageFromDescription(ecs_de.description);
+
+    if (VsFromDescription === Math.round(Number.parseFloat(Vs) / de.ratio_virtualisation)) {
+      Vs = VsFromDescription;
+    }
+  }
 
   if (gen_ecs_elec_ids.includes(de.enum_type_generateur_ecs_id)) {
     tv_pertes_stockage(di, de, du);
@@ -166,7 +177,7 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
   const type_generateur_id = type_generateur_ecs(di, de, du, usage_generateur);
   const type_energie = requestInput(de, du, 'type_energie');
 
-  calc_Qgw(di, de, du);
+  calc_Qgw(di, de, du, ecs_de);
   di.Qgw *= de.ratio_virtualisation;
 
   const pac_ids = tvColumnIDs('scop', 'type_generateur_ecs');

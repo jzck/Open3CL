@@ -194,7 +194,17 @@ export function calcul_3cl(dpe) {
   const virtualisationECS = ['4', '5', '32', '35', '36', '37'].includes(map_id);
 
   let becs = apport_et_besoin.besoin_ecs;
-  const becs_dep = apport_et_besoin.besoin_ecs_depensier;
+  let becs_dep = apport_et_besoin.besoin_ecs_depensier;
+
+  /**
+   * 11.4 Plusieurs systèmes d’ECS (limité à 2 systèmes différents par logement)
+   * Les besoins en ECS pour chaque générateur sont / 2
+   */
+  if (ecs.length > 1) {
+    becs /= 2;
+    becs_dep /= 2;
+  }
+
   ecs.forEach((ecs) => calc_ecs(ecs, becs, becs_dep, GV, ca_id, zc_id, th, virtualisationECS));
 
   const ac = cg.annee_construction;

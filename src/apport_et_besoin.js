@@ -29,17 +29,7 @@ export default function calc_apport_et_besoin(
 
   const nadeq = nadeqService.calculateNadeq(logement);
 
-  let besoin_ecs = calc_besoin_ecs(ilpa, ca, zc, nadeq);
-
-  /**
-   * 11.4 Plusieurs systèmes d’ECS (limité à 2 systèmes différents par logement)
-   * Les besoins en ECS pour chaque générateur sont / 2
-   */
-  if (ecs.length > 1) {
-    besoin_ecs.besoin_ecs /= 2;
-    besoin_ecs.besoin_ecsbesoin_ecs_depensier /= 2;
-  }
-
+  const besoin_ecs = calc_besoin_ecs(ilpa, ca, zc, nadeq);
   const besoin_fr = calc_besoin_fr(ilpa, ca, zc, Sh, nadeq, GV, inertie, bv);
   const apport_interne = calc_ai(ilpa, ca, zc, Sh, nadeq);
   const apport_solaire = calc_as(ilpa, ca, zc, bv);
