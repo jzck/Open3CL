@@ -148,7 +148,26 @@ export function calcul_3cl(dpe) {
       ? '1'
       : '0';
 
-  const deperdition = calc_deperdition(cg, zc_id, th, ej, env, logement, ShChauffageAndEcs);
+  /**
+   * 4 - Calcul des déperditions par renouvellement d’air
+   * Les valeurs des coefficients de protection E et F sont différents si plusieurs façades sont exposées ou non
+   */
+  const ficheTechniqueFacadesExposees = getFicheTechnique(dpe, '10', 'exposées');
+
+  logement.ventilation_collection.ventilation.forEach((ventilation) => {
+    ventilation.donnee_entree.ficheTechniqueFacadesExposees = ficheTechniqueFacadesExposees;
+  });
+
+  const deperdition = calc_deperdition(
+    cg,
+    zc_id,
+    th,
+    ej,
+    env,
+    logement,
+    ShChauffageAndEcs,
+    ficheTechniqueFacadesExposees
+  );
   const GV = deperdition.deperdition_enveloppe;
 
   env.inertie = inertie.calculateInertie(env);

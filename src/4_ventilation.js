@@ -137,7 +137,31 @@ export default function calc_ventilation(
 
   di.hvent = 0.34 * di.qvarep_conv * surface_ventile;
 
-  const pfe = requestInput(de, du, 'plusieurs_facade_exposee', 'bool');
+  let pfe = requestInput(de, du, 'plusieurs_facade_exposee', 'bool');
+
+  /**
+   * Si une fiche technique pour cette variable est présente, elle est prise en compte
+   * Les valeurs de plusieurs_facade_exposee n'étant pas toujours utilisées de la même manière
+   * dans tous les DPEs (parfois 0 = 'Oui', d'autres 0 = 'Non')
+   */
+  if (de.ficheTechniqueFacadesExposees) {
+    const pfeFicheTechnique = ['non', 'une'].includes(
+      de.ficheTechniqueFacadesExposees.valeur.toLowerCase()
+    )
+      ? 0
+      : 1;
+
+    if (pfeFicheTechnique !== pfe) {
+      console.error(
+        `La valeur de la variable plusieurs_facade_exposee ne correspond pas à celle présente 
+        dans la fiche technique "${de.ficheTechniqueFacadesExposees.description}". 
+        La valeur de la fiche technique est prise en compte.`
+      );
+    }
+
+    pfe = pfeFicheTechnique;
+  }
+
   calc_hperm(di, surface_ventile, Hsp, Sdep, pfe);
   calc_pvent(di, de, du, th);
 

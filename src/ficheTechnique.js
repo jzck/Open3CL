@@ -27,7 +27,7 @@ export default function getFicheTechnique(dpe, categoryFicheTechiqueId, descript
     (ficheTechnique) =>
       ficheTechnique &&
       ficheTechnique.description &&
-      ficheTechnique.description.indexOf(description) !== -1
+      ficheTechnique.description.toLowerCase().indexOf(description.toLowerCase()) !== -1
   );
 
   if (!found.length) {
