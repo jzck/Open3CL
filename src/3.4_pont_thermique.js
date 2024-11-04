@@ -1,7 +1,7 @@
 import enums from './enums.js';
-import { tv, requestInput } from './utils.js';
+import { tv, requestInput, compareReferences } from './utils.js';
 
-function tv_k(di, de, du, pc_id, enveloppe) {
+function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
   const mur_list = enveloppe.mur_collection.mur || [];
   const pb_list = enveloppe.plancher_bas_collection.plancher_bas || [];
   const ph_list = enveloppe.plancher_haut_collection.plancher_haut || [];
@@ -23,7 +23,11 @@ function tv_k(di, de, du, pc_id, enveloppe) {
       desc_1 = desc.match(/(.+)-(.+)/)[1];
       desc_2 = desc.match(/(.+)-(.+)/)[2];
     } else {
-      console.error(`BUG: description '${desc}' non reconnue pour le pont thermique...`);
+      di.k = pt_di.k;
+      console.error(
+        `BUG: description '${desc}' non reconnue pour le pont thermique. 
+        La valeur de k est prise dans les données intermédiaires du DPE`
+      );
       return;
     }
 
@@ -35,8 +39,10 @@ function tv_k(di, de, du, pc_id, enveloppe) {
     if (ptMur) {
       de.reference_1 = ptMur.donnee_entree.reference;
     } else {
+      di.k = pt_di.k;
       console.error(
-        `BUG: descriptions '${desc_1}' ou '${desc_2}' du pont thermique non reconnue dans les descriptions des murs`
+        `BUG: descriptions '${desc_1}' ou '${desc_2}' du pont thermique non reconnue dans les descriptions des murs. 
+        La valeur de k est prise dans les données intermédiaires du DPE`
       );
       return;
     }
@@ -67,8 +73,10 @@ function tv_k(di, de, du, pc_id, enveloppe) {
       if (ptMur) {
         de.reference_2 = ptMur.donnee_entree.reference;
       } else {
+        di.k = pt_di.k;
         console.error(
-          `BUG: descriptions '${desc_1}' ou '${desc_2}' du pont thermique non reconnue dans '${type_liaison}'`
+          `BUG: descriptions '${desc_1}' ou '${desc_2}' du pont thermique non reconnue dans '${type_liaison}'. 
+          La valeur de k est prise dans les données intermédiaires du DPE`
         );
         return;
       }
@@ -77,8 +85,8 @@ function tv_k(di, de, du, pc_id, enveloppe) {
 
   const mur = mur_list.find(
     (mur) =>
-      mur.donnee_entree.reference === de.reference_1 ||
-      mur.donnee_entree.reference === de.reference_2
+      compareReferences(mur.donnee_entree.reference, de.reference_1) ||
+      compareReferences(mur.donnee_entree.reference, de.reference_2)
   );
 
   const matcher = {
@@ -87,12 +95,20 @@ function tv_k(di, de, du, pc_id, enveloppe) {
 
   const pc = enums.periode_construction[pc_id];
 
+  let type_isolation_mur;
+
   if (mur) {
-    let type_isolation_mur = requestInput(
-      mur.donnee_entree,
-      mur.donnee_utilisateur,
-      'type_isolation'
-    );
+    /**
+     * 3.4 Calcul des déperditions par les ponts thermiques
+     * Les ponts thermiques des parois au niveau des circulations communes ne sont pas pris en compte.
+     *
+     */
+    if (['14', '15', '16'].includes(mur.donnee_entree.enum_type_adjacence_id)) {
+      di.k = 0;
+      return;
+    }
+
+    type_isolation_mur = requestInput(mur.donnee_entree, mur.donnee_utilisateur, 'type_isolation');
 
     const pi = requestInput(mur.donnee_entree, mur.donnee_utilisateur, 'periode_isolation') || pc;
 
@@ -110,11 +126,15 @@ function tv_k(di, de, du, pc_id, enveloppe) {
       const plancher_list = ph_list.concat(pb_list);
       const plancher = plancher_list.find(
         (plancher) =>
-          plancher.donnee_entree.reference === de.reference_1 ||
-          plancher.donnee_entree.reference === de.reference_2
+          compareReferences(plancher.donnee_entree.reference, de.reference_1) ||
+          compareReferences(plancher.donnee_entree.reference, de.reference_2)
       );
       if (!plancher) {
-        console.error('Did not find plancher reference:', de.reference_1, de.reference_2);
+        di.k = pt_di.k;
+        console.error(
+          `Impossible de trouver un plancher ayant pour référence '${de.reference_1}' ou '${de.reference_2}'. 
+          La valeur de k est prise dans les données intermédiaires du DPE`
+        );
         return;
       }
       const isolation_plancher = requestInput(
@@ -153,14 +173,43 @@ function tv_k(di, de, du, pc_id, enveloppe) {
     case 'refend / mur':
       break;
     case 'menuiserie / mur': {
+      // Si isolation ITR, k = 0.2, pas besoin des informations de la fenêtre
+      if (type_isolation_mur === 'itr') {
+        break;
+      }
+      /**
+       * 3.4.5 Menuiserie / mu
+       * Les ponts thermiques avec les parois en structure bois (ossature bois, rondin de bois, pans de bois) sont négligés.
+       * enum_materiaux_structure_mur_id
+       * 5 - Murs en pan de bois sans remplissage tout venant
+       * 6 - Murs en pan de bois avec remplissage tout venant
+       * 7 - Murs bois (rondin)
+       * 18 - Murs en ossature bois avec isolant en remplissage ≥ 2006
+       * 24 - Murs en ossature bois avec isolant en remplissage 2001-2005
+       * 25 - Murs en ossature bois sans remplissage
+       * 26 - Murs en ossature bois avec isolant en remplissage <2001
+       * 27 - Murs en ossature bois avec remplissage tout venant
+       */
+      if (
+        ['5', '6', '7', '18', '24', '25', '26', '27'].includes(
+          mur.donnee_entree.enum_materiaux_structure_mur_id
+        )
+      ) {
+        di.k = 0;
+        return;
+      }
       const menuiserie_list = bv_list.concat(porte_list);
       const menuiserie = menuiserie_list.find(
         (men) =>
-          men.donnee_entree.reference === de.reference_1 ||
-          men.donnee_entree.reference === de.reference_2
+          compareReferences(men.donnee_entree.reference, de.reference_1) ||
+          compareReferences(men.donnee_entree.reference, de.reference_2)
       );
       if (!menuiserie) {
-        console.error('Did not find menuiserie reference:', de.reference_1, de.reference_2);
+        di.k = pt_di.k;
+        console.error(
+          `Impossible de trouver une menuiserie ayant pour référence '${de.reference_1}' ou '${de.reference_2}'. 
+          La valeur de k est prise dans les données intermédiaires du DPE`
+        );
         return;
       }
       const mde = menuiserie.donnee_entree;
@@ -196,19 +245,27 @@ export default function calc_pont_thermique(pt, pc_id, enveloppe) {
   const di = {};
   const du = {};
 
-  const methode_saisie_pont_thermique = requestInput(de, du, 'methode_saisie_pont_thermique');
+  const methode_saisie_pont_thermique = parseInt(de.enum_methode_saisie_pont_thermique_id);
 
-  switch (methode_saisie_pont_thermique) {
-    case 'valeur forfaitaire':
-      tv_k(di, de, du, pc_id, enveloppe);
-      break;
-    case 'valeur justifiée saisie à partir des documents justificatifs autorisés':
-      di.k = requestInput(de, du, 'k', 'float');
-      break;
-    case 'saisie direct k depuis rset/rsee( etude rt2012/re2020)':
-      break;
-    default:
-      console.error('methode_saisie_pont_thermique non reconnu:' + methode_saisie_pont_thermique);
+  /**
+   * Si la valeur de k est directement saisie, prendre cette valeur
+   * enum_methode_saisie_pont_thermique_id
+   * 1 - valeur forfaitaire
+   * 2 - valeur justifiée saisie à partir des documents justificatifs autorisés
+   * 3 - saisie direct k depuis rset/rsee( etude rt2012/re2020)
+   */
+  if (methode_saisie_pont_thermique === 1) {
+    tv_k(pt.donnee_intermediaire, di, de, du, pc_id, enveloppe);
+  } else if (methode_saisie_pont_thermique === 2 || methode_saisie_pont_thermique === 3) {
+    if (de.k_saisi) {
+      di.k = de.k_saisi;
+    } else {
+      console.error(
+        `Aucune valeur de k_saisi pour le pont thermique '${pt.donnee_entree.reference}' alors que la donnée est saisie`
+      );
+    }
+  } else {
+    console.error('methode_saisie_pont_thermique non reconnu:' + methode_saisie_pont_thermique);
   }
 
   pt.donnee_utilisateur = du;
