@@ -58,7 +58,7 @@ function tv_rendement_generation(di, de, du) {
   }
 }
 
-function type_generateur_ch(di, de, du, usage_generateur) {
+export function type_generateur_ch(di, de, du, usage_generateur) {
   let type_generateur;
   if (usage_generateur === 'chauffage') {
     type_generateur = requestInputID(de, du, 'type_generateur_ch');
@@ -86,7 +86,6 @@ export function calc_generateur_ch(
   bch_dep,
   GV,
   Sh,
-  Sc,
   hsp,
   ca_id,
   zc_id,
@@ -105,9 +104,28 @@ export function calc_generateur_ch(
     const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur');
     const em = em_ch.find((em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id);
     const ed_id = em.donnee_entree.enum_type_emission_distribution_id;
-    tv_scop(di, de, du, zc_id, ed_id, 'ch');
+
+    /**
+     * Si la méthode de saisie est "6 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système thermodynamique : scop/cop/eer"
+     */
+    if (de.enum_methode_saisie_carac_sys_id === '6') {
+      di.rg = di.scop || di.cop;
+      di.rg_dep = di.scop || di.cop;
+    } else {
+      tv_scop(di, de, du, zc_id, ed_id, 'ch');
+    }
   } else if (combustion_ids.includes(type_gen_ch_id)) {
-    calc_generateur_combustion_ch(di, de, du, em_ch, GV, ca_id, zc_id, ac);
+    /**
+     * Si la méthode de saisie n'est pas "Valeur forfaitaire" mais "saisies"
+     * Documentation 3CL : "Pour les installations récentes ou recommandées, les caractéristiques réelles des chaudières présentées sur les bases
+     * de données professionnelles peuvent être utilisées."
+     */
+    if (de.enum_methode_saisie_carac_sys_id === '1' || !di.rendement_generation) {
+      calc_generateur_combustion_ch(di, de, du, em_ch, GV, ca_id, zc_id, ac);
+    } else {
+      di.rg = di.rendement_generation;
+      di.rg_dep = di.rendement_generation;
+    }
   } else {
     tv_rendement_generation(di, de, du);
   }

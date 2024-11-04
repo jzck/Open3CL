@@ -1,4 +1,4 @@
-import { tv } from './utils.js';
+import { bug_for_bug_compat, tv } from './utils.js';
 import { TvsStore } from './core/tv/infrastructure/tvs.store.js';
 
 const tvsStore = new TvsStore();
@@ -11,16 +11,16 @@ export function rendement_emission(em) {
 }
 
 function tv_rendement_distribution_ch(di, de) {
-  // Find rendement distribution by id if it exists
   let row;
 
-  if (de.tv_rendement_distribution_ch_id) {
+  row = tvsStore.getRendementDistributionCh(
+    de.enum_type_emission_distribution_id,
+    de.reseau_distribution_isole
+  );
+
+  if (!row && de.tv_rendement_distribution_ch_id) {
+    // Find rendement distribution by id if it exists
     row = tvsStore.getRendementDistributionChById(de.tv_rendement_distribution_ch_id);
-  } else {
-    row = tvsStore.getRendementDistributionCh(
-      de.enum_type_emission_distribution_id,
-      de.reseau_distribution_isole
-    );
   }
 
   if (row) {
@@ -58,6 +58,29 @@ function tv_rendement_regulation(di, de) {
 }
 
 function tv_intermittence(di, de, inst_ch_de, map_id, inertie_id) {
+  let hasComptage = false;
+  let row;
+
+  if (
+    inst_ch_de.ficheTechniqueComptage !== null &&
+    inst_ch_de.ficheTechniqueComptage !== undefined
+  ) {
+    // Si une fiche technique permet de connaitre la présence ou non d'un comptage individuel pour le chauffage
+    hasComptage = Number.parseInt(inst_ch_de.ficheTechniqueComptage.valeur) === 1;
+  } else {
+    if (bug_for_bug_compat) {
+      // Si info inconnue, on se base sur tv_intermittence_id pour récupérer cette info
+      const inertie = {
+        tv_intermittence_id: de.tv_intermittence_id
+      };
+      row = tv('intermittence', inertie, de);
+
+      if (row && row.comptage_individuel) {
+        hasComptage = row.comptage_individuel.includes('Présence');
+      }
+    }
+  }
+
   const matcher = {
     enum_methode_application_dpe_log_id: map_id,
     enum_type_installation_id: inst_ch_de.enum_type_installation_id,
@@ -65,8 +88,7 @@ function tv_intermittence(di, de, inst_ch_de, map_id, inertie_id) {
     enum_equipement_intermittence_id: de.enum_equipement_intermittence_id,
     enum_type_regulation_id: de.enum_type_regulation_id,
     enum_type_emission_distribution_id: de.enum_type_emission_distribution_id,
-    /* TODO */
-    comptage_individuel: 'Absence'
+    comptage_individuel: hasComptage ? 'Présence' : 'Absence'
   };
 
   // Pas de valeur d'inertie pour les méthodes d'applications différentes de "dpe maison individuelle"
@@ -76,7 +98,7 @@ function tv_intermittence(di, de, inst_ch_de, map_id, inertie_id) {
     matcher.enum_classe_inertie_id = inertie_id;
   }
 
-  const row = tv('intermittence', matcher, de);
+  row = tv('intermittence', matcher, de);
   if (row) {
     di.i0 = Number(row.i0);
     de.tv_intermittence_id = Number(row.tv_intermittence_id);

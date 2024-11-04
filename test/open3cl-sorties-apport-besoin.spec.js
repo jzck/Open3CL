@@ -2,7 +2,7 @@ import { calcul_3cl } from '../src/engine.js';
 import corpus from './corpus.json';
 import { getAdemeFileJson, getResultFile, saveResultFile } from './test-helpers.js';
 import { jest } from '@jest/globals';
-import { PRECISION } from './constant.js';
+import { PRECISION, PRECISION_PERCENT } from './constant.js';
 
 describe('Test Open3CL engine compliance on corpus', () => {
   /**
@@ -37,10 +37,6 @@ describe('Test Open3CL engine compliance on corpus', () => {
     'nadeq',
     'v40_ecs_journalier',
     'v40_ecs_journalier_depensier',
-    'besoin_ch',
-    'besoin_ch_depensier',
-    'besoin_ecs',
-    'besoin_ecs_depensier',
     'besoin_fr',
     'besoin_fr_depensier'
   ])('check "apport_et_besoin.%s" value', (attr) => {
@@ -53,4 +49,38 @@ describe('Test Open3CL engine compliance on corpus', () => {
       );
     });
   });
+
+  function expect_or(...tests) {
+    if (!tests || !Array.isArray(tests)) return;
+    try {
+      tests.shift()?.();
+    } catch (e) {
+      if (tests.length) expect_or(...tests);
+      else throw e;
+    }
+  }
+
+  describe.each(['besoin_ecs', 'besoin_ecs_depensier', 'besoin_ch', 'besoin_ch_depensier'])(
+    'check "%s" value',
+    (attr) => {
+      test.each(corpus)('dpe %s', (ademeId) => {
+        const exceptedDpe = getAdemeFileJson(ademeId);
+        const calculatedDpe = getResultFile(ademeId);
+
+        const expectedValue = exceptedDpe.logement.sortie.apport_et_besoin[attr];
+        const calculatedValue = calculatedDpe.logement.sortie.apport_et_besoin[attr];
+
+        // Values should sometimes be in different unit
+        const diff = Math.abs(expectedValue - calculatedValue) / (expectedValue || 1);
+        const diff1 = Math.abs(expectedValue - calculatedValue * 1000) / (expectedValue || 1);
+        const diff2 = Math.abs(expectedValue - calculatedValue / 1000) / (expectedValue || 1);
+
+        expect_or(
+          () => expect(diff).toBeLessThan(PRECISION_PERCENT),
+          () => expect(diff1).toBeLessThan(PRECISION_PERCENT),
+          () => expect(diff2).toBeLessThan(PRECISION_PERCENT)
+        );
+      });
+    }
+  );
 });

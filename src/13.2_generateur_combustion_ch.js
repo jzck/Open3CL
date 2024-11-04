@@ -177,7 +177,7 @@ export function calc_generateur_combustion_ch(di, de, du, em_ch, GV, ca_id, zc_i
 
   // Pveil and QP0 are in kW
   const Pveil = di.pveil / 1000;
-  const QP0 = di.pveil / 1000;
+  const QP0 = di.qp0 / 1000;
 
   const rg_pcs = Pmfou / (Pmcons + 0.45 * QP0 + Pveil);
   const rg_pcs_dep = Pmfou_dep / (Pmcons_dep + 0.45 * QP0 + Pveil);
