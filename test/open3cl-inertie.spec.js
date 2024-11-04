@@ -22,7 +22,7 @@ describe('Test Open3CL engine compliance on corpus', () => {
 
   test.each(corpus)('check enum_classe_inertie_id for dpe %s', (ademeId) => {
     const exceptedDpe = getAdemeFileJson(ademeId);
-    const calculatedInertie = inertie.calc_inertie(exceptedDpe.logement.enveloppe);
+    const calculatedInertie = inertie.calculateInertie(exceptedDpe.logement.enveloppe);
 
     expect(calculatedInertie.enum_classe_inertie_id).toBe(
       exceptedDpe.logement.enveloppe.inertie.enum_classe_inertie_id

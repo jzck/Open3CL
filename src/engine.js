@@ -10,6 +10,7 @@ import calc_qualite_isolation from './2021_04_13_qualite_isolation.js';
 import calc_conso from './conso.js';
 import { add_references, collectionCanBeEmpty, sanitize_dpe } from './utils.js';
 import { Inertie } from './7_inertie.js';
+import getFicheTechnique from './ficheTechnique.js';
 
 function calc_th(map_id) {
   const map = enums.methode_application_dpe_log[map_id];
@@ -85,7 +86,7 @@ export function calcul_3cl(dpe) {
   dpe.administratif.diagnostiqueur = { version_moteur_calcul: `Open3CL ${package_version}` };
   const env = logement.enveloppe;
   let Sh;
-  let ShEcs;
+  let ShChauffageAndEcs;
   // TODO requestInput Sh
   if (th === 'maison' || th === 'appartement') Sh = cg.surface_habitable_logement;
   else if (th === 'immeuble') Sh = cg.surface_habitable_immeuble;
@@ -132,9 +133,9 @@ export function calcul_3cl(dpe) {
       '40'
     ].includes(map_id)
   ) {
-    ShEcs = cg.surface_habitable_immeuble;
+    ShChauffageAndEcs = cg.surface_habitable_immeuble;
   } else {
-    ShEcs = Sh;
+    ShChauffageAndEcs = Sh;
   }
 
   const zc_id = logement.meteo.enum_zone_climatique_id;
@@ -147,7 +148,7 @@ export function calcul_3cl(dpe) {
       ? '1'
       : '0';
 
-  const deperdition = calc_deperdition(cg, zc_id, th, ej, env, logement, ShEcs);
+  const deperdition = calc_deperdition(cg, zc_id, th, ej, env, logement, ShChauffageAndEcs);
   const GV = deperdition.deperdition_enveloppe;
 
   env.inertie = inertie.calculateInertie(env);
@@ -170,7 +171,7 @@ export function calcul_3cl(dpe) {
     th,
     ecs,
     clim,
-    ShEcs,
+    ShChauffageAndEcs,
     Nb_lgt,
     GV,
     ilpa,
@@ -180,7 +181,7 @@ export function calcul_3cl(dpe) {
 
   const bfr = apport_et_besoin.besoin_fr;
   const bfr_dep = apport_et_besoin.besoin_fr_depensier;
-  clim.forEach((clim) => calc_clim(clim, bfr, bfr_dep, zc_id, ShEcs));
+  clim.forEach((clim) => calc_clim(clim, bfr, bfr_dep, zc_id, ShChauffageAndEcs));
 
   /**
    * La consommation ECS est obtenu pour certains types de DPE par virtualisation des générateurs collectifs en générateurs individuels virtuels
@@ -207,10 +208,18 @@ export function calcul_3cl(dpe) {
 
   ecs.forEach((ecs) => calc_ecs(ecs, becs, becs_dep, GV, ca_id, zc_id, th, virtualisationECS));
 
+  /**
+   * 8. Modélisation de l’intermittence
+   * En immeuble collectif, le chauffage mixte, c'est-à-dire dont une partie est facturée collectivement et une autre
+   * individuellement, est traité au niveau de l’intermittence comme un système collectif avec comptage individuel.
+   */
+  const ficheTechniqueComptage = getFicheTechnique(dpe, '7', 'Présence comptage');
+
   const ac = cg.annee_construction;
   // needed for apport_et_besoin
   instal_ch.forEach((ch) => {
-    calc_chauffage(ch, ca_id, zc_id, inertie_id, map_id, 0, 0, GV, Sh, hsp, ac);
+    ch.donnee_entree.ficheTechniqueComptage = ficheTechniqueComptage;
+    calc_chauffage(ch, ca_id, zc_id, inertie_id, map_id, 0, 0, GV, ShChauffageAndEcs, hsp, ac);
   });
 
   const bv_list = env.baie_vitree_collection.baie_vitree;
@@ -219,7 +228,7 @@ export function calcul_3cl(dpe) {
     ca_id,
     zc_id,
     inertie_id,
-    Sh,
+    ShChauffageAndEcs,
     GV,
     apport_et_besoin.nadeq,
     ecs,
@@ -230,13 +239,27 @@ export function calcul_3cl(dpe) {
 
   const bch = apport_et_besoin.besoin_ch;
   const bch_dep = apport_et_besoin.besoin_ch_depensier;
-  instal_ch.forEach((ch) =>
-    calc_chauffage(ch, ca_id, zc_id, inertie_id, map_id, bch, bch_dep, GV, Sh, hsp, ac)
-  );
+  instal_ch.forEach((ch) => {
+    ch.donnee_entree.ficheTechniqueComptage = ficheTechniqueComptage;
+    calc_chauffage(
+      ch,
+      ca_id,
+      zc_id,
+      inertie_id,
+      map_id,
+      bch,
+      bch_dep,
+      GV,
+      ShChauffageAndEcs,
+      hsp,
+      ac
+    );
+  });
 
   const vt_list = logement.ventilation_collection.ventilation;
 
   let prorataECS = 1;
+  let prorataChauffage = 1;
 
   /**
    * Besoins ECS pour les DPEs avec ECS collectif et répartition proratisés à la surface
@@ -251,10 +274,28 @@ export function calcul_3cl(dpe) {
    * 25 - dpe issu d'une étude energie environement réglementaire RE2020 bâtiment : appartement chauffage individuel ecs individuel
    */
   if (['15', '16', '19', '20', '22', '23', '24', '25'].includes(map_id)) {
-    prorataECS = Sh / ShEcs;
+    prorataECS = Sh / ShChauffageAndEcs;
   }
 
-  const conso = calc_conso(Sh, zc_id, ca_id, vt_list, instal_ch, ecs, clim, prorataECS);
+  if (
+    ['11', '13', '15', '16', '19', '20', '22', '23', '24', '25', /*'33', '34',*/ '40'].includes(
+      map_id
+    )
+  ) {
+    prorataChauffage = Sh / ShChauffageAndEcs;
+  }
+
+  const conso = calc_conso(
+    Sh,
+    zc_id,
+    ca_id,
+    vt_list,
+    instal_ch,
+    ecs,
+    clim,
+    prorataECS,
+    prorataChauffage
+  );
 
   const production_electricite = {
     conso_elec_ac: 0,

@@ -76,11 +76,31 @@ function getConso(coef, type_energie, conso) {
   return conso;
 }
 
-export default function calc_conso(Sh, zc_id, ca_id, vt, ch, ecs, fr, prorataECS) {
-  const gen_ch = ch.reduce(
-    (acc, ch) => acc.concat(ch.generateur_chauffage_collection.generateur_chauffage),
-    []
-  );
+export default function calc_conso(
+  Sh,
+  zc_id,
+  ca_id,
+  vt,
+  ch,
+  ecs,
+  fr,
+  prorataECS,
+  prorataChauffage
+) {
+  const gen_ch = ch.reduce((acc, ch) => {
+    const generateur_chauffage = ch.generateur_chauffage_collection.generateur_chauffage;
+    generateur_chauffage.forEach((value) => {
+      // S'il existe une clé de repartition de chauffage, utilisation de celle-ci pour répartir la conso chauffage collectif à l'appartement
+      if (ch.donnee_entree.cle_repartition_ch === 1) {
+        value.donnee_entree.cle_repartition_ch = prorataChauffage;
+      } else {
+        value.donnee_entree.cle_repartition_ch =
+          ch.donnee_entree.cle_repartition_ch || prorataChauffage;
+      }
+    });
+    return acc.concat(generateur_chauffage);
+  }, []);
+
   const gen_ecs = ecs.reduce((acc, ecs) => {
     const generateur_ecs = ecs.generateur_ecs_collection.generateur_ecs;
     if (prorataECS === 1) {
@@ -95,8 +115,30 @@ export default function calc_conso(Sh, zc_id, ca_id, vt, ch, ecs, fr, prorataECS
   }, []);
 
   const ret = {
-    ef_conso: calc_conso_pond(Sh, zc_id, vt, gen_ch, gen_ecs, fr, 'conso', null, prorataECS),
-    ep_conso: calc_conso_pond(Sh, zc_id, vt, gen_ch, gen_ecs, fr, 'ep_conso', coef_ep, prorataECS),
+    ef_conso: calc_conso_pond(
+      Sh,
+      zc_id,
+      vt,
+      gen_ch,
+      gen_ecs,
+      fr,
+      'conso',
+      null,
+      prorataECS,
+      prorataChauffage
+    ),
+    ep_conso: calc_conso_pond(
+      Sh,
+      zc_id,
+      vt,
+      gen_ch,
+      gen_ecs,
+      fr,
+      'ep_conso',
+      coef_ep,
+      prorataECS,
+      prorataChauffage
+    ),
     emission_ges: calc_conso_pond(
       Sh,
       zc_id,
@@ -106,9 +148,21 @@ export default function calc_conso(Sh, zc_id, ca_id, vt, ch, ecs, fr, prorataECS
       fr,
       'emission_ges',
       coef_ges,
-      prorataECS
+      prorataECS,
+      prorataChauffage
     ),
-    cout: calc_conso_pond(Sh, zc_id, vt, gen_ch, gen_ecs, fr, 'cout', coef_cout, prorataECS)
+    cout: calc_conso_pond(
+      Sh,
+      zc_id,
+      vt,
+      gen_ch,
+      gen_ecs,
+      fr,
+      'cout',
+      coef_cout,
+      prorataECS,
+      prorataChauffage
+    )
   };
   ret.ep_conso.classe_bilan_dpe = classe_bilan_dpe(
     ret.ep_conso.ep_conso_5_usages_m2,
@@ -214,11 +268,12 @@ function classe_emission_ges(emission_ges_5_usages_m2, zc_id, ca_id, Sh) {
 }
 
 /**
+ Calcul de la consommation globale d'ECS
  * @param gen_ecs {Generateur_ecs_collection}
  * @param field {string}
  * @param coef {number}
  * @param prorataECS {number}
- * @returns {*}
+ * @returns {number}
  */
 function getEcsConso(gen_ecs, field, coef, prorataECS) {
   return gen_ecs.reduce((acc, gen_ecs) => {
@@ -233,7 +288,39 @@ function getEcsConso(gen_ecs, field, coef, prorataECS) {
   }, 0);
 }
 
-function calc_conso_pond(Sh, zc_id, vt_list, gen_ch, gen_ecs, fr_list, prefix, coef, prorataECS) {
+/**
+ * Calcul de la consommation globale de chauffage
+ * @param gen_ch {Generateur_chauffage_collection}
+ * @param field {string}
+ * @param coef {number}
+ * @param prorataChauffage {number}
+ * @returns {number}
+ */
+function getChauffageConso(gen_ch, field, coef, prorataChauffage) {
+  return gen_ch.reduce((acc, gen_ch) => {
+    const conso = gen_ch.donnee_intermediaire[field];
+    let type_energie = enums.type_energie[gen_ch.donnee_entree.enum_type_energie_id];
+    if (type_energie === 'électricité') type_energie = 'électricité ch';
+    return (
+      acc +
+      getConso(coef, type_energie, conso) *
+        (gen_ch.donnee_entree.cle_repartition_ch || prorataChauffage)
+    );
+  }, 0);
+}
+
+function calc_conso_pond(
+  Sh,
+  zc_id,
+  vt_list,
+  gen_ch,
+  gen_ecs,
+  fr_list,
+  prefix,
+  coef,
+  prorataECS,
+  prorataChauffage
+) {
   const ret = {};
   ret.auxiliaire_ventilation = vt_list.reduce((acc, vt) => {
     const conso = vt.donnee_intermediaire.conso_auxiliaire_ventilation || 0;
@@ -255,19 +342,9 @@ function calc_conso_pond(Sh, zc_id, vt_list, gen_ch, gen_ecs, fr_list, prefix, c
   }, 0);
   ret.auxiliaire_distribution_ch = 0;
 
-  ret.ch = gen_ch.reduce((acc, gen_ch) => {
-    const conso = gen_ch.donnee_intermediaire.conso_ch;
-    let type_energie = enums.type_energie[gen_ch.donnee_entree.enum_type_energie_id];
-    if (type_energie === 'électricité') type_energie = 'électricité ch';
-    return acc + getConso(coef, type_energie, conso);
-  }, 0);
+  ret.ch = getChauffageConso(gen_ch, 'conso_ch', coef, prorataChauffage);
 
-  ret.ch_depensier = gen_ch.reduce((acc, gen_ch) => {
-    const conso = gen_ch.donnee_intermediaire.conso_ch_depensier;
-    let type_energie = enums.type_energie[gen_ch.donnee_entree.enum_type_energie_id];
-    if (type_energie === 'électricité') type_energie = 'électricité ch';
-    return acc + getConso(coef, type_energie, conso);
-  }, 0);
+  ret.ch_depensier = getChauffageConso(gen_ch, 'conso_ch_depensier', coef, prorataChauffage);
 
   ret.auxiliaire_generation_ecs = gen_ecs.reduce((acc, gen_ecs) => {
     const conso = gen_ecs.donnee_intermediaire.conso_auxiliaire_generation_ecs || 0;

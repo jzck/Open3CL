@@ -2,7 +2,7 @@ import { calcul_3cl } from '../src/engine.js';
 import corpus from './corpus.json';
 import { getAdemeFileJson, getResultFile, saveResultFile } from './test-helpers.js';
 import { jest } from '@jest/globals';
-import { PRECISION } from './constant.js';
+import { PRECISION_PERCENT } from './constant.js';
 import calc_pont_thermique from '../src/3.4_pont_thermique.js';
 
 describe('Test Open3CL engine compliance on corpus', () => {
@@ -26,6 +26,7 @@ describe('Test Open3CL engine compliance on corpus', () => {
     'deperdition_baie_vitree',
     'deperdition_enveloppe',
     'deperdition_plancher_bas',
+    'deperdition_mur',
     'deperdition_plancher_haut',
     'deperdition_pont_thermique',
     'deperdition_porte',
@@ -36,10 +37,11 @@ describe('Test Open3CL engine compliance on corpus', () => {
     test.each(corpus)('dpe %s', (ademeId) => {
       const exceptedDpe = getAdemeFileJson(ademeId);
       const calculatedDpe = getResultFile(ademeId);
-      expect(calculatedDpe.logement.sortie.deperdition[attr]).toBeCloseTo(
-        exceptedDpe.logement.sortie.deperdition[attr],
-        PRECISION
-      );
+      const expectedValue = calculatedDpe.logement.sortie.deperdition[attr];
+      const calculatedValue = exceptedDpe.logement.sortie.deperdition[attr];
+
+      const diff = Math.abs(expectedValue - calculatedValue) / expectedValue;
+      expect(diff).toBeLessThan(PRECISION_PERCENT);
     });
   });
 
