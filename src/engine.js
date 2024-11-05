@@ -17,6 +17,7 @@ function calc_th(map_id) {
   if (map.includes('maison')) return 'maison';
   else if (map.includes('appartement')) return 'appartement';
   else if (map.includes('immeuble')) return 'immeuble';
+  console.error(`Methode application DPE inconnue ${map_id} ${map}`);
   return null;
 }
 

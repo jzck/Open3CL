@@ -103,6 +103,9 @@ export function calc_generateur_ch(
   if (pac_ids.includes(type_gen_ch_id)) {
     const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur');
     const em = em_ch.find((em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id);
+    if (!em) {
+      console.error(`Emetteur non trouvé pour le générateur ${de.description}, lien=${gen_lge_id}`);
+    }
     const ed_id = em.donnee_entree.enum_type_emission_distribution_id;
 
     /**
