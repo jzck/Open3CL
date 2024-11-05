@@ -191,6 +191,7 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
        * 27 - Murs en ossature bois avec remplissage tout venant
        */
       if (
+        mur &&
         ['5', '6', '7', '18', '24', '25', '26', '27'].includes(
           mur.donnee_entree.enum_materiaux_structure_mur_id
         )
