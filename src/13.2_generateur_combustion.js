@@ -93,7 +93,7 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
 
   /**
    * Si la consommation ECS est obtenue par virtualisation du générateur collectif pour les besoins individuels
-   * la puissance nominale est obtenu à partir de la puissance nominale du générateur collectf multiplié par le
+   * la puissance nominale est obtenu à partir de la puissance nominale du générateur collectif multiplié par le
    * ratio de virtualisation
    * 17.2.1 - Génération d’un DPE à l’appartement / Traitement des usages collectifs
    */

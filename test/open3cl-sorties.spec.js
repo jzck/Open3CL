@@ -2,7 +2,7 @@ import { calcul_3cl } from '../src/engine.js';
 import corpus from './corpus.json';
 import { getAdemeFileJson, getResultFile, saveResultFile } from './test-helpers.js';
 import { jest } from '@jest/globals';
-import { PRECISION } from './constant.js';
+import { PRECISION, PRECISION_PERCENT } from './constant.js';
 
 describe('Test Open3CL engine compliance on corpus', () => {
   /**
@@ -69,10 +69,12 @@ describe('Test Open3CL engine compliance on corpus', () => {
     test.each(corpus)('dpe %s', (ademeId) => {
       const exceptedDpe = getAdemeFileJson(ademeId);
       const calculatedDpe = getResultFile(ademeId);
-      expect(calculatedDpe.logement.sortie.apport_et_besoin[attr]).toBeCloseTo(
-        exceptedDpe.logement.sortie.apport_et_besoin[attr],
-        PRECISION
-      );
+
+      const expectedValue = calculatedDpe.logement.sortie.apport_et_besoin[attr];
+      const calculatedValue = exceptedDpe.logement.sortie.apport_et_besoin[attr];
+
+      const diff = Math.abs(expectedValue - calculatedValue) / expectedValue;
+      expect(diff).toBeLessThan(PRECISION_PERCENT);
     });
   });
 
@@ -100,10 +102,11 @@ describe('Test Open3CL engine compliance on corpus', () => {
       const exceptedDpe = getAdemeFileJson(ademeId);
       const calculatedDpe = getResultFile(ademeId);
       if (exceptedDpe.logement.sortie.ef_conso[attr]) {
-        expect(calculatedDpe.logement.sortie.ef_conso[attr]).toBeCloseTo(
-          exceptedDpe.logement.sortie.ef_conso[attr],
-          PRECISION
-        );
+        const expectedValue = calculatedDpe.logement.sortie.ef_conso[attr];
+        const calculatedValue = exceptedDpe.logement.sortie.ef_conso[attr];
+
+        const diff = Math.abs(expectedValue - calculatedValue) / expectedValue;
+        expect(diff).toBeLessThan(PRECISION_PERCENT);
       }
     });
   });

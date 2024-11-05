@@ -48,9 +48,15 @@ export default function calc_besoin_ch(
   let fraction_apport_gratuit_ch = 0;
   let fraction_apport_gratuit_depensier_ch = 0;
 
-  // pertes stockage
   const Qgw_total = instal_ecs.reduce((acc, instal_ecs) => {
     const gen_ecs = instal_ecs.generateur_ecs_collection.generateur_ecs;
+
+    // 17.2.1.1 Calcul des consommations de chauffage, de refroidissement, d’ECS et d’auxiliaires
+    // Pour les installations ECS collectives, pas de récupération de stockage d'ECS
+    if (Number.parseInt(instal_ecs.donnee_entree.enum_type_installation_id) !== 1) {
+      return acc;
+    }
+
     return (
       acc +
       gen_ecs.reduce((acc, gen_ecs) => {

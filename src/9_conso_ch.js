@@ -5,7 +5,8 @@ import { calc_intermittence } from './8_intermittence.js';
 function coef_ch(Fch) {
   return {
     'installation de chauffage simple': {
-      0: 1
+      0: 1,
+      1: 1
     },
     'installation de chauffage avec chauffage solaire': {
       0: 1 - Fch
@@ -27,9 +28,8 @@ function coef_ch(Fch) {
         2: 0.1
       },
     'installation de chauffage avec une chaudière ou une pac en relève d’une chaudière bois': {
-      0: 0.75 * 0.8,
-      1: 0.25 * 0.8,
-      2: 0.2
+      0: 0.75,
+      1: 0.25
     },
     'installation de chauffage avec chauffage solaire et insert ou poêle bois en appoint': null,
     'installation de chauffage avec chaudière en relève de pac': {
@@ -55,7 +55,7 @@ function coef_ch(Fch) {
 
 export function conso_ch(di, de, du, _pos, cfg_ch, em_list, GV, Sh, hsp, bch, bch_dep) {
   const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur');
-  const coef = coef_ch(0.5)[cfg_ch][_pos];
+  const coef = coef_ch(0.5)[cfg_ch][_pos] || 1;
 
   const em_filt = em_list.filter(
     (em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id
