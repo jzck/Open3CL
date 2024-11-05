@@ -16,10 +16,10 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
     const desc = de.description;
     let desc_1, desc_2;
 
-    if (desc.match(/(.+) \/ (.+)/)) {
+    if (desc?.match(/(.+) \/ (.+)/)) {
       desc_1 = desc.match(/(.+) \/ (.+)/)[1];
       desc_2 = desc.match(/(.+) \/ (.+)/)[2];
-    } else if (desc.match(/(.+)-(.+)/)) {
+    } else if (desc?.match(/(.+)-(.+)/)) {
       desc_1 = desc.match(/(.+)-(.+)/)[1];
       desc_2 = desc.match(/(.+)-(.+)/)[2];
     } else {
@@ -33,8 +33,8 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
 
     let ptMur = mur_list.find(
       (mur) =>
-        mur.donnee_entree.description.includes(desc_1) ||
-        mur.donnee_entree.description.includes(desc_2)
+        mur.donnee_entree.description?.includes(desc_1) ||
+        mur.donnee_entree.description?.includes(desc_2)
     );
     if (ptMur) {
       de.reference_1 = ptMur.donnee_entree.reference;
@@ -67,8 +67,8 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
     if (list_2) {
       ptMur = list_2.find(
         (men) =>
-          men.donnee_entree.description.includes(desc_2) ||
-          men.donnee_entree.description.includes(desc_1)
+          men.donnee_entree.description?.includes(desc_2) ||
+          men.donnee_entree.description?.includes(desc_1)
       );
       if (ptMur) {
         de.reference_2 = ptMur.donnee_entree.reference;

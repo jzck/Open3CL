@@ -33,7 +33,7 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
     else type_toiture = 'terrasse';
   }
 
-  if (de.description.includes("donnant sur l'extérieur (combles aménagés)")) {
+  if (de.description?.includes("donnant sur l'extérieur (combles aménagés)")) {
     // cf 2287E1327399F
     // this is bullshit, by definition this is bullshit, how can someone have written this
     // "combles aménagés" should be "local non chauffé" or some shit, deifnitely not extérieur
