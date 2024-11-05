@@ -40,7 +40,8 @@ describe('Test Open3CL engine compliance on corpus', () => {
       const expectedValue = calculatedDpe.logement.sortie.deperdition[attr];
       const calculatedValue = exceptedDpe.logement.sortie.deperdition[attr];
 
-      const diff = Math.abs(expectedValue - calculatedValue) / expectedValue;
+      const diff =
+        Math.abs(expectedValue - calculatedValue) / (expectedValue !== 0 ? expectedValue : 1);
       expect(diff).toBeLessThan(PRECISION_PERCENT);
     });
   });

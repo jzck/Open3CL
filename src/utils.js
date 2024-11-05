@@ -343,3 +343,26 @@ export function getVolumeStockageFromDescription(description) {
   const matching = description.split('contenance ballon ');
   return matching && matching.length > 1 ? parseInt(matching[1], 10) : 0;
 }
+
+/**
+ * Remove space and accented characters
+ * @param reference {string}
+ * return {string}
+ */
+export function cleanReference(reference) {
+  return reference
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '');
+}
+
+/**
+ * Return true if references are the same (without spaces and accented characters)
+ * @param reference1 {string}
+ * @param reference2 {string}
+ * return {boolean}
+ */
+export function compareReferences(reference1, reference2) {
+  return cleanReference(reference1) === cleanReference(reference2);
+}
