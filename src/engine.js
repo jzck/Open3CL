@@ -171,7 +171,15 @@ export function calcul_3cl(dpe) {
   );
   const GV = deperdition.deperdition_enveloppe;
 
-  env.inertie = inertie.calculateInertie(env);
+  const calculatedInertie = inertie.calculateInertie(env);
+
+  if (calculatedInertie.enum_classe_inertie_id !== env.inertie.enum_classe_inertie_id) {
+    console.error(
+      `La classe d'inertie du DPE ${env.inertie.enum_classe_inertie_id} est différente 
+      de la classe d'inertie calculée ${calculatedInertie.enum_classe_inertie_id}`
+    );
+  }
+
   const inertie_id = env.inertie.enum_classe_inertie_id;
 
   /**
