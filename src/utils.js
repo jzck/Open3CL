@@ -356,11 +356,15 @@ export function getVolumeStockageFromDescription(description) {
  * return {string}
  */
 export function cleanReference(reference) {
-  return reference
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, '');
+  if (reference) {
+    return reference
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '');
+  }
+
+  return reference;
 }
 
 /**
