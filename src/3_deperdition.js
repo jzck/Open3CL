@@ -59,6 +59,12 @@ export function Uporte(o) {
 export function Upt(o) {
   const de = o.donnee_entree;
   const di = o.donnee_intermediaire;
+
+  // k can't be greater than 1
+  if (di.k > 1) {
+    di.k = 1;
+  }
+
   return de.l * di.k * (de.pourcentage_valeur_pont_thermique || 1);
 }
 

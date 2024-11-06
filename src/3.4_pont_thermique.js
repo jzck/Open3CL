@@ -1,5 +1,12 @@
 import enums from './enums.js';
-import { tv, requestInput, compareReferences } from './utils.js';
+import { tv, requestInput, compareReferences, bug_for_bug_compat } from './utils.js';
+
+function defaultValue(di, de) {
+  const row = tv('pont_thermique', {
+    tv_pont_thermique_id: de.tv_pont_thermique_id
+  });
+  return row ? row.k : di.k;
+}
 
 function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
   const mur_list = enveloppe.mur_collection.mur || [];
@@ -23,7 +30,7 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
       desc_1 = desc.match(/(.+)-(.+)/)[1];
       desc_2 = desc.match(/(.+)-(.+)/)[2];
     } else {
-      di.k = pt_di.k;
+      di.k = defaultValue(pt_di, de);
       console.error(
         `BUG: description '${desc}' non reconnue pour le pont thermique. 
         La valeur de k est prise dans les données intermédiaires du DPE`
@@ -39,7 +46,7 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
     if (ptMur) {
       de.reference_1 = ptMur.donnee_entree.reference;
     } else {
-      di.k = pt_di.k;
+      di.k = defaultValue(pt_di, de);
       console.error(
         `BUG: descriptions '${desc_1}' ou '${desc_2}' du pont thermique non reconnue dans les descriptions des murs. 
         La valeur de k est prise dans les données intermédiaires du DPE`
@@ -73,7 +80,7 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
       if (ptMur) {
         de.reference_2 = ptMur.donnee_entree.reference;
       } else {
-        di.k = pt_di.k;
+        di.k = defaultValue(pt_di, de);
         console.error(
           `BUG: descriptions '${desc_1}' ou '${desc_2}' du pont thermique non reconnue dans '${type_liaison}'. 
           La valeur de k est prise dans les données intermédiaires du DPE`
@@ -130,7 +137,7 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
           compareReferences(plancher.donnee_entree.reference, de.reference_2)
       );
       if (!plancher) {
-        di.k = pt_di.k;
+        di.k = defaultValue(pt_di, de);
         console.error(
           `Impossible de trouver un plancher ayant pour référence '${de.reference_1}' ou '${de.reference_2}'. 
           La valeur de k est prise dans les données intermédiaires du DPE`
@@ -206,7 +213,7 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
           compareReferences(men.donnee_entree.reference, de.reference_2)
       );
       if (!menuiserie) {
-        di.k = pt_di.k;
+        di.k = defaultValue(pt_di, de);
         console.error(
           `Impossible de trouver une menuiserie ayant pour référence '${de.reference_1}' ou '${de.reference_2}'. 
           La valeur de k est prise dans les données intermédiaires du DPE`
@@ -228,11 +235,28 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
         'presence_retour_isolation',
         'bool'
       );
+
+      if (bug_for_bug_compat) {
+        // Certains logiciels n'utilisent le boolean presence_retour_isolation de la même manière
+        // 0 = oui pour certains, 1 = oui pour d'autres
+        const tvPontThermique = tv('pont_thermique', {
+          tv_pont_thermique_id: de.tv_pont_thermique_id
+        });
+
+        if (
+          tvPontThermique &&
+          parseInt(matcher.presence_retour_isolation) !==
+            parseInt(tvPontThermique.presence_retour_isolation)
+        ) {
+          matcher.presence_retour_isolation = parseInt(tvPontThermique.presence_retour_isolation);
+        }
+      }
+
       matcher.largeur_dormant = requestInput(mde, mdu, 'largeur_dormant', 'float');
     }
   }
 
-  const row = tv('pont_thermique', matcher, de);
+  const row = tv('pont_thermique', matcher);
   if (row) {
     di.k = Number(row.k);
     de.tv_pont_thermique_id = Number(row.tv_pont_thermique_id);
