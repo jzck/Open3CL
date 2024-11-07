@@ -60,6 +60,11 @@ export default function calc_besoin_ch(
     return (
       acc +
       gen_ecs.reduce((acc, gen_ecs) => {
+        // Pas de récupération de stockage si le ballon est hors volume chauffé
+        if (gen_ecs.donnee_entree.position_volume_chauffe === 0) {
+          return acc;
+        }
+
         return acc + (gen_ecs.donnee_intermediaire.Qgw || 0);
       }, 0)
     );
@@ -107,9 +112,8 @@ export default function calc_besoin_ch(
     // pertes generation
     const Bch_hp_j = bvj * dh19j;
     const Bch_hp_j_dep = bvj_dep * dh21j;
-    pertes_generateur_ch_recup += calc_Qrec_gen_j(gen_ch, nref19, Bch_hp_j) / (1000 * 1000);
-    pertes_generateur_ch_recup_depensier +=
-      calc_Qrec_gen_j(gen_ch, nref21, Bch_hp_j_dep) / (1000 * 1000);
+    pertes_generateur_ch_recup += calc_Qrec_gen_j(gen_ch, nref19, Bch_hp_j) / 1000;
+    pertes_generateur_ch_recup_depensier += calc_Qrec_gen_j(gen_ch, nref21, Bch_hp_j_dep) / 1000;
 
     besoin_ch += (bvj * dh19j) / 1000;
     besoin_ch_depensier += (bvj_dep * dh21j) / 1000;
