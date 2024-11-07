@@ -31,7 +31,10 @@ function coef_ch(Fch) {
       0: 0.75,
       1: 0.25
     },
-    'installation de chauffage avec chauffage solaire et insert ou poêle bois en appoint': null,
+    'installation de chauffage avec chauffage solaire et insert ou poêle bois en appoint': {
+      0: 0.75 * (1 - Fch),
+      1: 0.25 * (1 - Fch)
+    },
     'installation de chauffage avec chaudière en relève de pac': {
       0: 0.75,
       1: 0.25
@@ -55,7 +58,7 @@ function coef_ch(Fch) {
 
 export function conso_ch(di, de, du, _pos, cfg_ch, em_list, GV, Sh, hsp, bch, bch_dep) {
   const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur');
-  const coef = coef_ch(0.5)[cfg_ch][_pos] || 1;
+  const coef = coef_ch(de.fch || 0.5)[cfg_ch][_pos] || 1;
 
   const em_filt = em_list.filter(
     (em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id
