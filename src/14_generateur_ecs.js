@@ -212,6 +212,8 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
     if (de.enum_methode_saisie_carac_sys_id === '1') {
       tv_generateur_combustion(di, de, du, 'ecs', GV, tbase);
     } else {
+      di.pveil = di.pveilleuse || 0;
+
       if (bug_for_bug_compat) {
         if (di.qp0 < 1) {
           di.qp0 *= 1000;
@@ -246,7 +248,10 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
         Iecs = 1 / di.rendement_generation_stockage;
         Iecs_dep = 1 / di.rendement_generation_stockage_depensier;
       }
-    } else if (type_generateur.includes('accumulateur gaz')) {
+    } else if (
+      type_generateur.includes('accumulateur gaz') ||
+      type_generateur.includes('accumulateur gpl/propane/butane')
+    ) {
       di.rendement_generation = rg_accumulateur_gaz(di, besoin_ecs);
       di.rendement_generation_depensier = rg_accumulateur_gaz(di, besoin_ecs_dep);
       Iecs = 1 / di.rendement_generation;

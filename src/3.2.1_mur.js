@@ -78,15 +78,25 @@ function calc_umur0(di, de, du) {
     de.enduit_isolant_paroi_ancienne = de.paroi_ancienne;
   }
 
-  const type_doublage = requestInput(de, du, 'type_doublage');
-  switch (type_doublage) {
-    case "doublage indéterminé ou lame d'air inf 15 mm":
-      di.umur0 = 1 / (1 / di.umur0 + 0.1);
-      break;
-    case "doublage indéterminé avec lame d'air sup 15 mm":
-    case 'doublage connu (plâtre brique bois)':
-      di.umur0 = 1 / (1 / di.umur0 + 0.21);
-      break;
+  let type_doublage = parseInt(de.enum_type_doublage_id);
+
+  // Certaines descriptions contiennent des informations sur le type de doublage
+  if (bug_for_bug_compat) {
+    if (
+      (type_doublage === 1 || type_doublage === 2) &&
+      de.description.toLowerCase().indexOf('doublage connu (plâtre, brique, bois') !== -1
+    ) {
+      type_doublage = 5;
+    }
+  }
+
+  // 3 - doublage indéterminé ou lame d'air inf 15 mm
+  if (type_doublage === 3) {
+    di.umur0 = 1 / (1 / di.umur0 + 0.1);
+  } else if (type_doublage === 4 || type_doublage === 5) {
+    // 4 - doublage indéterminé avec lame d'air sup 15 mm
+    // 5 - doublage connu (plâtre brique bois)
+    di.umur0 = 1 / (1 / di.umur0 + 0.21);
   }
 
   if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1) {

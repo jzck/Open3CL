@@ -151,7 +151,16 @@ export default function calc_bv(bv, zc) {
 
   const type_fermeture = requestInput(de, du, 'type_fermeture');
   if (type_fermeture !== 'abscence de fermeture pour la baie vitrée') {
-    tv_ujn(di, de, du);
+    /**
+     * 3.3.3 Coefficients Ujn des fenêtres/portes-fenêtres
+     * Si le Ujn d’une menuiserie est connu et justifié, le saisir directement
+     */
+    if (de.ujn_saisi) {
+      di.ujn = de.ujn_saisi;
+    } else {
+      tv_ujn(di, de, du);
+    }
+
     di.u_menuiserie = di.ujn;
   } else {
     di.u_menuiserie = di.uw;
