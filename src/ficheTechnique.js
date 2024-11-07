@@ -1,10 +1,18 @@
 /**
- * Retourne si elle existe la fiche technique de type categoryFicheTechiqueId
- * et contenant le texte description
+ * Retourne si elle existe la fiche technique contenant le texte description et
+ * présente dans la catégorie de fiches techniques ayant pour catégorie categoryFicheTechiqueId
+ * et contenant la valeur classification
  * @param dpe {FullDpe}
  * @param categoryFicheTechiqueId {string}
+ * @param description {string}
+ * @param classification {string | null}
  */
-export default function getFicheTechnique(dpe, categoryFicheTechiqueId, description) {
+export default function getFicheTechnique(
+  dpe,
+  categoryFicheTechiqueId,
+  description,
+  classification = null
+) {
   /** @type {FicheTechniqueItem[]} */
   let fichesTechniques = dpe.fiche_technique_collection.fiche_technique;
 
@@ -14,6 +22,31 @@ export default function getFicheTechnique(dpe, categoryFicheTechiqueId, descript
 
   fichesTechniques = fichesTechniques.reduce((acc, ficheTechnique) => {
     if (ficheTechnique.enum_categorie_fiche_technique_id === categoryFicheTechiqueId) {
+      /**
+       * Plusieurs collections de fiches techniques peuvent exister pour la même catégorie (pour 2 systèmes ECS par exemple)
+       * Le champs classification permet de trouver la collection qui convient en filtrant sur une seconde donnée
+       */
+      if (classification) {
+        const secondFiche =
+          ficheTechnique.sous_fiche_technique_collection.sous_fiche_technique.filter(
+            (ficheTechnique) => {
+              const valeur = ficheTechnique?.valeur;
+
+              if (typeof valeur === 'string') {
+                return (
+                  ficheTechnique.valeur.toLowerCase().indexOf(classification.toLowerCase()) !== -1
+                );
+              }
+
+              return ficheTechnique.valeur === classification;
+            }
+          );
+
+        if (!secondFiche.length) {
+          return acc;
+        }
+      }
+
       return acc.concat(ficheTechnique.sous_fiche_technique_collection.sous_fiche_technique);
     }
     return acc;
@@ -23,16 +56,16 @@ export default function getFicheTechnique(dpe, categoryFicheTechiqueId, descript
     return null;
   }
 
-  const found = fichesTechniques.filter(
+  const firstFiche = fichesTechniques.filter(
     (ficheTechnique) =>
       ficheTechnique &&
       ficheTechnique.description &&
       ficheTechnique.description.toLowerCase().indexOf(description.toLowerCase()) !== -1
   );
 
-  if (!found.length) {
+  if (!firstFiche.length) {
     return null;
   }
 
-  return found[0];
+  return firstFiche[0];
 }

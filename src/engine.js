@@ -8,7 +8,7 @@ import calc_chauffage from './9_chauffage.js';
 import calc_confort_ete from './2021_04_13_confort_ete.js';
 import calc_qualite_isolation from './2021_04_13_qualite_isolation.js';
 import calc_conso from './conso.js';
-import { add_references, collectionCanBeEmpty, sanitize_dpe } from './utils.js';
+import { add_references, bug_for_bug_compat, collectionCanBeEmpty, sanitize_dpe } from './utils.js';
 import { Inertie } from './7_inertie.js';
 import getFicheTechnique from './ficheTechnique.js';
 
@@ -234,7 +234,40 @@ export function calcul_3cl(dpe) {
     becs_dep /= 2;
   }
 
-  ecs.forEach((ecs) => calc_ecs(ecs, becs, becs_dep, GV, ca_id, zc_id, th, virtualisationECS));
+  ecs.forEach((ecs) => {
+    if (bug_for_bug_compat) {
+      /**
+       * Réalignement si besoin de la variable position_volume_chauffe
+       * Si une fiche technique pour cette variable est présente, elle est prise en compte
+       * Les valeurs de position_volume_chauffe n'étant pas toujours utilisées de la même manière
+       * dans tous les DPEs (parfois 0 = 'Oui', d'autres 0 = 'Non')
+       */
+      ecs.generateur_ecs_collection.generateur_ecs.forEach((generateur) => {
+        const ficheProductionVolumeHabitable = getFicheTechnique(
+          dpe,
+          '8',
+          'volume habitable',
+          generateur.donnee_entree.description
+        );
+
+        if (ficheProductionVolumeHabitable) {
+          const pvcFicheTechnique =
+            ficheProductionVolumeHabitable.valeur.indexOf('hors volume habitable') !== -1 ? 0 : 1;
+
+          if (generateur.donnee_entree.position_volume_chauffe !== pvcFicheTechnique) {
+            console.error(
+              `La valeur de la variable position_volume_chauffe pour le générateur ECS ${generateur.donnee_entree.description} 
+                ne correspond pas à celle présente dans la fiche technique "${ficheProductionVolumeHabitable.description}". 
+                La valeur de la fiche technique est prise en compte.`
+            );
+
+            generateur.donnee_entree.position_volume_chauffe = pvcFicheTechnique;
+          }
+        }
+      });
+    }
+    calc_ecs(ecs, becs, becs_dep, GV, ca_id, zc_id, th, virtualisationECS);
+  });
 
   /**
    * 8. Modélisation de l’intermittence
