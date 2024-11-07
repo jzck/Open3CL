@@ -2,8 +2,6 @@ import enums from './enums.js';
 import b from './3.1_b.js';
 import { tv, requestInput, getKeyByValue, bug_for_bug_compat } from './utils.js';
 
-const scriptName = new URL(import.meta.url).pathname.split('/').pop();
-
 function tv_uph0(di, de, du) {
   requestInput(de, du, 'type_plancher_haut');
   const matcher = {
@@ -33,12 +31,23 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
     else type_toiture = 'terrasse';
   }
 
-  if (de.description?.includes("donnant sur l'extérieur (combles aménagés)")) {
-    // cf 2287E1327399F
-    // this is bullshit, by definition this is bullshit, how can someone have written this
-    // "combles aménagés" should be "local non chauffé" or some shit, deifnitely not extérieur
-    console.warn(`BUG(${scriptName}) extérieur != combles`);
-    if (bug_for_bug_compat) type_toiture = 'combles';
+  if (bug_for_bug_compat) {
+    /**
+     * Pour certains DPE le type d'adjacence du plancher haut n'est pas bien défini.
+     * On va le récupérer depuis les données d'entrée si besoin
+     */
+    const rowUph = tv('uph', {
+      tv_uph_id: de.tv_uph_id
+    });
+
+    if (rowUph && rowUph.type_toiture === 'combles') {
+      if (rowUph.type_toiture !== type_toiture) {
+        console.error(
+          `Le type d'adjacence pour le plancher haut ${de.description} ne correspond pas aux données saisies (${rowUph.type_toiture})`
+        );
+        type_toiture = rowUph.type_toiture;
+      }
+    }
   }
 
   const matcher = {
@@ -47,7 +56,7 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
     effet_joule: ej,
     type_toiture
   };
-  const row = tv('uph', matcher, de);
+  const row = tv('uph', matcher);
   if (row) {
     di.uph = Number(row.uph);
     de.tv_uph_id = Number(row.tv_uph_id);
