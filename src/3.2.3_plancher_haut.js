@@ -18,8 +18,20 @@ function tv_uph0(di, de, du) {
   }
 }
 
-function tv_uph(di, de, du, pc_id, zc, ej) {
+function verifyAdjacencyType(de, du) {
   const type_adjacence = requestInput(de, du, 'type_adjacence');
+  const type_ph = requestInput(de, du, 'type_plancher_haut');
+
+  if (type_ph === 'combles aménagés sous rampant' && type_adjacence === 'extérieur') {
+    console.warn('Adjacency type mismatch detected for attic');
+    return 'locaux non chauffés non accessible';
+  }
+
+  return type_adjacence;
+}
+
+  const type_adjacence = verifyAdjacencyType(de, du);
+  de.type_adjacence = type_adjacence; // Update the input data with verified adjacency type
   const type_ph = requestInput(de, du, 'type_plancher_haut');
   let type_toiture;
 
@@ -33,7 +45,11 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
     else type_toiture = 'terrasse';
   }
 
-  if (de.description?.includes("donnant sur l'extérieur (combles aménagés)")) {
+  // Remove this check as it's now handled by verifyAdjacencyType
+  // if (de.description?.includes("donnant sur l'extérieur (combles aménagés)")) {
+  //   console.warn(`BUG(${scriptName}) extérieur != combles`);
+  //   if (bug_for_bug_compat) type_toiture = 'combles';
+  // }
     // cf 2287E1327399F
     // this is bullshit, by definition this is bullshit, how can someone have written this
     // "combles aménagés" should be "local non chauffé" or some shit, deifnitely not extérieur
