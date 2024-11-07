@@ -33,7 +33,15 @@ function tv_pertes_stockage(di, de) {
   }
 }
 
+function tv_facteur_couverture_solaire(di, de, du, zc_id, th) {
+  // Check if fecs is manually provided
+  const fecs_saisi = requestInput(de, du, 'fecs_saisi', 'float');
+  if (fecs_saisi !== undefined) {
+    di.fecs = fecs_saisi;
+    return;
+  }
 function tv_facteur_couverture_solaire(di, de, zc_id, th) {
+  // If fecs is not manually provided, calculate it using the table
   const matcher = {
     enum_zone_climatique_id: zc_id,
     type_installation_solaire:
@@ -286,6 +294,7 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
 
   // Système ECS avec solaire (paragraphe 11.3 de la doc Méthode de calcul 3CL-DPE 2021)
   if (ecs_de.enum_type_installation_solaire_id) {
+    tv_facteur_couverture_solaire(ecs_di, ecs_de, du, zc_id, th);
     tv_facteur_couverture_solaire(ecs_di, ecs_de, zc_id, th);
 
     di.conso_ecs = ecs_di.besoin_ecs * (1 - ecs_di.fecs) * Iecs;
