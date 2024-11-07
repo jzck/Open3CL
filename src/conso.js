@@ -20,6 +20,8 @@ const coef_ges = {
   'gaz naturel': 0.227,
   'fioul domestique': 0.324,
   charbon: 0.385,
+  propane: 0.272,
+  butane: 0.272,
   "électricité d'origine renouvelable utilisée dans le bâtiment": 0,
   'électricité ch': 0.079,
   'électricité ecs': 0.065,
@@ -49,6 +51,25 @@ const coef_cout = {
   'électricité éclairage': cout_electricite,
   'électricité auxiliaire': cout_electricite
 };
+
+/**
+ * Fonction utilitaire pour générer la clef à utiliser pour la table `coef_ges`.
+ * Le type_energie 'électricté' nécessite un suffixe : en fonction la destination d'usage,
+ * le coefficient est différent.
+ *
+ * @param type_energie {string} label de l'enum type_energie
+ * @param destination {'ch' | 'ecs' | 'éclairage'}
+ * @return {string} la clef à utiliser pour récupérer le coefficient depuis la table `coef_ges`
+ */
+function getCoefKey(type_energie, destination) {
+  if (type_energie === 'électricité') {
+    if (!['ch', 'ecs', 'éclairage'].includes(destination)) {
+      console.error(`Type d'électricité inconnu: ${destination}`);
+    }
+    return `électricité ${destination}`;
+  }
+  return type_energie;
+}
 
 function cout_gaz_naturel(cef) {
   if (cef < 5009) return 0.11121 * cef;
@@ -201,19 +222,19 @@ export default function calc_conso(
       fr_en = [];
     }
     const gen_ch_en = gen_ch.filter(
-      (gen_ch) => gen_ch.donnee_entree.enum_type_energie_id === type_energie
+      (gen_ch) => gen_ch.donnee_entree.enum_type_energie_id === energie_id
     );
     const gen_ecs_en = gen_ecs.filter(
-      (gen_ecs) => gen_ecs.donnee_entree.enum_type_energie_id === type_energie
+      (gen_ecs) => gen_ecs.donnee_entree.enum_type_energie_id === energie_id
     );
     let conso_en = calc_conso_pond(Sh, zc_id, vt_en, gen_ch_en, gen_ecs_en, fr_en, '', null);
     conso_en = {
       conso_ch: conso_en._ch,
       conso_ecs: conso_en._ecs,
       conso_5_usages: conso_en._5_usages,
-      emission_ges_ch: conso_en._ch * coef_ges[type_energie],
-      emission_ges_ecs: conso_en._ecs * coef_ges[type_energie],
-      emission_ges_5_usages: conso_en._5_usages * coef_ges[type_energie]
+      emission_ges_ch: conso_en._ch * coef_ges[getCoefKey(type_energie, 'ch')],
+      emission_ges_ecs: conso_en._ecs * coef_ges[getCoefKey(type_energie, 'ecs')],
+      emission_ges_5_usages: conso_en._5_usages * coef_ges[type_energie],  // TODO elec
     };
     conso_en.enum_type_energie_id = energie_id;
     return acc.concat(conso_en);
