@@ -34,6 +34,15 @@ function tv_pertes_stockage(di, de) {
 }
 
 function tv_facteur_couverture_solaire(di, de, zc_id, th) {
+  /**
+   * 18.4 Facteur de couverture solaire
+   * Les facteurs de couverture solaire peuvent être saisi directement quand ils sont connus et peuvent être justifiés.
+   */
+  if (de.fecs_saisi) {
+    di.fecs = de.fecs_saisi;
+    return;
+  }
+
   const matcher = {
     enum_zone_climatique_id: zc_id,
     type_installation_solaire:
