@@ -2,6 +2,10 @@ import enums from './enums.js';
 import { tv, requestInput, compareReferences, bug_for_bug_compat } from './utils.js';
 
 function defaultValue(di, de) {
+  if (di.k === 0) {
+    return 0;
+  }
+
   const row = tv('pont_thermique', {
     tv_pont_thermique_id: de.tv_pont_thermique_id
   });
@@ -105,16 +109,6 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
   let type_isolation_mur;
 
   if (mur) {
-    /**
-     * 3.4 Calcul des déperditions par les ponts thermiques
-     * Les ponts thermiques des parois au niveau des circulations communes ne sont pas pris en compte.
-     *
-     */
-    if (['14', '15', '16'].includes(mur.donnee_entree.enum_type_adjacence_id)) {
-      di.k = 0;
-      return;
-    }
-
     type_isolation_mur = requestInput(mur.donnee_entree, mur.donnee_utilisateur, 'type_isolation');
 
     const pi = requestInput(mur.donnee_entree, mur.donnee_utilisateur, 'periode_isolation') || pc;
@@ -184,6 +178,17 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
       if (type_isolation_mur === 'itr') {
         break;
       }
+
+      /**
+       * 3.4 Calcul des déperditions par les ponts thermiques
+       * Les ponts thermiques des parois au niveau des circulations communes ne sont pas pris en compte.
+       *
+       */
+      if (mur && ['14', '15', '16', '22'].includes(mur.donnee_entree.enum_type_adjacence_id)) {
+        di.k = 0;
+        return;
+      }
+
       /**
        * 3.4.5 Menuiserie / mu
        * Les ponts thermiques avec les parois en structure bois (ossature bois, rondin de bois, pans de bois) sont négligés.
