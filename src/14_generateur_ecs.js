@@ -96,8 +96,17 @@ function calc_Qgw(di, de, du, ecs_de) {
       Vs = VsFromDescription;
     }
   }
+  // Adjust Qgw based on position_volume_chauffe
+  const position_factor = position_volume_chauffe === 0 ? 1.25 : 1;
+
 
   if (gen_ecs_elec_ids.includes(de.enum_type_generateur_ecs_id)) {
+    tv_pertes_stockage(di, de, du);
+    di.Qgw = ((8592 * 45) / 24) * Vs * di.cr * position_factor;
+    delete di.cr;
+  } else {
+    di.Qgw = 67662 * Vs ** 0.55 * position_factor;
+  }
     tv_pertes_stockage(di, de, du);
     di.Qgw = ((8592 * 45) / 24) * Vs * di.cr;
     delete di.cr;
@@ -163,6 +172,23 @@ function rgrsReseauUrbain(de) {
 }
 
 export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, th) {
+  const de = gen_ecs.donnee_entree;
+  const di = gen_ecs.donnee_intermediaire || {};
+  const du = {};
+
+  // Ratio de virtualisation à prendre en compte sur le rendement (17.2.1 Génération d'un DPE à l'appartement)
+  de.ratio_virtualisation = ecs_de.ratio_virtualisation || 1;
+
+  const besoin_ecs = ecs_di.besoin_ecs;
+  const besoin_ecs_dep = ecs_di.besoin_ecs_depensier;
+
+  const usage_generateur = requestInput(de, du, 'usage_generateur');
+  const type_generateur_id = type_generateur_ecs(di, de, du, usage_generateur);
+  const type_energie = requestInput(de, du, 'type_energie');
+
+  const position_volume_chauffe = requestInput(de, du, 'position_volume_chauffe', 'int');
+
+  calc_Qgw(di, de, du, ecs_de, position_volume_chauffe);
   const de = gen_ecs.donnee_entree;
   const di = gen_ecs.donnee_intermediaire || {};
   const du = {};
