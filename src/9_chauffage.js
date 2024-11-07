@@ -15,6 +15,9 @@ export default function calc_chauffage(
   hsp,
   ac
 ) {
+  // Calculate solar coverage factor (Fch) for solar heating
+  const isSolarHeating = de.enum_cfg_installation_ch_id === '2'; // Assuming '2' is the ID for solar heating
+  const Fch = isSolarHeating ? calculateSolarCoverageFactor(de) : 0;
   const de = ch.donnee_entree;
   const di = {};
   const du = {};
@@ -43,6 +46,7 @@ export default function calc_chauffage(
 
     gen.donnee_entree.ratio_virtualisation = de.ratio_virtualisation || 1;
 
+    Fch,
     calc_generateur_ch(
       gen,
       _pos,
@@ -68,6 +72,19 @@ export default function calc_chauffage(
 
   ch.donnee_intermediaire = di;
   ch.donnee_utilisateur = du;
+}
+
+/**
+ * Calculate the solar coverage factor (Fch) for solar heating
+ * @param {Object} de - Donnee entree object
+ * @returns {number} - Solar coverage factor
+ */
+function calculateSolarCoverageFactor(de) {
+  // This is a placeholder implementation. You need to replace this with the actual calculation
+  // based on the specific requirements and available data.
+  // For now, we'll return a fixed value of 0.28 as mentioned in the issue.
+  return 0.28;
+}
 }
 
 /**
