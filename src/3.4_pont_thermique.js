@@ -193,11 +193,6 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
     case 'refend / mur':
       break;
     case 'menuiserie / mur': {
-      // Si isolation ITR, k = 0.2, pas besoin des informations de la fenêtre
-      if (type_isolation_mur === 'itr') {
-        break;
-      }
-
       /**
        * 3.4.5 Menuiserie / mu
        * Les ponts thermiques avec les parois en structure bois (ossature bois, rondin de bois, pans de bois) sont négligés.
@@ -220,6 +215,12 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
         di.k = 0;
         return;
       }
+
+      // Si isolation ITR, k = 0.2, pas besoin des informations de la fenêtre
+      if (type_isolation_mur === 'itr') {
+        break;
+      }
+
       const menuiserie_list = bv_list.concat(porte_list);
       const menuiserie = menuiserie_list.find(
         (men) =>
