@@ -21,6 +21,16 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
 
   const type_liaison = requestInput(de, du, 'type_liaison');
 
+  /**
+   * 3.4.4 Refend / mur
+   * Lorsque le refend ne sépare pas deux volumes du même lot faisant l’objet du DPE, il faut prendre en compte dans les
+   * calculs seulement la moitié de la valeur tabulée ci-dessus.
+   * Par défaut on prend 0.5 si la valeur n'est pas spécifiée
+   */
+  if (type_liaison === 'refend / mur' && !de.pourcentage_valeur_pont_thermique) {
+    de.pourcentage_valeur_pont_thermique = 0.5;
+  }
+
   if (!de.reference_1) {
     console.warn(`BUG: pas de reference pour le pont thermique ${de.description}...`);
     // on trouve les references grace a la description
@@ -109,6 +119,15 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
   let type_isolation_mur;
 
   if (mur) {
+    /**
+     * 3.4 Calcul des déperditions par les ponts thermiques
+     * Les ponts thermiques des parois au niveau des circulations communes ne sont pas pris en compte.
+     */
+    if (mur && ['14', '15', '16', '22'].includes(mur.donnee_entree.enum_type_adjacence_id)) {
+      di.k = 0;
+      return;
+    }
+
     type_isolation_mur = requestInput(mur.donnee_entree, mur.donnee_utilisateur, 'type_isolation');
 
     const pi = requestInput(mur.donnee_entree, mur.donnee_utilisateur, 'periode_isolation') || pc;
@@ -177,16 +196,6 @@ function tv_k(pt_di, di, de, du, pc_id, enveloppe) {
       // Si isolation ITR, k = 0.2, pas besoin des informations de la fenêtre
       if (type_isolation_mur === 'itr') {
         break;
-      }
-
-      /**
-       * 3.4 Calcul des déperditions par les ponts thermiques
-       * Les ponts thermiques des parois au niveau des circulations communes ne sont pas pris en compte.
-       *
-       */
-      if (mur && ['14', '15', '16', '22'].includes(mur.donnee_entree.enum_type_adjacence_id)) {
-        di.k = 0;
-        return;
       }
 
       /**
