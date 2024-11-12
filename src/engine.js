@@ -264,6 +264,52 @@ export function calcul_3cl(dpe) {
             generateur.donnee_entree.position_volume_chauffe = pvcFicheTechnique;
           }
         }
+
+        /**
+         * Si utilisation mixte chauffage + ECS, on compare le type de générateur ECS au générateur de chauffage associé
+         * Réalignement si besoin de la donnée. Le type de générateur ECS est quelques fois erroné
+         * enum_usage_generateur_id = 3 - chauffage + ecs
+         */
+        if (generateur.donnee_entree.enum_usage_generateur_id === '3') {
+          const referenceGenerateurMixte = generateur.donnee_entree.reference_generateur_mixte;
+
+          // Récupération du générateur de chauffage associé à la production ECS
+          const generateurMixte = instal_ch
+            .flatMap(
+              (installation) => installation.generateur_chauffage_collection.generateur_chauffage
+            )
+            .find(
+              (generateurChauffage) =>
+                generateurChauffage.donnee_entree.reference_generateur_mixte ===
+                referenceGenerateurMixte
+            );
+
+          if (generateurMixte) {
+            const generateurLabel =
+              enums.type_generateur_ch[generateurMixte.donnee_entree.enum_type_generateur_ch_id];
+
+            if (generateurLabel) {
+              // Récupération s'il existe de l'id du générateur ECS qui a le même libellé que le générateur de chauffage associé
+              const newEcsGenerateurId =
+                Object.entries(enums.type_generateur_ecs).find(
+                  ([, label]) => label === generateurLabel
+                )?.[0] ?? null;
+
+              if (
+                newEcsGenerateurId &&
+                newEcsGenerateurId !== generateur.donnee_entree.enum_type_generateur_ecs_id
+              ) {
+                console.error(
+                  `Le type de générateur ECS ${generateur.donnee_entree.description} ne correspond pas à celui 
+                  du générateur de chauffage associé "${generateurLabel}". 
+                  Le type de générateur de chauffage "${generateurLabel}" est utilisé pour les calculs ECS.`
+                );
+
+                generateur.donnee_entree.enum_type_generateur_ecs_id = newEcsGenerateurId;
+              }
+            }
+          }
+        }
       });
     }
     calc_ecs(ecs, becs, becs_dep, GV, ca_id, zc_id, th, virtualisationECS);
