@@ -287,10 +287,11 @@ export function clean_dpe(dpe_in) {
 
 export function sanitize_dpe(dpe_in) {
   const collection_paths = [
-    'logement.plancher_bas_collection.plancher_bas',
-    'logement.plancher_haut_collection.plancher_haut',
+    'logement.enveloppe.plancher_bas_collection.plancher_bas',
+    'logement.enveloppe.plancher_haut_collection.plancher_haut',
     'logement.ventilation_collection.ventilation',
     'logement.climatisation_collection.climatisation',
+    'logement.enveloppe.baie_vitree_collection.baie_vitree',
     'logement.enveloppe.porte_collection.porte',
     'logement.enveloppe.pont_thermique_collection.pont_thermique'
   ];
@@ -358,6 +359,7 @@ export function getVolumeStockageFromDescription(description) {
 export function cleanReference(reference) {
   if (reference) {
     return reference
+      .toString()
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')

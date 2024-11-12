@@ -20,37 +20,39 @@ export default function getFicheTechnique(
     fichesTechniques = [fichesTechniques];
   }
 
-  fichesTechniques = fichesTechniques.reduce((acc, ficheTechnique) => {
-    if (ficheTechnique.enum_categorie_fiche_technique_id === categoryFicheTechiqueId) {
-      /**
-       * Plusieurs collections de fiches techniques peuvent exister pour la même catégorie (pour 2 systèmes ECS par exemple)
-       * Le champs classification permet de trouver la collection qui convient en filtrant sur une seconde donnée
-       */
-      if (classification) {
-        const secondFiche =
-          ficheTechnique.sous_fiche_technique_collection.sous_fiche_technique.filter(
-            (ficheTechnique) => {
-              const valeur = ficheTechnique?.valeur;
+  fichesTechniques = fichesTechniques
+    .filter((ficheTechnique) => ficheTechnique)
+    .reduce((acc, ficheTechnique) => {
+      if (ficheTechnique.enum_categorie_fiche_technique_id === categoryFicheTechiqueId) {
+        /**
+         * Plusieurs collections de fiches techniques peuvent exister pour la même catégorie (pour 2 systèmes ECS par exemple)
+         * Le champs classification permet de trouver la collection qui convient en filtrant sur une seconde donnée
+         */
+        if (classification) {
+          const secondFiche =
+            ficheTechnique.sous_fiche_technique_collection.sous_fiche_technique.filter(
+              (ficheTechnique) => {
+                const valeur = ficheTechnique?.valeur;
 
-              if (typeof valeur === 'string') {
-                return (
-                  ficheTechnique.valeur.toLowerCase().indexOf(classification.toLowerCase()) !== -1
-                );
+                if (typeof valeur === 'string') {
+                  return (
+                    ficheTechnique.valeur.toLowerCase().indexOf(classification.toLowerCase()) !== -1
+                  );
+                }
+
+                return ficheTechnique.valeur === classification;
               }
+            );
 
-              return ficheTechnique.valeur === classification;
-            }
-          );
-
-        if (!secondFiche.length) {
-          return acc;
+          if (!secondFiche.length) {
+            return acc;
+          }
         }
-      }
 
-      return acc.concat(ficheTechnique.sous_fiche_technique_collection.sous_fiche_technique);
-    }
-    return acc;
-  }, []);
+        return acc.concat(ficheTechnique.sous_fiche_technique_collection.sous_fiche_technique);
+      }
+      return acc;
+    }, []);
 
   if (!fichesTechniques.length) {
     return null;

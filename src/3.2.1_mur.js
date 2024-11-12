@@ -136,15 +136,37 @@ export default function calc_mur(mur, zc, pc_id, ej) {
     case 'epaisseur isolation saisie justifiée par mesure ou observation':
     case 'epaisseur isolation saisie justifiée à partir des documents justificatifs autorisés': {
       calc_umur0(di, de, du);
-      const e = requestInput(de, du, 'epaisseur_isolation', 'int') * 0.01;
-      di.umur = 1 / (1 / Number(di.umur0) + e / 0.04);
+      const epaisseurIsolation = requestInput(de, du, 'epaisseur_isolation', 'int') * 0.01;
+
+      if (epaisseurIsolation) {
+        di.umur = 1 / (1 / Number(di.umur0) + epaisseurIsolation / 0.04);
+      } else {
+        console.error(
+          `Le mur ${mur.donnee_entree.description} ne possède pas de donnée d'entrée pour epaisseur_isolation 
+          alors que methode_saisie_u = 'epaisseur isolation saisie'`
+        );
+
+        di.umur = Math.min(di.umur0, 2.5);
+      }
+
       break;
     }
     case "resistance isolation saisie justifiée observation de l'isolant installé et mesure de son épaisseur":
     case 'resistance isolation saisie justifiée  à partir des documents justificatifs autorisés': {
       calc_umur0(di, de, du);
-      const r = requestInput(de, du, 'resistance_isolation', 'float');
-      di.umur = 1 / (1 / Number(di.umur0) + r);
+      const resistanceIsolation = requestInput(de, du, 'resistance_isolation', 'float');
+
+      if (resistanceIsolation) {
+        di.umur = 1 / (1 / Number(di.umur0) + resistanceIsolation);
+      } else {
+        console.error(
+          `Le mur ${mur.donnee_entree.description} ne possède pas de donnée d'entrée pour resistance_isolation 
+          alors que methode_saisie_u = 'resistance isolation saisie'`
+        );
+
+        di.umur = Math.min(di.umur0, 2.5);
+      }
+
       break;
     }
     case 'isolation inconnue  (table forfaitaire)':
