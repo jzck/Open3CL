@@ -1,5 +1,5 @@
 import enums from './enums.js';
-import { tv, tvColumnIDs, requestInput, requestInputID } from './utils.js';
+import { requestInput, requestInputID, tv, tvColumnIDs } from './utils.js';
 import { tv_scop } from './12.4_pac.js';
 import { conso_aux_gen } from './15_conso_aux.js';
 import { conso_ch } from './9_conso_ch.js';
@@ -101,21 +101,35 @@ export function calc_generateur_ch(
   const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ch');
   const pac_ids = tvColumnIDs('scop', 'type_generateur_ch');
   if (pac_ids.includes(type_gen_ch_id)) {
-    const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur');
-    const em = em_ch.find((em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id);
-    if (!em) {
-      console.error(`Emetteur non trouvé pour le générateur ${de.description}, lien=${gen_lge_id}`);
-    }
-    const ed_id = em.donnee_entree.enum_type_emission_distribution_id;
+    let em;
 
-    /**
-     * Si la méthode de saisie est "6 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système thermodynamique : scop/cop/eer"
-     */
-    if (de.enum_methode_saisie_carac_sys_id === '6') {
+    // Si un seul émetteur de chauffage décrit, on considère que cet émetteur est relié au générateur de chauffage
+    if (em_ch.length === 1) {
+      em = em_ch[0];
+    } else {
+      const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur');
+      em = em_ch.find((em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id);
+    }
+
+    if (em) {
+      const ed_id = em.donnee_entree.enum_type_emission_distribution_id;
+
+      /**
+       * Si la méthode de saisie est "6 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système thermodynamique : scop/cop/eer"
+       */
+      if (de.enum_methode_saisie_carac_sys_id === '6') {
+        di.rg = di.scop || di.cop;
+        di.rg_dep = di.scop || di.cop;
+      } else {
+        tv_scop(di, de, du, zc_id, ed_id, 'ch');
+      }
+    } else {
+      console.error(
+        `Emetteur de chauffage non trouvé pour le générateur ${de.description}, les valeurs intermédiaires saisies sont prises en compte`
+      );
+
       di.rg = di.scop || di.cop;
       di.rg_dep = di.scop || di.cop;
-    } else {
-      tv_scop(di, de, du, zc_id, ed_id, 'ch');
     }
   } else if (combustion_ids.includes(type_gen_ch_id)) {
     /**
