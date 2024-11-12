@@ -193,8 +193,17 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
   const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ecs');
   let Iecs, Iecs_dep;
   if (pac_ids.includes(type_generateur_id)) {
-    tv_scop(di, de, du, zc_id, null, 'ecs');
-    const cop = di.scop ? di.scop : di.cop;
+    /**
+     * Si la méthode de saisie est "6 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système thermodynamique : scop/cop/eer"
+     */
+    if (de.enum_methode_saisie_carac_sys_id === '6') {
+      di.rg = di.scop || di.cop;
+      di.rg_dep = di.scop || di.cop;
+    } else {
+      tv_scop(di, de, du, zc_id, null, 'ecs');
+    }
+
+    const cop = di.scop || di.cop;
     Iecs = 1 / cop;
     Iecs_dep = 1 / cop;
   } else if (type_energie === 'électricité') {
