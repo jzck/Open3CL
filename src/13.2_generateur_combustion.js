@@ -59,9 +59,15 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
     row = tv('generateur_combustion', matcher);
 
     if (bug_for_bug_compat) {
+      /**
+       * Si le type de générateur est
+       * 84 - système collectif par défaut en abscence d'information : chaudière fioul pénalisante
+       * On garde l'information à partir de tv_generateur_combustion_id.
+       * Si non, on vérifie que le générateur décrit fait bien partie des générateurs associés pour tv_generateur_combustion_id spécifié
+       */
       if (
-        !row[typeGenerateur] ||
-        !row[typeGenerateur].split('|').includes(enum_type_generateur_id)
+        enum_type_generateur_id !== '84' &&
+        (!row[typeGenerateur] || !row[typeGenerateur].split('|').includes(enum_type_generateur_id))
       ) {
         row = null;
         matcher = {};
