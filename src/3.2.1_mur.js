@@ -149,7 +149,7 @@ export default function calc_mur(mur, zc, pc_id, ej) {
     }
     case 'isolation inconnue  (table forfaitaire)':
       calc_umur0(di, de, du);
-      tv_umur(di, de, du, pc_id, zc);
+      tv_umur(di, de, du, pc_id, zc, ej);
       di.umur = Math.min(di.umur, di.umur0);
       break;
     case "année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)": {
