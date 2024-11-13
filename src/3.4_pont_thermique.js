@@ -153,6 +153,8 @@ function tv_k(pt_di, di, de, du, pc_id, logement) {
     }
 
     matcher.isolation_mur = `^${type_isolation_mur}$`;
+  } else {
+    matcher.isolation_mur = `^iti`;
   }
 
   switch (type_liaison) {
@@ -193,6 +195,7 @@ function tv_k(pt_di, di, de, du, pc_id, logement) {
        * 27 - Murs en ossature bois avec remplissage tout venant
        */
       if (
+        mur &&
         type_liaison === 'plancher haut lourd / mur' &&
         ([9, 10].includes(parseInt(plancher.donnee_entree.enum_type_plancher_haut_id)) ||
           [5, 6, 7, 16, 18, 24, 25, 26, 27].includes(
@@ -223,6 +226,7 @@ function tv_k(pt_di, di, de, du, pc_id, logement) {
        * 27 - Murs en ossature bois avec remplissage tout venant
        */
       if (
+        mur &&
         type_liaison === 'plancher bas / mur' &&
         ([4, 10].includes(parseInt(plancher.donnee_entree.enum_type_plancher_bas_id)) ||
           [5, 6, 7, 16, 18, 24, 25, 26, 27].includes(
