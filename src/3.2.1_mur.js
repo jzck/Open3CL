@@ -208,6 +208,7 @@ export default function calc_mur(mur, zc, pc_id, ej) {
     case 'saisie direct u justifiée  (à partir des documents justificatifs autorisés)':
     case 'saisie direct u depuis rset/rsee( etude rt2012/re2020)':
       di.umur = requestInput(de, du, 'umur_saisi', 'float');
+      di.umur0 = mur.donnee_intermediaire?.umur0;
       break;
     default:
       console.warn('methode_saisie_u inconnue:', methode_saisie_u);
