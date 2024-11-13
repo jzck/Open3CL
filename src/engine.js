@@ -31,6 +31,8 @@ export function calcul_3cl(dpe) {
     return null;
   }
   const logement = dpe.logement;
+  global.dpe = dpe;
+
   const cg = logement.caracteristique_generale;
   const map_id = cg.enum_methode_application_dpe_log_id;
   const th = calc_th(map_id);
@@ -272,39 +274,41 @@ export function calcul_3cl(dpe) {
         if (generateur.donnee_entree.enum_usage_generateur_id === '3') {
           const referenceGenerateurMixte = generateur.donnee_entree.reference_generateur_mixte;
 
-          // Récupération du générateur de chauffage associé à la production ECS
-          const generateurMixte = instal_ch
-            .flatMap(
-              (installation) => installation.generateur_chauffage_collection.generateur_chauffage
-            )
-            .find(
-              (generateurChauffage) =>
-                generateurChauffage.donnee_entree.reference_generateur_mixte ===
-                referenceGenerateurMixte
-            );
+          if (referenceGenerateurMixte) {
+            // Récupération du générateur de chauffage associé à la production ECS
+            const generateurMixte = instal_ch
+              .flatMap(
+                (installation) => installation.generateur_chauffage_collection.generateur_chauffage
+              )
+              .find(
+                (generateurChauffage) =>
+                  generateurChauffage.donnee_entree.reference_generateur_mixte ===
+                  referenceGenerateurMixte
+              );
 
-          if (generateurMixte) {
-            const generateurLabel =
-              enums.type_generateur_ch[generateurMixte.donnee_entree.enum_type_generateur_ch_id];
+            if (generateurMixte) {
+              const generateurLabel =
+                enums.type_generateur_ch[generateurMixte.donnee_entree.enum_type_generateur_ch_id];
 
-            if (generateurLabel) {
-              // Récupération s'il existe de l'id du générateur ECS qui a le même libellé que le générateur de chauffage associé
-              const newEcsGenerateurId =
-                Object.entries(enums.type_generateur_ecs).find(
-                  ([, label]) => label === generateurLabel
-                )?.[0] ?? null;
+              if (generateurLabel) {
+                // Récupération s'il existe de l'id du générateur ECS qui a le même libellé que le générateur de chauffage associé
+                const newEcsGenerateurId =
+                  Object.entries(enums.type_generateur_ecs).find(
+                    ([, label]) => label === generateurLabel
+                  )?.[0] ?? null;
 
-              if (
-                newEcsGenerateurId &&
-                newEcsGenerateurId !== generateur.donnee_entree.enum_type_generateur_ecs_id
-              ) {
-                console.error(
-                  `Le type de générateur ECS ${generateur.donnee_entree.description} ne correspond pas à celui 
+                if (
+                  newEcsGenerateurId &&
+                  newEcsGenerateurId !== generateur.donnee_entree.enum_type_generateur_ecs_id
+                ) {
+                  console.error(
+                    `Le type de générateur ECS ${generateur.donnee_entree.description} ne correspond pas à celui 
                   du générateur de chauffage associé "${generateurLabel}". 
                   Le type de générateur de chauffage "${generateurLabel}" est utilisé pour les calculs ECS.`
-                );
+                  );
 
-                generateur.donnee_entree.enum_type_generateur_ecs_id = newEcsGenerateurId;
+                  generateur.donnee_entree.enum_type_generateur_ecs_id = newEcsGenerateurId;
+                }
               }
             }
           }

@@ -9,7 +9,10 @@ import {
   getVolumeStockageFromDescription
 } from './utils.js';
 import { tv_scop } from './12.4_pac.js';
-import { tv_generateur_combustion } from './13.2_generateur_combustion.js';
+import {
+  tv_generateur_combustion,
+  updateGenerateurCombustion
+} from './13.2_generateur_combustion.js';
 import { conso_aux_gen } from './15_conso_aux.js';
 
 function tv_pertes_stockage(di, de) {
@@ -181,6 +184,10 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
 
   const besoin_ecs = ecs_di.besoin_ecs;
   const besoin_ecs_dep = ecs_di.besoin_ecs_depensier;
+
+  // Mise à jour du type de générateur si besoin
+  // ex: poêles à bois bouilleur -> chaudière bois
+  updateGenerateurCombustion(de, 'ecs');
 
   const usage_generateur = requestInput(de, du, 'usage_generateur');
   const type_generateur_id = type_generateur_ecs(di, de, du, usage_generateur);
