@@ -31,7 +31,6 @@ export function calcul_3cl(dpe) {
     return null;
   }
   const logement = dpe.logement;
-  global.dpe = dpe;
 
   const cg = logement.caracteristique_generale;
   const map_id = cg.enum_methode_application_dpe_log_id;
