@@ -19,6 +19,9 @@ export default function calc_chauffage(
   const di = {};
   const du = {};
 
+  di.besoin_ch = bch;
+  di.besoin_ch_depensier = bch_dep;
+
   const em_ch = ch.emetteur_chauffage_collection.emetteur_chauffage;
   em_ch.forEach((em_ch) => calc_emetteur_ch(em_ch, de, map_id, inertie_id));
 
