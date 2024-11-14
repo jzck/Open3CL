@@ -155,7 +155,7 @@ function Pcons(x, de, di, Cdimref) {
   return Pfou(x, di, Cdimref) * (1 + QPx(x_final, de, di) / Px(x, di, Cdimref));
 }
 
-export function calc_generateur_combustion_ch(di, de, du, em_ch, GV, ca_id, zc_id, ac) {
+export function calc_generateur_combustion_ch(dpe, di, de, du, em_ch, GV, ca_id, zc_id, ac) {
   const ca = enums.classe_altitude[ca_id];
   const zc = enums.zone_climatique[zc_id];
   const tbase = Tbase[ca][zc.slice(0, 2)];
@@ -168,7 +168,7 @@ export function calc_generateur_combustion_ch(di, de, du, em_ch, GV, ca_id, zc_i
 
   // Mise à jour du type de générateur si besoin
   // ex: poêles à bois bouilleur -> chaudière bois
-  updateGenerateurCombustion(de, 'ch');
+  updateGenerateurCombustion(dpe, de, 'ch');
 
   const Cdimref = di.pn / (GV * (19 - tbase));
   const Cdimref_dep = di.pn / (GV * (21 - tbase));

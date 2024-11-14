@@ -315,7 +315,7 @@ export function calcul_3cl(dpe) {
         }
       });
     }
-    calc_ecs(ecs, becs, becs_dep, GV, ca_id, zc_id, th, virtualisationECS);
+    calc_ecs(dpe, ecs, becs, becs_dep, GV, ca_id, zc_id, th, virtualisationECS);
   });
 
   /**
@@ -329,7 +329,7 @@ export function calcul_3cl(dpe) {
   // needed for apport_et_besoin
   instal_ch.forEach((ch) => {
     ch.donnee_entree.ficheTechniqueComptage = ficheTechniqueComptage;
-    calc_chauffage(ch, ca_id, zc_id, inertie_id, map_id, 0, 0, GV, ShChauffageAndEcs, hsp, ac);
+    calc_chauffage(dpe, ch, ca_id, zc_id, inertie_id, map_id, 0, 0, GV, ShChauffageAndEcs, hsp, ac);
   });
 
   const bv_list = env.baie_vitree_collection.baie_vitree;
@@ -352,6 +352,7 @@ export function calcul_3cl(dpe) {
   instal_ch.forEach((ch) => {
     ch.donnee_entree.ficheTechniqueComptage = ficheTechniqueComptage;
     calc_chauffage(
+      dpe,
       ch,
       ca_id,
       zc_id,

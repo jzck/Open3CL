@@ -174,7 +174,7 @@ function rgrsReseauUrbain(de) {
   return 0.75;
 }
 
-export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, th) {
+export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, th) {
   const de = gen_ecs.donnee_entree;
   const di = gen_ecs.donnee_intermediaire || {};
   const du = {};
@@ -187,7 +187,7 @@ export default function calc_gen_ecs(gen_ecs, ecs_di, ecs_de, GV, ca_id, zc_id, 
 
   // Mise à jour du type de générateur si besoin
   // ex: poêles à bois bouilleur -> chaudière bois
-  updateGenerateurCombustion(de, 'ecs');
+  updateGenerateurCombustion(dpe, de, 'ecs');
 
   const usage_generateur = requestInput(de, du, 'usage_generateur');
   const type_generateur_id = type_generateur_ecs(di, de, du, usage_generateur);

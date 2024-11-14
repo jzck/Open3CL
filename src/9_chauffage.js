@@ -3,6 +3,7 @@ import { calc_emetteur_ch } from './9_emetteur_ch.js';
 import { calc_generateur_ch, type_generateur_ch } from './9_generateur_ch.js';
 
 export default function calc_chauffage(
+  dpe,
   ch,
   ca_id,
   zc_id,
@@ -50,6 +51,7 @@ export default function calc_chauffage(
     gen.donnee_entree.fch = Fch || 0.5;
 
     calc_generateur_ch(
+      dpe,
       gen,
       _pos,
       em_ch,
