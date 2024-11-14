@@ -56,20 +56,79 @@ export function Uporte(o) {
   return de.surface_porte * di.uporte * di.b;
 }
 
-export function Upt(o) {
-  const de = o.donnee_entree;
-  const di = o.donnee_intermediaire;
+/**
+ * Compare la liste des ponts thermiques déclarés et calculés
+ * Retourne true si individuellement chacun des ponts thermiques est identique
+ * @param calculatedPTs
+ * @param declaredPTs
+ * @returns {boolean}
+ */
+function verifyPontsThermiquesEquality(calculatedPTs, declaredPTs) {
+  /**
+   * Pour les ponts thermiques déclarés, le facteur deperdition_pont_thermique étant déjà pris en compte, seul k est considéré
+   */
+  const uptForCalculatedPTs = calculatedPTs.map(
+    (calculatedPT) =>
+      calculatedPT.donnee_intermediaire.k *
+      (calculatedPT.donnee_entree.pourcentage_valeur_pont_thermique || 1)
+  );
+  const uptForDeclaredPTs = declaredPTs.map((declaredPT) => declaredPT.donnee_intermediaire.k);
 
-  // k can't be greater than 1
-  if (di.k > 1) {
-    di.k = 1;
+  return (
+    calculatedPTs.length === declaredPTs.length &&
+    !uptForCalculatedPTs.some((val, i) => val.toFixed(5) !== uptForDeclaredPTs[i].toFixed(5))
+  );
+}
+
+/**
+ * Calcul de la déperdition totale liée aux ponts thermiques
+ * @param dpe {FullDpe}
+ * @param calculatedPontsThermiques
+ * @param declaredPontsThermiques
+ * @return {number}
+ */
+function totalDeperditionPontThermique(dpe, calculatedPontsThermiques, declaredPontsThermiques) {
+  // Total déclaré des déperditions des ponts thermiques
+  const declaredDeperditionPT = dpe.logement.sortie.deperdition.deperdition_pont_thermique;
+
+  /**
+   * Comparaison des valeurs intermédiaires calculées et déclarées pour chacun des ponts thermiques
+   * @type {boolean}
+   */
+  const sameValues = verifyPontsThermiquesEquality(
+    calculatedPontsThermiques,
+    declaredPontsThermiques
+  );
+
+  const calculatedDeperditionPT = calculatedPontsThermiques.reduce(
+    (acc, pt) => acc + Upt(pt) || 0,
+    0
+  );
+
+  /**
+   * Si individuellement les ponts thermiques déclarés et calculés sont identiques, la déperdition totale devrait l'être également
+   * Pour certains DPE, il réside une différence que l'on prendra en compte pour la suite des calculs.
+   */
+  if (sameValues && calculatedDeperditionPT.toFixed(5) !== declaredDeperditionPT.toFixed(5)) {
+    console.error(
+      `Les valeurs des ponts thermiques calculées et déclarées pour le DPE ${dpe.numero_dpe} sont les mêmes mais le total des déperditions pour les ponts thermiques
+       ${declaredDeperditionPT} diffère du total calculé avec les mêmes valeurs ${declaredDeperditionPT}'. Le total déclaré est conservé.`
+    );
+    return declaredDeperditionPT;
   }
+  return calculatedDeperditionPT;
+}
+
+export function Upt(pt) {
+  const de = pt.donnee_entree;
+  const di = pt.donnee_intermediaire;
 
   return de.l * di.k * (de.pourcentage_valeur_pont_thermique || 1);
 }
 
-export default function calc_deperdition(cg, zc, th, ej, logement, Sh) {
+export default function calc_deperdition(cg, zc, th, ej, dpe, Sh) {
   const pc = cg.enum_periode_construction_id;
+  const logement = dpe.logement;
   const enveloppe = logement.enveloppe;
 
   const mur_list = enveloppe.mur_collection.mur || [];
@@ -78,6 +137,7 @@ export default function calc_deperdition(cg, zc, th, ej, logement, Sh) {
   const porte_list = enveloppe.porte_collection.porte || [];
   const bv_list = enveloppe.baie_vitree_collection.baie_vitree || [];
   const pt_list = enveloppe.pont_thermique_collection.pont_thermique || [];
+  const declaredPontsThermiques = structuredClone(pt_list);
   const vt_list = logement.ventilation_collection.ventilation || [];
 
   mur_list.forEach((mur) => calc_mur(mur, zc, pc, ej));
@@ -99,7 +159,7 @@ export default function calc_deperdition(cg, zc, th, ej, logement, Sh) {
   const d_ph = ph_list.reduce((acc, ph) => acc + Uph(ph) || 0, 0);
   const d_bv = bv_list.reduce((acc, bv) => acc + Ubv(bv) || 0, 0);
   const d_porte = porte_list.reduce((acc, porte) => acc + Uporte(porte) || 0, 0);
-  const d_pt = pt_list.reduce((acc, pt) => acc + Upt(pt) || 0, 0);
+  const d_pt = totalDeperditionPontThermique(dpe, pt_list, declaredPontsThermiques);
   const hvent = vt_list.reduce((acc, vt) => acc + vt.donnee_intermediaire.hvent || 0, 0);
   const hperm = vt_list.reduce((acc, vt) => acc + vt.donnee_intermediaire.hperm || 0, 0);
 
