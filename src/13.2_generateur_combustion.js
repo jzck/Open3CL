@@ -249,7 +249,7 @@ function updateGenerateur(ids, de, type) {
     const values = ids[generateurId];
 
     // Récupération de l'année d'installation de la chaudière dans les fiches techniques
-    const installationDate = getFicheTechnique(global.dpe, '7', 'année', 'bouilleur')?.valeur;
+    const ficheTechnique = getFicheTechnique(global.dpe, '7', 'année', 'bouilleur')?.valeur;
 
     /**
      * Par défaut:
@@ -259,11 +259,11 @@ function updateGenerateur(ids, de, type) {
      */
     let newGenerateurId = generateurId === 13 ? values[1978] : values[2004];
 
-    if (installationDate) {
-      if (installationDate.toString().toLowerCase() === 'avant 1948') {
+    if (ficheTechnique) {
+      if (ficheTechnique.toString().toLowerCase() === 'avant 1948') {
         newGenerateurId = values[1948];
       } else {
-        const installationDate = parseInt(installationDate, 10);
+        const installationDate = parseInt(ficheTechnique, 10);
 
         if (installationDate >= 2019) {
           newGenerateurId = values[2019];
