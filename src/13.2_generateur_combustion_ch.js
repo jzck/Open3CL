@@ -1,6 +1,9 @@
 import enums from './enums.js';
 import { tv, tvColumnIDs, requestInput, requestInputID, Tbase } from './utils.js';
-import { tv_generateur_combustion } from './13.2_generateur_combustion.js';
+import {
+  tv_generateur_combustion,
+  updateGenerateurCombustion
+} from './13.2_generateur_combustion.js';
 
 const coef_pond = {
   0.05: 0.1,
@@ -26,8 +29,8 @@ const K = {
   'bois – plaquettes d’industrie': 1.08,
   'réseau de chauffage urbain': 1,
   charbon: 1.04,
-  propane: undefined,
-  butane: undefined,
+  propane: 1.11,
+  butane: 1.11,
   "électricité d'origine renouvelable utilisée dans le bâtiment": undefined,
   'autre combustible fossile': undefined,
   'réseau de froid urbain': undefined
@@ -162,6 +165,10 @@ export function calc_generateur_combustion_ch(di, de, du, em_ch, GV, ca_id, zc_i
   if (type_gen_ch_list.includes(de.enum_type_generateur_ch_id)) {
     tv_temp_fonc_30_100(di, de, du, em_ch, ac);
   }
+
+  // Mise à jour du type de générateur si besoin
+  // ex: poêles à bois bouilleur -> chaudière bois
+  updateGenerateurCombustion(de, 'ch');
 
   const Cdimref = di.pn / (GV * (19 - tbase));
   const Cdimref_dep = di.pn / (GV * (21 - tbase));

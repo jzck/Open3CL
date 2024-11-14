@@ -29,20 +29,25 @@ export default function getFicheTechnique(
          * Le champs classification permet de trouver la collection qui convient en filtrant sur une seconde donnée
          */
         if (classification) {
-          const secondFiche =
-            ficheTechnique.sous_fiche_technique_collection.sous_fiche_technique.filter(
-              (ficheTechnique) => {
-                const valeur = ficheTechnique?.valeur;
+          /** @type {SousFicheTechniqueItem[]} */
+          let sousFichesTechniques =
+            ficheTechnique.sous_fiche_technique_collection.sous_fiche_technique;
 
-                if (typeof valeur === 'string') {
-                  return (
-                    ficheTechnique.valeur.toLowerCase().indexOf(classification.toLowerCase()) !== -1
-                  );
-                }
+          if (!Array.isArray(sousFichesTechniques)) {
+            sousFichesTechniques = [sousFichesTechniques];
+          }
 
-                return ficheTechnique.valeur === classification;
-              }
-            );
+          const secondFiche = sousFichesTechniques.filter((ficheTechnique) => {
+            const valeur = ficheTechnique?.valeur;
+
+            if (typeof valeur === 'string') {
+              return (
+                ficheTechnique.valeur.toLowerCase().indexOf(classification.toLowerCase()) !== -1
+              );
+            }
+
+            return ficheTechnique.valeur === classification;
+          });
 
           if (!secondFiche.length) {
             return acc;
