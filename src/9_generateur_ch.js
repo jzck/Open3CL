@@ -78,6 +78,7 @@ export function type_generateur_ch(di, de, du, usage_generateur) {
 }
 
 export function calc_generateur_ch(
+  dpe,
   gen_ch,
   _pos,
   em_ch,
@@ -138,7 +139,7 @@ export function calc_generateur_ch(
      * de données professionnelles peuvent être utilisées."
      */
     if (de.enum_methode_saisie_carac_sys_id === '1' || !di.rendement_generation) {
-      calc_generateur_combustion_ch(di, de, du, em_ch, GV, ca_id, zc_id, ac);
+      calc_generateur_combustion_ch(dpe, di, de, du, em_ch, GV, ca_id, zc_id, ac);
     } else {
       di.rg = di.rendement_generation;
       di.rg_dep = di.rendement_generation;

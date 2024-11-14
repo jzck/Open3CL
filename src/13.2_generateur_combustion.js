@@ -119,10 +119,11 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
 /**
  * Mise à jour du type de générateur si besoin
  * Pour les générateurs "poêles à bois bouilleur", les calculs sont faits comme pour les chaudières bois
+ * @param dpe {FullDpe}
  * @param de {Donnee_entree}
  * @param type {'ch' | 'ecs'}
  */
-export function updateGenerateurCombustion(de, type) {
+export function updateGenerateurCombustion(dpe, de, type) {
   /**
    * 13.1 Inserts et poêles
    * Les poêles à bois bouilleur sont traités comme des chaudières bois
@@ -176,7 +177,7 @@ export function updateGenerateurCombustion(de, type) {
       }
     };
 
-    updateGenerateur(ids, de, type);
+    updateGenerateur(dpe, ids, de, type);
   } else {
     /**
      * enum_type_generateur_ch_id
@@ -225,7 +226,7 @@ export function updateGenerateurCombustion(de, type) {
       }
     };
 
-    updateGenerateur(ids, de, type);
+    updateGenerateur(dpe, ids, de, type);
   }
 }
 
@@ -235,11 +236,12 @@ export function updateGenerateurCombustion(de, type) {
  * Ex:
  *  - Pour un poêle à bois bouilleur granulés installé en 2000, on prendra la chaudière bois granulés 1995-2003
  *  - Pour un poêle à bois bouilleur bûche installé avant 1948, on prendra la chaudière bois bûche avant 1978
+ * @param dpe {FullDpe}
  * @param ids
  * @param de {Donnee_entree}
  * @param type {'ch' | 'ecs'}
  */
-function updateGenerateur(ids, de, type) {
+function updateGenerateur(dpe, ids, de, type) {
   const enumType = `enum_type_generateur_${type}_id`;
   const generateurId = de[enumType];
 
@@ -249,7 +251,7 @@ function updateGenerateur(ids, de, type) {
     const values = ids[generateurId];
 
     // Récupération de l'année d'installation de la chaudière dans les fiches techniques
-    const ficheTechnique = getFicheTechnique(global.dpe, '7', 'année', 'bouilleur')?.valeur;
+    const ficheTechnique = getFicheTechnique(dpe, '7', 'année', 'bouilleur')?.valeur;
 
     /**
      * Par défaut:
