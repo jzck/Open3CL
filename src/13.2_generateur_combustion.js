@@ -52,46 +52,45 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
   let matcher = {};
   const typeGenerateur = `enum_type_generateur_${type}_id`;
   const enum_type_generateur_id = de[typeGenerateur];
+  matcher[typeGenerateur] = enum_type_generateur_id;
 
-  let row;
-
-  if (de.tv_generateur_combustion_id) {
-    matcher[`tv_generateur_combustion_id`] = de.tv_generateur_combustion_id;
-    row = tv('generateur_combustion', matcher);
-
-    if (bug_for_bug_compat) {
-      /**
-       * Si le type de générateur est
-       * 84 - ECS - système collectif par défaut en abscence d'information : chaudière fioul pénalisante
-       * 119 - CH - système collectif par défaut en abscence d'information : chaudière fioul pénalisante
-       * On garde l'information à partir de tv_generateur_combustion_id.
-       * Si non, on vérifie que le générateur décrit fait bien partie des générateurs associés pour tv_generateur_combustion_id spécifié
-       */
-      if (
-        ((type === 'ecs' && enum_type_generateur_id !== '84') ||
-          (type === 'ch' && enum_type_generateur_id !== '119')) &&
-        (!row[typeGenerateur] || !row[typeGenerateur].split('|').includes(enum_type_generateur_id))
-      ) {
-        row = null;
-        matcher = {};
-        console.warn(
-          `Correction tv_generateur_combustion_id pour le générateur ECS. La valeur tv_generateur_combustion_id saisie ne correspond pas au générateur décrit`
-        );
-      }
-    }
+  if (!di.pn) {
+    // some engines don't set ms_carac_sys properly...
+    // so instead we just check if di.pn is set or not
+    di.pn = (1.2 * GV * (19 - tbase)) / 0.95 ** 3;
   }
 
-  if (!row) {
-    matcher[typeGenerateur] = enum_type_generateur_id;
+  matcher.critere_pn = criterePn(di.pn / 1000, matcher);
+  let row = tv('generateur_combustion', matcher);
 
-    if (!di.pn) {
-      // some engines don't set ms_carac_sys properly...
-      // so instead we just check if di.pn is set or not
-      di.pn = (1.2 * GV * (19 - tbase)) / 0.95 ** 3;
+  /**
+   * Si le type de générateur est
+   * 84 - ECS - système collectif par défaut en abscence d'information : chaudière fioul pénalisante
+   * 119 - CH - système collectif par défaut en abscence d'information : chaudière fioul pénalisante
+   * On garde l'information à partir de tv_generateur_combustion_id.
+   * Si non, on vérifie que le générateur décrit fait bien partie des générateurs associés pour tv_generateur_combustion_id spécifié
+   */
+  if (
+    bug_for_bug_compat &&
+    (
+      (type === 'ecs' && enum_type_generateur_id === '84')
+      || (type === 'ch' && enum_type_generateur_id === '119')
+    ) &&
+    de.tv_generateur_combustion_id
+  ) {
+    const tv_row = tv('generateur_combustion', {
+      tv_generateur_combustion_id: de.tv_generateur_combustion_id
+    });
+    /* On vérifie que le tv_ est différent de celui trouvé par la table forfaitaire
+     * et qu'il est compatible avec le générateur.
+     */
+    if (
+      tv_row.tv_generateur_combustion_id !== row.tv_generateur_combustion_id &&
+      (tv_row[typeGenerateur]?.split('|')?.includes(enum_type_generateur_id) ?? false)
+    ) {
+      console.warn('Bug compat. Utilisation du tv_generateur_combustion fourni');
+      row = tv_row;
     }
-
-    matcher.critere_pn = criterePn(di.pn / 1000, matcher);
-    row = tv('generateur_combustion', matcher);
   }
 
   if (!row) console.error('!! pas de valeur forfaitaire trouvée pour generateur_combustion !!');
