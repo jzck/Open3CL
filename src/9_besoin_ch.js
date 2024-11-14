@@ -81,15 +81,14 @@ export default function calc_besoin_ch(
    * Ce calcul ne s’applique qu’au générateur pour lesquels des pertes à l’arrêt Qp0 sont prises en compte.
    * Seules les pertes des générateurs et des ballons de stockage en volume chauffé sont récupérables. Les pertes
    * récupérées des générateurs d’air chaud sont nulles.
+   *
+   * @type {GenerateurChauffageItem[]}
    */
-  const gen_ch_recup = [];
-  for (const inst_ch of instal_ch) {
-    for (const gen_ch of inst_ch.generateur_chauffage_collection.generateur_chauffage) {
-      if (gen_ch.donnee_intermediaire.qp0 && (gen_ch.donnee_entree.position_volume_chauffe ?? 0)) {
-        gen_ch_recup.push(gen_ch);
-      }
-    }
-  }
+  const gen_ch_recup = instal_ch.flatMap(inst_ch =>
+    inst_ch.generateur_chauffage_collection.generateur_chauffage.filter(gen_ch =>
+      gen_ch.donnee_intermediaire.qp0 && (gen_ch.donnee_entree.position_volume_chauffe ?? 0)
+    )
+  );
 
   for (const mois of mois_liste) {
     const nref19 = Nref19[ca][mois][zc];
@@ -128,11 +127,12 @@ export default function calc_besoin_ch(
     const Bch_hp_j = bvj * dh19j;
     const Bch_hp_j_dep = bvj_dep * dh21j;
 
-    for (const gen_ch of gen_ch_recup) {
-      pertes_generateur_ch_recup += calc_Qrec_gen_j(gen_ch, nref19, Bch_hp_j) / (1000 * 1000);
-      pertes_generateur_ch_recup_depensier +=
-        calc_Qrec_gen_j(gen_ch, nref21, Bch_hp_j_dep) / (1000 * 1000);
-    }
+    gen_ch_recup.forEach(
+      gen_ch => {
+        pertes_generateur_ch_recup += calc_Qrec_gen_j(gen_ch, nref19, Bch_hp_j) / 1000;
+        pertes_generateur_ch_recup_depensier += calc_Qrec_gen_j(gen_ch, nref21, Bch_hp_j_dep) / 1000;
+      }
+    )
 
     besoin_ch += (bvj * dh19j) / 1000;
     besoin_ch_depensier += (bvj_dep * dh21j) / 1000;
