@@ -165,7 +165,7 @@ export function calcul_3cl(dpe) {
     zc_id,
     th,
     ej,
-    logement,
+    dpe,
     ShChauffageAndEcs,
     ficheTechniqueFacadesExposees
   );
