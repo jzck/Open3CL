@@ -59,7 +59,10 @@ export default function calc_besoin_ch(
       acc +
       gen_ecs.reduce((acc, gen_ecs) => {
         // Pas de récupération de stockage si le ballon est hors volume chauffé
-        if (gen_ecs.donnee_entree.position_volume_chauffe === 0) {
+        if (
+          gen_ecs.donnee_entree.position_volume_chauffe_stockage === 0 ||
+          gen_ecs.donnee_entree.position_volume_chauffe === 0
+        ) {
           return acc;
         }
 
