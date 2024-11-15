@@ -1,5 +1,5 @@
 import b from './3.1_b.js';
-import { tv, requestInput, requestInputID } from './utils.js';
+import { tv, requestInput, requestInputID, bug_for_bug_compat } from './utils.js';
 
 function tv_ug(di, de, du) {
   const matcher = {
@@ -148,6 +148,64 @@ export default function calc_bv(bv, zc) {
   tv_ug(di, de, du);
   if (de.uw_saisi) di.uw = de.uw_saisi;
   else tv_uw(di, de, du);
+
+  /**
+   * S'il existe une double-fenêtre, calcul des facteurs sw et uw équivalents
+   * 3.3.2 Coefficients Uw des fenêtres / portes-fenêtres - Traitement des doubles fenêtre
+   * 6.2.1 Détermination du facteur solaire
+   */
+  if (de.double_fenetre === 1 && bv.baie_vitree_double_fenetre) {
+    const deDoubleFenetre = bv.baie_vitree_double_fenetre.donnee_entree;
+    const diDoubleFenetre = bv.baie_vitree_double_fenetre.donnee_intermediaire;
+
+    if (deDoubleFenetre.sw_saisi) {
+      diDoubleFenetre.sw = deDoubleFenetre.sw_saisi;
+    } else {
+      tv_sw(diDoubleFenetre, deDoubleFenetre, du);
+    }
+
+    const sw = di.sw * (diDoubleFenetre.sw || 1);
+
+    if (!de.sw_saisi) {
+      di.sw = sw;
+    }
+
+    if (
+      bug_for_bug_compat &&
+      de.sw_saisi &&
+      bv.donnee_intermediaire.sw.toFixed(5) === sw.toFixed(5)
+    ) {
+      console.error(
+        `Le coefficient sw pour la double fenêtre '${de.description}' est saisi mais il est égale au produit des facteurs 
+          sw des deux fenêtres. Il devrait être sw_saisi, le produit des sw est utilisé.`
+      );
+      di.sw = sw;
+    }
+
+    if (deDoubleFenetre.uw_saisi) {
+      diDoubleFenetre.uw = deDoubleFenetre.uw_saisi;
+    } else {
+      tv_uw(diDoubleFenetre, deDoubleFenetre, du);
+    }
+
+    const uw = 1 / (1 / di.uw + 1 / diDoubleFenetre.uw + 0.07);
+
+    if (!de.uw_saisi) {
+      di.uw = uw;
+    }
+
+    if (
+      bug_for_bug_compat &&
+      de.uw_saisi &&
+      bv.donnee_intermediaire.uw.toFixed(5) === uw.toFixed(5)
+    ) {
+      console.error(
+        `Le coefficient uw pour la double fenêtre '${de.description}' est saisi mais il est égale au uw équivalent
+          des deux fenêtres. Il devrait être uw_saisi, le facteur uw équivalent est utilisé.`
+      );
+      di.uw = uw;
+    }
+  }
 
   const type_fermeture = requestInput(de, du, 'type_fermeture');
   if (type_fermeture !== 'abscence de fermeture pour la baie vitrée') {
