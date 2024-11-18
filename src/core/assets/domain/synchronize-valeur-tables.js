@@ -28,6 +28,11 @@ export class SynchronizeValeurTables {
   #synchronizeDpeGesLimitValuesTables;
 
   /**
+   * @type {AddAdditionnalUeValuesTables}
+   */
+  #addAdditionnalUeValuesTables;
+
+  /**
    * @type {SynchronizeC1Tables}
    */
   #synchronizeC1Tables;
@@ -37,6 +42,7 @@ export class SynchronizeValeurTables {
    * @param appConfig {ApplicationConfig}
    * @param synchronizeSolicitationsTables {SynchronizeSolicitationsTables}
    * @param synchronizeDpeGesLimitValuesTables {SynchronizeDpeGesLimitValuesTables}
+   * @param addAdditionnalUeValuesTables {AddAdditionnalUeValuesTables}
    * @param synchronizeC1Tables {SynchronizeC1Tables}
    */
   constructor(
@@ -44,12 +50,14 @@ export class SynchronizeValeurTables {
     appConfig,
     synchronizeSolicitationsTables,
     synchronizeDpeGesLimitValuesTables,
+    addAdditionnalUeValuesTables,
     synchronizeC1Tables
   ) {
     this.#fileStore = fileStore;
     this.#appConfig = appConfig;
     this.#synchronizeSolicitationsTables = synchronizeSolicitationsTables;
     this.#synchronizeDpeGesLimitValuesTables = synchronizeDpeGesLimitValuesTables;
+    this.#addAdditionnalUeValuesTables = addAdditionnalUeValuesTables;
     this.#synchronizeC1Tables = synchronizeC1Tables;
   }
 
@@ -118,13 +126,18 @@ export class SynchronizeValeurTables {
           const c1TablesValues = tablesValues[2];
 
           // Merge content from "valeur_tables.xlsx" file with "18.2_sollicitations_ext.ods" file
-          const tableValues = Object.assign(
+          let tableValues = Object.assign(
             {},
             valeurTablesValues,
             solicitationsTablesValues,
             dpeGesLimitTablesValues,
             c1TablesValues
           );
+
+          // Ajout de valeurs supplémentaires pour le calcul du facteur Ue pour les déperditions plancher_bas
+          if (tableValues['ue']) {
+            tableValues = this.#addAdditionnalUeValuesTables.execute(tableValues);
+          }
 
           // Overwrite the tv.js file in filesystem
           return this.#fileStore.writeFileToLocalSystem(

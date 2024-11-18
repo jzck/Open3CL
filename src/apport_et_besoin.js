@@ -29,8 +29,8 @@ export default function calc_apport_et_besoin(
 
   const nadeq = nadeqService.calculateNadeq(logement);
 
-  const besoin_ecs = calc_besoin_ecs(ilpa, ca, zc, nadeq);
-  const besoin_fr = calc_besoin_fr(ilpa, ca, zc, Sh, nadeq, GV, inertie, bv);
+  const besoin_ecs = calc_besoin_ecs(ca, zc, nadeq);
+  const besoin_fr = calc_besoin_fr(ca, zc, Sh, nadeq, GV, inertie, bv);
   const apport_interne = calc_ai(ilpa, ca, zc, Sh, nadeq);
   const apport_solaire = calc_as(ilpa, ca, zc, bv);
 
