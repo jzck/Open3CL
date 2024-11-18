@@ -378,3 +378,52 @@ export function cleanReference(reference) {
 export function compareReferences(reference1, reference2) {
   return cleanReference(reference1) === cleanReference(reference2);
 }
+
+/**
+ * Vérification si le chauffage est par effet joule
+ * 3.2 Calcul des U des parois opaques
+ * On considère qu’un logement est chauffé par effet joule lorsque la chaleur est fournie par une résistance électrique.
+ * @param instal_ch {InstallationChauffageItem[]}
+ * @returns {string} 1 if effet joule, 0 otherwise
+ */
+export function isEffetJoule(instal_ch) {
+  const { surfaceEffetJoule, surfaceTotale } = instal_ch.reduce(
+    (acc, item) => {
+      const generatorIds = item.generateur_chauffage_collection.generateur_chauffage.reduce(
+        (acc, generateur) => {
+          return [...acc, generateur.donnee_entree.enum_type_generateur_ch_id];
+        },
+        []
+      );
+
+      /**
+       * enum_type_generateur_ch_id
+       * 98 - convecteur électrique nfc, nf** et nf***
+       * 99 - panneau rayonnant électrique nfc, nf** et nf***
+       * 100 - radiateur électrique nfc, nf** et nf***
+       * 101 - autres émetteurs à effet joule
+       * 102 - plancher ou plafond rayonnant électrique avec régulation terminale
+       * 103 - plancher ou plafond rayonnant électrique sans régulation terminale
+       * 104 - radiateur électrique à accumulation
+       * 105 - convecteur bi-jonction
+       * 106 - chaudière électrique
+       * @type {boolean}
+       */
+      const isEffetJoule =
+        generatorIds.filter((value) =>
+          ['98', '99', '100', '101', '102', '103', '104', '105', '106'].includes(value)
+        ).length > 0;
+
+      if (isEffetJoule) {
+        acc.surfaceEffetJoule += item.donnee_entree.surface_chauffee;
+      }
+
+      acc.surfaceTotale += item.donnee_entree.surface_chauffee;
+      return acc;
+    },
+    { surfaceEffetJoule: 0, surfaceTotale: 0 }
+  );
+
+  // Si la surface chauffée par une résistance électrique est majoritaire => effet_joule = 1
+  return surfaceEffetJoule / surfaceTotale >= 0.5 ? '1' : '0';
+}

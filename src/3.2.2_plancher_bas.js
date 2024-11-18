@@ -18,11 +18,31 @@ function tv_upb0(di, de, du) {
   }
 }
 
-function tv_upb(di, de, du, pc_id, zc, ej) {
+function tv_upb(di, de, du, pc_id, zc, effetJoule) {
+  if (bug_for_bug_compat && de.tv_upb_id) {
+    /**
+     * Vérification de la variable effet_joule
+     * Certains DPE utilise de manière erronée cette variable. Pour rester cohérent avec le DPE, utilisation de la variable
+     * effet_joule telle qu'elle est utilisée dans le DPE
+     */
+    const rowUpb = tv('upb', {
+      tv_upb_id: de.tv_upb_id
+    });
+
+    if (rowUpb && rowUpb.effet_joule !== effetJoule) {
+      console.error(
+        `La variable effet_joule utilisée dans le DPE pour le plancher bas '${de.description}' est ${rowUpb.effet_joule}.
+        Celle-ci devrait être ${effetJoule}. La valeur ${rowUpb.effet_joule} est conservée dans la suite des calculs`
+      );
+
+      effetJoule = rowUpb.effet_joule;
+    }
+  }
+
   const matcher = {
     enum_periode_construction_id: pc_id,
     enum_zone_climatique_id: zc,
-    effet_joule: ej
+    effet_joule: effetJoule
   };
   const row = tv('upb', matcher, de);
   if (row) {
@@ -141,7 +161,7 @@ function calc_upb0(di, de, du) {
   }
 }
 
-export default function calc_pb(pb, zc, pc_id, ej, pb_list) {
+export default function calc_pb(pb, zc, pc_id, effetJoule, pb_list) {
   const de = pb.donnee_entree;
   const du = {};
   const di = {};
@@ -172,7 +192,7 @@ export default function calc_pb(pb, zc, pc_id, ej, pb_list) {
     case 'isolation inconnue  (table forfaitaire)':
     case "année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)": {
       calc_upb0(di, de, du);
-      tv_upb(di, de, du, de.enum_periode_isolation_id || pc_id, zc, ej);
+      tv_upb(di, de, du, de.enum_periode_isolation_id || pc_id, zc, effetJoule);
       di.upb = Math.min(di.upb, di.upb0);
       break;
     }
@@ -190,12 +210,12 @@ export default function calc_pb(pb, zc, pc_id, ej, pb_list) {
       }
       calc_upb0(di, de, du);
       const tv_upb_avant = de.tv_upb_id;
-      tv_upb(di, de, du, pi_id, zc, ej);
+      tv_upb(di, de, du, pi_id, zc, effetJoule);
       if (de.tv_upb_id !== tv_upb_avant && pi_id !== pc_id) {
         console.warn(
           `BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 17)`
         );
-        if (bug_for_bug_compat) tv_upb(di, de, du, pc_id, zc, ej);
+        if (bug_for_bug_compat) tv_upb(di, de, du, pc_id, zc, effetJoule);
       }
       di.upb = Math.min(di.upb, di.upb0);
       break;
