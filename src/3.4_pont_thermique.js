@@ -131,8 +131,17 @@ function tv_k(pt_di, di, de, du, pc_id, logement) {
     /**
      * 3.4 Calcul des déperditions par les ponts thermiques
      * Les ponts thermiques des parois au niveau des circulations communes ne sont pas pris en compte.
+     * 14 - Circulation sans ouverture directe sur l'extérieur
+     * 15 - Circulation avec ouverture directe sur l'extérieur
+     * 16 - Circulation avec bouche ou gaine de désenfumage ouverte en permanence
+     * 17 - Hall d'entrée avec dispositif de fermeture automatique
+     * 18 - Hall d'entrée sans dispositif de fermeture automatique
+     * 22 - Local non déperditif ( local à usage d'habitation chauffé)
      */
-    if (mur && ['14', '15', '16', '22'].includes(mur.donnee_entree.enum_type_adjacence_id)) {
+    if (
+      mur &&
+      ['14', '15', '16', '17', '18', '22'].includes(mur.donnee_entree.enum_type_adjacence_id)
+    ) {
       /**
        * Certains ponts thermiques de type 'plancher bas / mur' ou 'plancher haut lourd / mur', bien que sur des circulations doivent être pris en compte
        * Certaines configurations du logement n'étant pas définissable, on doit se baser sur les données décrites dans le DPE
