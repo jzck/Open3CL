@@ -22,10 +22,23 @@ function tv_pertes_stockage(di, de) {
   else if (de.volume_stockage <= 300) vb = '200 <   ≤ 300';
   else vb = '> 300';
 
-  const matcher = {
+  let matcher = {
     enum_type_generateur_ecs_id: de.enum_type_generateur_ecs_id,
     volume_ballon: vb
   };
+
+  if (bug_for_bug_compat && de.enum_type_generateur_ecs_id === '84') {
+    matcher = {
+      tv_pertes_stockage_id: de.tv_pertes_stockage_id
+    };
+
+    console.error(
+      `Le générateur ECS est de type '84 - "système collectif par défaut en abscence d'information : chaudière fioul pénalisante"'.
+      On ne connait pas le type précis du générateur ECS permettant de récupérer les pertes de stockages. Utilisations de 
+      tv_pertes_stockage_id ${de.tv_pertes_stockage_id} saisi.
+      `
+    );
+  }
 
   const row = tv('pertes_stockage', matcher);
   if (row) {
@@ -109,7 +122,17 @@ function calc_Qgw(di, de, du, ecs_de) {
     }
   }
 
-  if (gen_ecs_elec_ids.includes(de.enum_type_generateur_ecs_id)) {
+  let isElectric = gen_ecs_elec_ids.includes(de.enum_type_generateur_ecs_id);
+
+  /**
+   * Si le système ECS est inconnu -> on se base exclusivement sur le type d'énergie
+   * enum_type_generateur_ecs_id = 84 - "système collectif par défaut en abscence d'information : chaudière fioul pénalisante"
+   */
+  if (bug_for_bug_compat && de.enum_type_generateur_ecs_id === '84') {
+    isElectric = de.enum_type_energie_id === '1';
+  }
+
+  if (isElectric) {
     tv_pertes_stockage(di, de, du);
     di.Qgw = ((8592 * 45) / 24) * Vs * di.cr;
     delete di.cr;
@@ -194,7 +217,13 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
   const type_energie = requestInput(de, du, 'type_energie');
 
   calc_Qgw(di, de, du, ecs_de);
-  di.Qgw *= de.ratio_virtualisation;
+
+  /**
+   * Application du ratio uniquement pour les installations collectives
+   */
+  if (ecs_de.enum_type_installation_id !== '1') {
+    di.Qgw *= de.ratio_virtualisation;
+  }
 
   const pac_ids = tvColumnIDs('scop', 'type_generateur_ecs');
   const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ecs');

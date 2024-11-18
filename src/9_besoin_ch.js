@@ -59,7 +59,10 @@ export default function calc_besoin_ch(
       acc +
       gen_ecs.reduce((acc, gen_ecs) => {
         // Pas de récupération de stockage si le ballon est hors volume chauffé
-        if (gen_ecs.donnee_entree.position_volume_chauffe === 0) {
+        if (
+          gen_ecs.donnee_entree.position_volume_chauffe_stockage === 0 ||
+          gen_ecs.donnee_entree.position_volume_chauffe === 0
+        ) {
           return acc;
         }
 
@@ -84,9 +87,10 @@ export default function calc_besoin_ch(
    *
    * @type {GenerateurChauffageItem[]}
    */
-  const gen_ch_recup = instal_ch.flatMap(inst_ch =>
-    inst_ch.generateur_chauffage_collection.generateur_chauffage.filter(gen_ch =>
-      gen_ch.donnee_intermediaire.qp0 && (gen_ch.donnee_entree.position_volume_chauffe ?? 0)
+  const gen_ch_recup = instal_ch.flatMap((inst_ch) =>
+    inst_ch.generateur_chauffage_collection.generateur_chauffage.filter(
+      (gen_ch) =>
+        gen_ch.donnee_intermediaire.qp0 && (gen_ch.donnee_entree.position_volume_chauffe ?? 0)
     )
   );
 
@@ -127,12 +131,10 @@ export default function calc_besoin_ch(
     const Bch_hp_j = bvj * dh19j;
     const Bch_hp_j_dep = bvj_dep * dh21j;
 
-    gen_ch_recup.forEach(
-      gen_ch => {
-        pertes_generateur_ch_recup += calc_Qrec_gen_j(gen_ch, nref19, Bch_hp_j) / 1000;
-        pertes_generateur_ch_recup_depensier += calc_Qrec_gen_j(gen_ch, nref21, Bch_hp_j_dep) / 1000;
-      }
-    )
+    gen_ch_recup.forEach((gen_ch) => {
+      pertes_generateur_ch_recup += calc_Qrec_gen_j(gen_ch, nref19, Bch_hp_j) / 1000;
+      pertes_generateur_ch_recup_depensier += calc_Qrec_gen_j(gen_ch, nref21, Bch_hp_j_dep) / 1000;
+    });
 
     besoin_ch += (bvj * dh19j) / 1000;
     besoin_ch_depensier += (bvj_dep * dh21j) / 1000;

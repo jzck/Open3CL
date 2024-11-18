@@ -1,7 +1,7 @@
 import enums from './enums.js';
 import { tv, requestInput, compareReferences, bug_for_bug_compat } from './utils.js';
 
-function defaultValue(logement, type_liaison, pt_di, de) {
+function defaultValue(type_liaison, pt_di, de) {
   if (pt_di.k === 0) {
     return 0;
   }
@@ -23,10 +23,10 @@ function defaultValue(logement, type_liaison, pt_di, de) {
       tv_pont_thermique_id est ignoré, la valeur k = ${pt_di.k} est conservée`
     );
 
-    return pourcentageValeurPontThermique(logement, type_liaison, de, pt_di.k, pt_di);
+    return pourcentageValeurPontThermique(type_liaison, de, pt_di.k, pt_di);
   }
 
-  return pourcentageValeurPontThermique(logement, type_liaison, de, k, pt_di);
+  return pourcentageValeurPontThermique(type_liaison, de, k, pt_di);
 }
 
 function tv_k(pt_di, di, de, du, pc_id, logement) {
@@ -53,7 +53,7 @@ function tv_k(pt_di, di, de, du, pc_id, logement) {
       desc_1 = desc.match(/(.+)-(.+)/)[1];
       desc_2 = desc.match(/(.+)-(.+)/)[2];
     } else {
-      di.k = defaultValue(logement, type_liaison, pt_di, de);
+      di.k = defaultValue(type_liaison, pt_di, de);
       console.error(
         `BUG: description '${desc}' non reconnue pour le pont thermique. 
         La valeur de k est prise dans les données intermédiaires du DPE`
@@ -69,7 +69,7 @@ function tv_k(pt_di, di, de, du, pc_id, logement) {
     if (ptMur) {
       de.reference_1 = ptMur.donnee_entree.reference;
     } else {
-      di.k = defaultValue(logement, type_liaison, pt_di, de);
+      di.k = defaultValue(type_liaison, pt_di, de);
       console.error(
         `BUG: descriptions '${desc_1}' ou '${desc_2}' du pont thermique non reconnue dans les descriptions des murs. 
         La valeur de k est prise dans les données intermédiaires du DPE`
@@ -103,7 +103,7 @@ function tv_k(pt_di, di, de, du, pc_id, logement) {
       if (ptMur) {
         de.reference_2 = ptMur.donnee_entree.reference;
       } else {
-        di.k = defaultValue(logement, type_liaison, pt_di, de);
+        di.k = defaultValue(type_liaison, pt_di, de);
         console.error(
           `BUG: descriptions '${desc_1}' ou '${desc_2}' du pont thermique non reconnue dans '${type_liaison}'. 
           La valeur de k est prise dans les données intermédiaires du DPE`
@@ -167,7 +167,7 @@ function tv_k(pt_di, di, de, du, pc_id, logement) {
           compareReferences(plancher.donnee_entree.reference, de.reference_2)
       );
       if (!plancher) {
-        di.k = defaultValue(logement, type_liaison, pt_di, de);
+        di.k = defaultValue(type_liaison, pt_di, de);
         console.error(
           `Impossible de trouver un plancher ayant pour référence '${de.reference_1}' ou '${de.reference_2}'. 
           La valeur de k est prise dans les données intermédiaires du DPE`
@@ -308,7 +308,7 @@ function tv_k(pt_di, di, de, du, pc_id, logement) {
           compareReferences(men.donnee_entree.reference, de.reference_2)
       );
       if (!menuiserie) {
-        di.k = defaultValue(logement, type_liaison, pt_di, de);
+        di.k = defaultValue(type_liaison, pt_di, de);
         console.error(
           `Impossible de trouver une menuiserie ayant pour référence '${de.reference_1}' ou '${de.reference_2}'. 
           La valeur de k est prise dans les données intermédiaires du DPE`
@@ -380,7 +380,7 @@ function tv_k(pt_di, di, de, du, pc_id, logement) {
     di.k = Number(row.k);
     de.tv_pont_thermique_id = Number(row.tv_pont_thermique_id);
 
-    pourcentageValeurPontThermique(logement, type_liaison, de, di, pt_di);
+    pourcentageValeurPontThermique(type_liaison, de, di, pt_di);
   } else {
     console.error('!! pas de valeur forfaitaire trouvée pour pont_thermique (k) !!');
   }
@@ -400,19 +400,15 @@ function tv_k(pt_di, di, de, du, pc_id, logement) {
  * Par défaut on prend 0.5 si la valeur n'est pas spécifiée, qu'il n'y a qu'un seul étage au logement.
  * Si la valeur k calculée est égale au à celle spécifiée, le facteur est déjà pris en compte
  *
- * @param logement {Logement}
  * @param type_liaison {string} type de liaison du pont thermique en cours d'étude
  * @param de {Donnee_entree} données d'entrée du pont thermique en cours d'étude
  * @param k {string} valeur calculée pour k
  * @param pt_di {Donnee_intermediaire} données intermédiaires du pont thermique en cours d'étude
  */
-function pourcentageValeurPontThermique(logement, type_liaison, de, k, pt_di) {
-  const nombreNiveauLogement = logement.caracteristique_generale.nombre_niveau_logement || 1;
-
+function pourcentageValeurPontThermique(type_liaison, de, k, pt_di) {
   if (
     !de.pourcentage_valeur_pont_thermique &&
     (type_liaison === 'refend / mur' || type_liaison === 'plancher intermédiaire lourd / mur') &&
-    nombreNiveauLogement === 1 &&
     (parseFloat(k) !== parseFloat(pt_di.k) || pt_di.k > 1)
   ) {
     de.pourcentage_valeur_pont_thermique = 0.5;

@@ -94,7 +94,10 @@ function tv_sw(di, de, du) {
 }
 
 function tv_masque_proche(di, de) {
-  if (!de.tv_coef_masque_proche_id) return;
+  if (!de.tv_coef_masque_proche_id) {
+    di.fe1 = 1;
+    return;
+  }
   const matcher = {
     tv_coef_masque_proche_id: de.tv_coef_masque_proche_id // TODO remove
   };
