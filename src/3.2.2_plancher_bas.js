@@ -83,7 +83,7 @@ function ue_ranges(inputNumber, ranges) {
   return result;
 }
 
-const values_2s_p = [3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20];
+const values_2s_p = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20];
 
 function tv_ue(di, de, du, pc_id, pb_list) {
   const type_adjacence = enums.type_adjacence[de.enum_type_adjacence_id];
@@ -101,45 +101,48 @@ function tv_ue(di, de, du, pc_id, pb_list) {
     type_adjacence_plancher = 'plancher sur vide sanitaire ou sous-sol non chauffé';
     [upb1, upb2] = ue_ranges(di.upb, [0.31, 0.34, 0.37, 0.41, 0.45, 0.83, 1.43, 3.33]);
   }
-  // sum all surface_paroi_opaque for all plancher_bas
-  const S = pb_list.reduce((acc, pb) => {
-    const type_adjacence = enums.type_adjacence[pb.donnee_entree.enum_type_adjacence_id];
-    switch (type_adjacence) {
-      case 'vide sanitaire':
-      case 'sous-sol non chauffé':
-      case 'terre-plein':
-        return acc + pb.donnee_entree.surface_paroi_opaque;
-      default:
-        return acc;
-    }
-  }, 0);
-  const surface_ue = requestInput(de, du, 'surface_ue', 'float') || S;
 
-  // calcul utilisé par 2187E0982591I
-  /* surface_ue = de.surface_paroi_opaque */
-  /* if (de.reference == 'plancher_bas_1') { */
-  /*   surface_ue = 15.9 //sum of plancher_bas_1 + plancher_bas_2 */
-  /* } */
+  /**
+   * La surface Ue est la surface de tous les planchers bas ayant le même type d'adjacence
+   * Le périmètre Ue est le périmètre de tous les planchers bas ayant le même type d'adjacence
+   */
+  const { surfaceUe, perimetreUe } = pb_list.reduce(
+    (acc, plancherBas) => {
+      if (plancherBas.donnee_entree.enum_type_adjacence_id === de.enum_type_adjacence_id) {
+        acc.surfaceUe +=
+          plancherBas.donnee_entree.surface_ue || plancherBas.donnee_entree.surface_paroi_opaque;
+        acc.perimetreUe += plancherBas.donnee_entree.perimetre_ue || 0;
+      }
+      return acc;
+    },
+    { surfaceUe: 0, perimetreUe: 0 }
+  );
 
-  const perimetre_ue = requestInput(de, du, 'perimetre_ue', 'float');
   const matcher = {
     type_adjacence_plancher,
-    '2s_p': Math.round((2 * surface_ue) / perimetre_ue)
+    '2s_p': Math.round((2 * surfaceUe) / perimetreUe)
   };
-  // get 2s_p from surface_ue and perimetre_ue, choose from closest 2s_p_values
   matcher['2s_p'] = values_2s_p.reduce((prev, curr) => {
     return Math.abs(curr - matcher['2s_p']) < Math.abs(prev - matcher['2s_p']) ? curr : prev;
   });
+
   matcher['2s_p'] = `^${matcher['2s_p']}$`;
+
   const matcher_1 = { ...matcher, ...{ upb: String(upb1) } };
   const matcher_2 = { ...matcher, ...{ upb: String(upb2) } };
   const row_1 = tv('ue', matcher_1);
   const row_2 = tv('ue', matcher_2);
+
   const delta_ue = Number(row_2.ue) - Number(row_1.ue);
   const delta_upb = upb2 - upb1;
+
   let ue;
-  if (delta_upb === 0) ue = Number(row_1.ue);
-  else ue = Number(row_1.ue) + (delta_ue * (di.upb - upb1)) / delta_upb;
+  if (delta_upb === 0) {
+    ue = Number(row_1.ue);
+  } else {
+    // Interpolation linéaire si di.upb n'est pas une valeur connue
+    ue = Number(row_1.ue) + (delta_ue * (di.upb - upb1)) / delta_upb;
+  }
   de.ue = ue;
 }
 

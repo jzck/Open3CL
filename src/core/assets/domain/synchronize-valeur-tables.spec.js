@@ -6,6 +6,7 @@ import { SynchronizeSolicitationsTables } from './synchronize-solicitations-tabl
 import { ValeurTablesFixture } from '../../../../test/fixtures/core/assets/valeur-tables.fixture.js';
 import { jest } from '@jest/globals';
 import { SynchronizeDpeGesLimitValuesTables } from './synchronize-dpe-ges-limit-values-tables.js';
+import { AddAdditionnalUeValuesTables } from './add-additionnal-ue-values-tables.js';
 
 describe('SynchronizeValeurTables unit tests', () => {
   it('should download, parse and convert valeur_tables.xlsx file', () => {
@@ -17,11 +18,13 @@ describe('SynchronizeValeurTables unit tests', () => {
       fileStore,
       appConfig
     );
+    const addAdditionnalUeValuesTables = new AddAdditionnalUeValuesTables(fileStore, appConfig);
     const synchronizeValeurTables = new SynchronizeValeurTables(
       fileStore,
       appConfig,
       synchronizeSolicitationTables,
       synchronizeDpeGesLimitValuesTables,
+      addAdditionnalUeValuesTables,
       synchronizeC1Tables
     );
 
@@ -38,6 +41,7 @@ describe('SynchronizeValeurTables unit tests', () => {
     jest.spyOn(synchronizeC1Tables, 'execute').mockResolvedValue({});
     jest.spyOn(synchronizeSolicitationTables, 'execute').mockResolvedValue({});
     jest.spyOn(synchronizeDpeGesLimitValuesTables, 'execute').mockResolvedValue({});
+    jest.spyOn(addAdditionnalUeValuesTables, 'execute').mockResolvedValue({});
 
     return synchronizeValeurTables.execute().then(() => {
       expect(fileStore.downloadXlsxFileAndConvertToJson).toHaveBeenCalled();

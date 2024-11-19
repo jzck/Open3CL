@@ -25,7 +25,7 @@ export function calc_besoin_fr_j(Sh, GV, inertie, aij_fr, asj_fr, nrefj, textmoy
   return bfr;
 }
 
-export default function calc_besoin_fr(ilpa, ca, zc, Sh, nadeq, GV, inertie, bv) {
+export default function calc_besoin_fr(ca, zc, Sh, nadeq, GV, inertie, bv) {
   const Nref26 = tvs.nref26;
   const Nref28 = tvs.nref28;
   const e_fr_26 = tvs.e_fr_26;

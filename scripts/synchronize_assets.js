@@ -6,6 +6,7 @@ import { SynchronizeValeurTables } from '../src/core/assets/domain/synchronize-v
 import { SynchronizeSolicitationsTables } from '../src/core/assets/domain/synchronize-solicitations-tables.js';
 import { SynchronizeC1Tables } from '../src/core/assets/domain/synchronize-c1-tables.js';
 import { SynchronizeDpeGesLimitValuesTables } from '../src/core/assets/domain/synchronize-dpe-ges-limit-values-tables.js';
+import { AddAdditionnalUeValuesTables } from '../src/core/assets/domain/add-additionnal-ue-values-tables.js';
 
 const fileStore = new FileStore();
 const appConfig = new ApplicationConfig();
@@ -15,12 +16,14 @@ const synchronizeDpeGesLimitValuesTables = new SynchronizeDpeGesLimitValuesTable
   fileStore,
   appConfig
 );
+const addAdditionnalUeValuesTables = new AddAdditionnalUeValuesTables(fileStore, appConfig);
 const synchronizeC1Tables = new SynchronizeC1Tables(fileStore, appConfig);
 const synchronizeValeurTables = new SynchronizeValeurTables(
   fileStore,
   appConfig,
   synchronizeSolicitationsTables,
   synchronizeDpeGesLimitValuesTables,
+  addAdditionnalUeValuesTables,
   synchronizeC1Tables
 );
 const synchronizeAssets = new SynchronizeAssets(synchronizeEnumTables, synchronizeValeurTables);
