@@ -8,7 +8,13 @@ import calc_chauffage from './9_chauffage.js';
 import calc_confort_ete from './2021_04_13_confort_ete.js';
 import calc_qualite_isolation from './2021_04_13_qualite_isolation.js';
 import calc_conso from './conso.js';
-import { add_references, bug_for_bug_compat, collectionCanBeEmpty, sanitize_dpe } from './utils.js';
+import {
+  add_references,
+  bug_for_bug_compat,
+  collectionCanBeEmpty,
+  isEffetJoule,
+  sanitize_dpe
+} from './utils.js';
 import { Inertie } from './7_inertie.js';
 import getFicheTechnique from './ficheTechnique.js';
 
@@ -144,11 +150,6 @@ export function calcul_3cl(dpe) {
   const ca_id = logement.meteo.enum_classe_altitude_id;
 
   const instal_ch = logement.installation_chauffage_collection.installation_chauffage;
-  const ej =
-    instal_ch[0].generateur_chauffage_collection.generateur_chauffage[0].donnee_entree
-      .enum_type_energie_id === '1'
-      ? '1'
-      : '0';
 
   /**
    * 4 - Calcul des déperditions par renouvellement d’air
@@ -164,7 +165,7 @@ export function calcul_3cl(dpe) {
     cg,
     zc_id,
     th,
-    ej,
+    isEffetJoule(instal_ch),
     dpe,
     ShChauffageAndEcs,
     ficheTechniqueFacadesExposees

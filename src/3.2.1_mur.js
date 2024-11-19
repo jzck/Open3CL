@@ -36,11 +36,31 @@ function tv_umur0(di, de, du) {
   }
 }
 
-function tv_umur(di, de, du, pc_id, zc, ej) {
+function tv_umur(di, de, du, pc_id, zc, effetJoule) {
+  if (bug_for_bug_compat && de.tv_umur_id) {
+    /**
+     * Vérification de la variable effet_joule
+     * Certains DPE utilise de manière erronée cette variable. Pour rester cohérent avec le DPE, utilisation de la variable
+     * effet_joule telle qu'elle est utilisée dans le DPE
+     */
+    const rowUmur = tv('umur', {
+      tv_umur_id: de.tv_umur_id
+    });
+
+    if (rowUmur && rowUmur.effet_joule !== effetJoule) {
+      console.error(
+        `La variable effet_joule utilisée dans le DPE pour le mur '${de.description}' est ${rowUmur.effet_joule}.
+        Celle-ci devrait être ${effetJoule}. La valeur ${rowUmur.effet_joule} est conservée dans la suite des calculs`
+      );
+
+      effetJoule = rowUmur.effet_joule;
+    }
+  }
+
   const matcher = {
     enum_periode_construction_id: pc_id,
     enum_zone_climatique_id: zc,
-    effet_joule: ej
+    effet_joule: effetJoule
   };
   const row = tv('umur', matcher, de);
   if (row) {
@@ -116,7 +136,7 @@ function calc_umur0(di, de, du) {
   di.umur0 = Math.min(2.5, di.umur0);
 }
 
-export default function calc_mur(mur, zc, pc_id, ej) {
+export default function calc_mur(mur, zc, pc_id, effetJoule) {
   const de = mur.donnee_entree;
   const du = {};
   const di = {};
@@ -171,13 +191,13 @@ export default function calc_mur(mur, zc, pc_id, ej) {
     }
     case 'isolation inconnue  (table forfaitaire)':
       calc_umur0(di, de, du);
-      tv_umur(di, de, du, pc_id, zc, ej);
+      tv_umur(di, de, du, pc_id, zc, effetJoule);
       di.umur = Math.min(di.umur, di.umur0);
       break;
     case "année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)": {
       calc_umur0(di, de, du);
       const pi_id = requestInputID(de, du, 'periode_isolation') || pc_id;
-      tv_umur(di, de, du, pi_id, zc, ej);
+      tv_umur(di, de, du, pi_id, zc, effetJoule);
       di.umur = Math.min(di.umur, di.umur0);
       break;
     }
@@ -195,12 +215,12 @@ export default function calc_mur(mur, zc, pc_id, ej) {
         }
       }
       const tv_umur_avant = de.tv_umur_id;
-      tv_umur(di, de, du, pi_id, zc, ej);
+      tv_umur(di, de, du, pi_id, zc, effetJoule);
       if (de.tv_umur_id !== tv_umur_avant && pi_id !== pc_id) {
         console.warn(
           `BUG(${scriptName}) Si année de construction <74 alors Année d'isolation=75-77 (3CL page 13)`
         );
-        if (bug_for_bug_compat) tv_umur(di, de, du, pc_id, zc, ej);
+        if (bug_for_bug_compat) tv_umur(di, de, du, pc_id, zc, effetJoule);
       }
       di.umur = Math.min(di.umur, di.umur0);
       break;

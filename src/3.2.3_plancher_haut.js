@@ -16,7 +16,7 @@ function tv_uph0(di, de, du) {
   }
 }
 
-function tv_uph(di, de, du, pc_id, zc, ej) {
+function tv_uph(di, de, du, pc_id, zc, effetJoule) {
   const type_adjacence = requestInput(de, du, 'type_adjacence');
   const type_ph = requestInput(de, du, 'type_plancher_haut');
   let type_toiture;
@@ -31,7 +31,7 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
     else type_toiture = 'terrasse';
   }
 
-  if (bug_for_bug_compat) {
+  if (bug_for_bug_compat && de.tv_uph_id) {
     /**
      * Pour certains DPE le type d'adjacence du plancher haut n'est pas bien défini.
      * On va le récupérer depuis les données d'entrée si besoin
@@ -40,12 +40,21 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
       tv_uph_id: de.tv_uph_id
     });
 
-    if (rowUph && rowUph.type_toiture === 'combles') {
-      if (rowUph.type_toiture !== type_toiture) {
+    if (rowUph) {
+      if (rowUph.type_toiture === 'combles' && rowUph.type_toiture !== type_toiture) {
         console.error(
           `Le type d'adjacence pour le plancher haut ${de.description} ne correspond pas aux données saisies (${rowUph.type_toiture})`
         );
         type_toiture = rowUph.type_toiture;
+      }
+
+      if (rowUph.effet_joule !== effetJoule) {
+        console.error(
+          `La variable effet_joule utilisée dans le DPE pour le plancher haut '${de.description}' est ${rowUph.effet_joule}.
+        Celle-ci devrait être ${effetJoule}. La valeur ${rowUph.effet_joule} est conservée dans la suite des calculs`
+        );
+
+        effetJoule = rowUph.effet_joule;
       }
     }
   }
@@ -53,7 +62,7 @@ function tv_uph(di, de, du, pc_id, zc, ej) {
   const matcher = {
     enum_periode_construction_id: pc_id,
     enum_zone_climatique_id: zc,
-    effet_joule: ej,
+    effet_joule: effetJoule,
     type_toiture
   };
   const row = tv('uph', matcher);
@@ -83,7 +92,7 @@ function calc_uph0(di, de, du) {
   }
 }
 
-export default function calc_ph(ph, zc, pc_id, ej) {
+export default function calc_ph(ph, zc, pc_id, effetJoule) {
   const de = ph.donnee_entree;
   const du = {};
   const di = {};
@@ -114,7 +123,7 @@ export default function calc_ph(ph, zc, pc_id, ej) {
     }
     case 'isolation inconnue  (table forfaitaire)':
     case "année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)":
-      tv_uph(di, de, du, de.enum_periode_isolation_id || pc_id, zc, ej);
+      tv_uph(di, de, du, de.enum_periode_isolation_id || pc_id, zc, effetJoule);
       calc_uph0(di, de, du);
       di.uph = Math.min(di.uph, di.uph0);
       break;
@@ -132,7 +141,7 @@ export default function calc_ph(ph, zc, pc_id, ej) {
         }
       }
       calc_uph0(di, de, du);
-      tv_uph(di, de, du, pi_id, zc, ej);
+      tv_uph(di, de, du, pi_id, zc, effetJoule);
       di.uph = Math.min(di.uph, di.uph0);
       break;
     }
