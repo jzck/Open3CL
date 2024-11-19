@@ -22,6 +22,7 @@ const coef_ges = {
   charbon: 0.385,
   propane: 0.272,
   butane: 0.272,
+  gpl: 0.272,
   "électricité d'origine renouvelable utilisée dans le bâtiment": 0,
   'électricité ch': 0.079,
   'électricité ecs': 0.065,
