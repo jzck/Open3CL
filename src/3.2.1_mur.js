@@ -15,15 +15,22 @@ function tv_umur0(di, de, du) {
   const matcher = {
     enum_materiaux_structure_mur_id: de.enum_materiaux_structure_mur_id
   };
-  if (!['1', '20'].includes(de.enum_materiaux_structure_mur_id.toString())) {
-    // 1: inconnu, 20: cloison de platree, pas concerné par les epaisseurs
-    // TODO not float, get from csv
+
+  /**
+   * Les matériaux 1, 6, 20, 27 ne sont pas concernés par les épaisseurs
+   * 1 - inconnu
+   * 6 - murs en pan de bois avec remplissage tout venant
+   * 20 - cloison de plâtre
+   * 27 - murs en ossature bois avec remplissage tout venant
+   */
+  if (![1, 6, 20, 27].includes(parseInt(de.enum_materiaux_structure_mur_id))) {
     matcher.epaisseur_structure = requestInput(de, du, 'epaisseur_structure', 'float');
     if (!matcher.epaisseur_structure) {
-      // BUG: des fois, LICIEL omet le champ 'epaisseur_structure'
-      // il faut aller le chercher dans description
-      // if desc is "Mur en blocs de béton creux d'épaisseur ≥ 25 cm non isolé donnant sur l'extérieur"
-      // retrive just "≥ 25" with a regex
+      /**
+       * Certains logiciels omettent le champ 'epaisseur_structure'
+       * Récupération de cette information si elle existe dans la description via regex "(\d+) cm"
+       * @type {number}
+       */
       matcher.epaisseur_structure = getThicknessFromDescription(de.description);
     }
   }
@@ -76,9 +83,11 @@ function calc_umur0(di, de, du) {
   const methode_saisie_u0 = requestInput(de, du, 'methode_saisie_u0');
   switch (methode_saisie_u0) {
     case 'type de paroi inconnu (valeur par défaut)':
-      de.enum_materiaux_structure_mur_id = getKeyByValue(enums.materiaux_structure_mur, 'inconnu');
-      tv_umur0(di, de, du);
-      break;
+      /**
+       * Si le type de mur est inconnu, Umur0 = Umur_nu = 2.5.
+       */
+      di.umur0 = '2.5';
+      return;
     case 'déterminé selon le matériau et épaisseur à partir de la table de valeur forfaitaire':
       requestInput(de, du, 'materiaux_structure_mur');
       tv_umur0(di, de, du);
@@ -101,14 +110,21 @@ function calc_umur0(di, de, du) {
   let type_doublage = parseInt(de.enum_type_doublage_id);
 
   // Certaines descriptions contiennent des informations sur le type de doublage
-  if (bug_for_bug_compat) {
-    if (
-      (type_doublage === 1 || type_doublage === 2) &&
-      de.description.toLowerCase().indexOf('doublage connu (plâtre, brique, bois') !== -1
-    ) {
+  if (bug_for_bug_compat && (type_doublage === 1 || type_doublage === 2)) {
+    if (de.description.toLowerCase().indexOf('doublage connu (plâtre, brique, bois') !== -1) {
       type_doublage = 5;
+    } else if (
+      de.description.toLowerCase().indexOf("doublage indéterminé avec lame d'air su") !== -1
+    ) {
+      type_doublage = 4;
+    } else if (
+      de.description.toLowerCase().indexOf("doublage indéterminé ou lame d'air inf") !== -1
+    ) {
+      type_doublage = 3;
     }
   }
+
+  di.umur0 = Math.min(2.5, di.umur0);
 
   // 3 - doublage indéterminé ou lame d'air inf 15 mm
   if (type_doublage === 3) {
