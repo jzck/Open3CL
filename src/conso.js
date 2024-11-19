@@ -118,6 +118,7 @@ export default function calc_conso(
         value.donnee_entree.cle_repartition_ch =
           ch.donnee_entree.cle_repartition_ch || prorataChauffage;
       }
+      value.donnee_entree.enum_type_installation_id = ch.donnee_entree.enum_type_installation_id;
     });
     return acc.concat(generateur_chauffage);
   }, []);
@@ -234,7 +235,7 @@ export default function calc_conso(
       conso_5_usages: conso_en._5_usages,
       emission_ges_ch: conso_en._ch * coef_ges[getCoefKey(type_energie, 'ch')],
       emission_ges_ecs: conso_en._ecs * coef_ges[getCoefKey(type_energie, 'ecs')],
-      emission_ges_5_usages: conso_en._5_usages * coef_ges[type_energie],  // TODO elec
+      emission_ges_5_usages: conso_en._5_usages * coef_ges[type_energie] // TODO elec
     };
     conso_en.enum_type_energie_id = energie_id;
     return acc.concat(conso_en);
@@ -322,11 +323,14 @@ function getChauffageConso(gen_ch, field, coef, prorataChauffage) {
     const conso = gen_ch.donnee_intermediaire[field];
     let type_energie = enums.type_energie[gen_ch.donnee_entree.enum_type_energie_id];
     if (type_energie === 'électricité') type_energie = 'électricité ch';
-    return (
-      acc +
-      getConso(coef, type_energie, conso) *
-        (gen_ch.donnee_entree.cle_repartition_ch || prorataChauffage)
-    );
+
+    // La clé de répartition n'est utilisée que dans le cadre des chauffages collectifs
+    const repartition =
+      gen_ch.donnee_entree.enum_type_installation_id !== '1'
+        ? gen_ch.donnee_entree.cle_repartition_ch || prorataChauffage
+        : prorataChauffage;
+
+    return acc + getConso(coef, type_energie, conso) * repartition;
   }, 0);
 }
 
