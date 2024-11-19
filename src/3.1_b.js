@@ -57,41 +57,46 @@ export default function b(di, de, du, zc_id) {
     } else {
       requestInput(de, du, 'surface_aiu', 'float');
       requestInput(de, du, 'surface_aue', 'float');
-      const ranges = findRanges(de.surface_aiu / de.surface_aue);
-      if (ranges[0]) {
-        // Si le rapport des surfaces est égale à la borne inférieure, utilisation de la borne supérieure
-        // et prise en compte de l'égalité
-        if (ranges[0] === de.surface_aiu / de.surface_aue) {
+
+      if (de.surface_aiu === de.surface_aue) {
+        matcher.aiu_aue_max = '≤ 0,25';
+      } else {
+        const ranges = findRanges(de.surface_aiu / de.surface_aue);
+        if (ranges[0]) {
+          // Si le rapport des surfaces est égale à la borne inférieure, utilisation de la borne supérieure
+          // et prise en compte de l'égalité
+          if (ranges[0] === de.surface_aiu / de.surface_aue) {
+            matcher.aiu_aue_max =
+              '≤ ' +
+              ranges[0]
+                .toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                  useGrouping: false
+                })
+                .replace('.', ',');
+          } else {
+            matcher.aiu_aue_min =
+              ranges[0]
+                .toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                  useGrouping: false
+                })
+                .replace('.', ',') + ' <';
+          }
+        }
+        if (ranges[1]) {
           matcher.aiu_aue_max =
             '≤ ' +
-            ranges[0]
+            ranges[1]
               .toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
                 useGrouping: false
               })
               .replace('.', ',');
-        } else {
-          matcher.aiu_aue_min =
-            ranges[0]
-              .toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                useGrouping: false
-              })
-              .replace('.', ',') + ' <';
         }
-      }
-      if (ranges[1]) {
-        matcher.aiu_aue_max =
-          '≤ ' +
-          ranges[1]
-            .toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-              useGrouping: false
-            })
-            .replace('.', ',');
       }
     }
   }
