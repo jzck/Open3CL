@@ -7,7 +7,15 @@ export function calc_sse_j(bv_list, zc, mois) {
 
   const ssej = bv_list.reduce((acc, bv) => {
     const type_adjacence = enums.type_adjacence[bv.donnee_entree.enum_type_adjacence_id];
-    if (type_adjacence !== 'extérieur') return acc;
+    /**
+     * @TODO implémenter les facteurs solaires pour les espaces tampons solarisés
+     * 6.3 Traitement des espaces tampons solarisés
+     */
+    if (
+      type_adjacence !== 'extérieur' &&
+      type_adjacence !== 'espace tampon solarisé (véranda,loggia fermée)'
+    )
+      return acc;
     const de = bv.donnee_entree;
     const di = bv.donnee_intermediaire;
 
