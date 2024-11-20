@@ -2,8 +2,6 @@ import enums from './enums.js';
 import { tv, requestInputID, requestInput, bug_for_bug_compat } from './utils.js';
 import calc_pvent from './5_conso_ventilation.js';
 
-const scriptName = new URL(import.meta.url).pathname.split('/').pop();
-
 function tv_debits_ventilation(di, de, du) {
   const matcher = {
     enum_type_ventilation_id: requestInputID(de, du, 'type_ventilation')
@@ -57,17 +55,28 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
   let pjt =
     surface_bv_avec_joint / (surface_bv_avec_joint + surface_bv_sans_joint) > 0.5 ? '1' : '0';
 
-  if (de.tv_q4pa_conv_id === 12 && pjt === '0') {
-    // cf 2387E0992815Q
-    // cf 2387E0430619S
-    console.warn(`BUG(${scriptName}) us: pjt=0, them: pjt=1`);
-    if (bug_for_bug_compat) pjt = '1';
-  }
+  if (bug_for_bug_compat && de.tv_q4pa_conv_id) {
+    const rowQ4paConv = tv('q4pa_conv', {
+      tv_q4pa_conv_id: de.tv_q4pa_conv_id
+    });
 
-  if ([10, 11].includes(de.tv_q4pa_conv_id) && isolation_surfaces === '0') {
-    // cf 2287E1489258O
-    console.warn(`BUG(${scriptName}) us: isolation_surface=0, them: isolation_surfaces=1`);
-    if (bug_for_bug_compat) isolation_surfaces = 1;
+    if (rowQ4paConv) {
+      if (rowQ4paConv.isolation_surfaces !== isolation_surfaces) {
+        console.error(
+          `Calcul de hperm pour la ventilation ${de.description}. Le DPE considère isolation_surfaces = ${rowQ4paConv.isolation_surfaces} 
+          alors que ce devrait être isolation_surfaces = ${isolation_surfaces}. La valeur du DPE isolation_surfaces = ${rowQ4paConv.isolation_surfaces} est utilisée.`
+        );
+        isolation_surfaces = rowQ4paConv.isolation_surfaces;
+      }
+
+      if (rowQ4paConv.presence_joints_menuiserie !== pjt) {
+        console.error(
+          `Calcul de hperm pour la ventilation ${de.description}. Le DPE considère presence_joints_menuiserie = ${rowQ4paConv.presence_joints_menuiserie} 
+          alors que ce devrait être presence_joints_menuiserie = ${pjt}. La valeur du DPE presence_joints_menuiserie = ${rowQ4paConv.presence_joints_menuiserie} est utilisée.`
+        );
+        pjt = rowQ4paConv.presence_joints_menuiserie;
+      }
+    }
   }
 
   const matcher = {
@@ -95,14 +104,15 @@ const f_tab = {
   0: 20
 };
 
-function calc_hperm(di, Sh, Hsp, Sdep, pfe) {
+function calc_hperm(di, surface_ventile, Hsp, Sdep, pfe) {
   const e = e_tab[pfe];
   const f = f_tab[pfe];
   const Q4pa_env = di.q4pa_conv * Sdep;
-  const Q4pa = Q4pa_env + 0.45 * di.smea_conv * Sh;
-  const n50 = Q4pa / ((4 / 50) ** (2 / 3) * Hsp * Sh);
+  const Q4pa = Q4pa_env + 0.45 * di.smea_conv * surface_ventile;
+  const n50 = Q4pa / ((4 / 50) ** (2 / 3) * Hsp * surface_ventile);
   const Qvinf =
-    (Hsp * Sh * n50 * e) / (1 + (f / e) * ((di.qvasouf_conv - di.qvarep_conv) / (Hsp * n50)) ** 2);
+    (Hsp * surface_ventile * n50 * e) /
+    (1 + (f / e) * ((di.qvasouf_conv - di.qvarep_conv) / (Hsp * n50)) ** 2);
   di.hperm = 0.34 * Qvinf;
 }
 
