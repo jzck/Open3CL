@@ -301,12 +301,11 @@ function classe_emission_ges(emission_ges_5_usages_m2, zc_id, ca_id, Sh) {
 function getEcsConso(gen_ecs, field, coef, prorataECS) {
   return gen_ecs.reduce((acc, gen_ecs) => {
     const conso = gen_ecs.donnee_intermediaire[field];
-    let type_energie = enums.type_energie[gen_ecs.donnee_entree.enum_type_energie_id];
-    if (type_energie === 'électricité') type_energie = 'électricité ecs';
+    const typeEnergie = getTypeEnergie(gen_ecs.donnee_entree, 'ecs');
+
     return (
       acc +
-      getConso(coef, type_energie, conso) *
-        (gen_ecs.donnee_entree.cle_repartition_ecs || prorataECS)
+      getConso(coef, typeEnergie, conso) * (gen_ecs.donnee_entree.cle_repartition_ecs || prorataECS)
     );
   }, 0);
 }
@@ -322,8 +321,7 @@ function getEcsConso(gen_ecs, field, coef, prorataECS) {
 function getChauffageConso(gen_ch, field, coef, prorataChauffage) {
   return gen_ch.reduce((acc, gen_ch) => {
     const conso = gen_ch.donnee_intermediaire[field];
-    let type_energie = enums.type_energie[gen_ch.donnee_entree.enum_type_energie_id];
-    if (type_energie === 'électricité') type_energie = 'électricité ch';
+    const typeEnergie = getTypeEnergie(gen_ch.donnee_entree, 'ch');
 
     // La clé de répartition n'est utilisée que dans le cadre des chauffages collectifs
     const repartition =
@@ -331,7 +329,7 @@ function getChauffageConso(gen_ch, field, coef, prorataChauffage) {
         ? gen_ch.donnee_entree.cle_repartition_ch || prorataChauffage
         : prorataChauffage;
 
-    return acc + getConso(coef, type_energie, conso) * repartition;
+    return acc + getConso(coef, typeEnergie, conso) * repartition;
   }, 0);
 }
 
@@ -390,16 +388,16 @@ function calc_conso_pond(
 
   ret.fr = fr_list.reduce((acc, fr) => {
     const conso = fr.donnee_intermediaire.conso_fr;
-    let type_energie = enums.type_energie[fr.donnee_entree.enum_type_energie_id];
-    if (type_energie === 'électricité') type_energie = 'électricité fr';
-    return acc + getConso(coef, type_energie, conso);
+    const typeEnergie = getTypeEnergie(fr.donnee_entree, 'fr');
+
+    return acc + getConso(coef, typeEnergie, conso);
   }, 0);
 
   ret.fr_depensier = fr_list.reduce((acc, fr) => {
     const conso = fr.donnee_intermediaire.conso_fr_depensier;
-    let type_energie = enums.type_energie[fr.donnee_entree.enum_type_energie_id];
-    if (type_energie === 'électricité') type_energie = 'électricité fr';
-    return acc + getConso(coef, type_energie, conso);
+    const typeEnergie = getTypeEnergie(fr.donnee_entree, 'fr');
+
+    return acc + getConso(coef, typeEnergie, conso);
   }, 0);
 
   let tot_aux;
@@ -420,4 +418,19 @@ function calc_conso_pond(
     delete ret[key];
   });
   return ret;
+}
+
+/**
+ * Retourne le type d'énergie utlisé.
+ * 1 - Electricité par défaut si la donnée n'est pas définie
+ * @param donneeEntree {Donnee_entree}
+ * @param suffix {string} Suffix à ajouter au type électricité
+ * @return {string}
+ */
+function getTypeEnergie(donneeEntree, suffix) {
+  let type_energie = enums.type_energie[donneeEntree.enum_type_energie_id || 1];
+
+  if (type_energie === 'électricité') type_energie = `électricité ${suffix}`;
+
+  return type_energie;
 }
