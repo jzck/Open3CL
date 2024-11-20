@@ -12,6 +12,7 @@ import {
   add_references,
   bug_for_bug_compat,
   collectionCanBeEmpty,
+  containsAnySubstring,
   isEffetJoule,
   sanitize_dpe
 } from './utils.js';
@@ -247,13 +248,17 @@ export function calcul_3cl(dpe) {
         const ficheProductionVolumeHabitable = getFicheTechnique(
           dpe,
           '8',
-          'volume habitable',
+          'hors volume habitable',
           generateur.donnee_entree.description
         );
 
         if (ficheProductionVolumeHabitable) {
-          const pvcFicheTechnique =
-            ficheProductionVolumeHabitable.valeur.indexOf('hors volume habitable') !== -1 ? 0 : 1;
+          const pvcFicheTechnique = containsAnySubstring(ficheProductionVolumeHabitable.valeur, [
+            'hors volume habitable',
+            'oui'
+          ])
+            ? 0
+            : 1;
 
           if (generateur.donnee_entree.position_volume_chauffe !== pvcFicheTechnique) {
             console.error(

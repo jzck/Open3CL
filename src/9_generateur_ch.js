@@ -96,12 +96,60 @@ export function calc_generateur_ch(
   const du = gen_ch.donnee_utilisateur || {};
   const di = gen_ch.donnee_intermediaire || {};
 
+  const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ch');
+  const pac_ids = tvColumnIDs('scop', 'type_generateur_ch');
+
   const usage_generateur = requestInput(de, du, 'usage_generateur');
   const type_gen_ch_id = type_generateur_ch(di, de, du, usage_generateur);
 
-  const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ch');
-  const pac_ids = tvColumnIDs('scop', 'type_generateur_ch');
-  if (pac_ids.includes(type_gen_ch_id)) {
+  let isPacGenerator = pac_ids.includes(type_gen_ch_id);
+  let isCombustionGenerator = combustion_ids.includes(type_gen_ch_id);
+
+  /**
+   * Pour le type de chauffage 119 - système collectif par défaut en abscence d'information : chaudière fioul pénalisante,
+   * détection en fonction des données d'entrées du type de générateur pour calculer les rendements de l'installation
+   *
+   * Si présence de tv_generateur_combustion_id dans les données d'entrée alors générateur à combustion
+   * Si présence de tv_scop_id dans les données d'entrée alors générateur pompe à chaleur
+   */
+  if (type_gen_ch_id === '119') {
+    isPacGenerator = false;
+    isCombustionGenerator = false;
+
+    if (de.tv_generateur_combustion_id) {
+      const row = tv('generateur_combustion', {
+        tv_generateur_combustion_id: de.tv_generateur_combustion_id
+      });
+
+      if (row) {
+        // On prend par défaut le premier type de générateur pour effectuer les calculs de rendement
+        const typeGenerateurCh = row.enum_type_generateur_ch_id?.split('|');
+
+        if (typeGenerateurCh && typeGenerateurCh.length) {
+          de.enum_type_generateur_ch_id = typeGenerateurCh[0];
+        }
+      }
+
+      isCombustionGenerator = true;
+    } else if (de.tv_scop_id) {
+      isPacGenerator = true;
+    } else {
+      const row = tv('rendement_generation', {
+        tv_rendement_generation_id: de.tv_rendement_generation_id
+      });
+
+      if (row) {
+        // On prend par défaut le premier type de générateur pour effectuer les calculs de rendement
+        const typeGenerateurCh = row.enum_type_generateur_ch_id?.split('|');
+
+        if (typeGenerateurCh && typeGenerateurCh.length) {
+          de.enum_type_generateur_ch_id = typeGenerateurCh[0];
+        }
+      }
+    }
+  }
+
+  if (isPacGenerator) {
     let em;
 
     // Si un seul émetteur de chauffage décrit, on considère que cet émetteur est relié au générateur de chauffage
@@ -132,7 +180,7 @@ export function calc_generateur_ch(
       di.rg = di.scop || di.cop;
       di.rg_dep = di.scop || di.cop;
     }
-  } else if (combustion_ids.includes(type_gen_ch_id)) {
+  } else if (isCombustionGenerator) {
     /**
      * Si la méthode de saisie n'est pas "Valeur forfaitaire" mais "saisies"
      * Documentation 3CL : "Pour les installations récentes ou recommandées, les caractéristiques réelles des chaudières présentées sur les bases

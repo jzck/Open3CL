@@ -427,3 +427,13 @@ export function isEffetJoule(instal_ch) {
   // Si la surface chauffée par une résistance électrique est majoritaire => effet_joule = 1
   return surfaceEffetJoule / surfaceTotale >= 0.5 ? '1' : '0';
 }
+
+/**
+ * Vérification si on trouve au moins une des chaînes de caractères substrings dans mainString
+ * @param mainString chaîne dans laquelle vérifier l'existence des substrings
+ * @param substrings chaîne à chercher dans la chaine principale
+ * @returns {boolean}
+ */
+export function containsAnySubstring(mainString, substrings) {
+  return substrings.some((substring) => mainString.toLowerCase().includes(substring.toLowerCase()));
+}
