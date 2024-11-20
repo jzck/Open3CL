@@ -1,5 +1,5 @@
 import enums from './enums.js';
-import { tv, requestInput, requestInputID } from './utils.js';
+import { tv, requestInput, requestInputID, bug_for_bug_compat } from './utils.js';
 
 function findRanges(inputNumber) {
   const ranges = [0.25, 0.5, 0.75, 1, 1.25, 2, 2.5, 3, 3.5, 4, 6, 8, 10, 25, 50];
@@ -59,7 +59,37 @@ export default function b(di, de, du, zc_id) {
       requestInput(de, du, 'surface_aue', 'float');
 
       if (de.surface_aiu === de.surface_aue) {
-        matcher.aiu_aue_max = '≤ 0,25';
+        const defaultAiuAueMin = '0,75 <';
+        const defaultAiuAueMax = '≤ 1,00';
+
+        matcher.aiu_aue_min = defaultAiuAueMin;
+        matcher.aiu_aue_max = defaultAiuAueMax;
+
+        /**
+         * Certains DPE utilisent seulement aiu_aue_max = '≤ 0,25' alors que le ratio surface_aiu / surface_aue est 1 et donc
+         * on devrait avoir aiu_aue_min: '0,75 <' et aiu_aue_max: '≤ 1,00',
+         */
+        if (bug_for_bug_compat && de.tv_coef_reduction_deperdition_id) {
+          const rowCoeffReductionpertes = tv('coef_reduction_deperdition', {
+            tv_coef_reduction_deperdition_id: de.tv_coef_reduction_deperdition_id
+          });
+
+          if (rowCoeffReductionpertes) {
+            matcher.aiu_aue_min = rowCoeffReductionpertes.aiu_aue_min || defaultAiuAueMin;
+            matcher.aiu_aue_max = rowCoeffReductionpertes.aiu_aue_max || defaultAiuAueMax;
+
+            if (
+              matcher.aiu_aue_min !== defaultAiuAueMin ||
+              matcher.aiu_aue_max !== defaultAiuAueMax
+            ) {
+              console.error(
+                `Le calcul de b pour ${de.description} devrait se faire avec aiu_aue_min: '0,75 <' et aiu_aue_max: '≤ 1,00'
+                car surface_aiu === surface_aue. aiu_aue_min = ${matcher.aiu_aue_min} et aiu_aue_max = ${matcher.aiu_aue_max}
+                sont cependant utilisés par le DPE. Prise en compte de ces valeurs pour la suite des calculs`
+              );
+            }
+          }
+        }
       } else {
         const ranges = findRanges(de.surface_aiu / de.surface_aue);
         if (ranges[0]) {

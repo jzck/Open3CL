@@ -32,9 +32,28 @@ function tv_umur0(di, de, du) {
        * @type {number}
        */
       matcher.epaisseur_structure = getThicknessFromDescription(de.description);
+
+      /**
+       * Si on n'a toujours pas de valeur pour 'epaisseur_structure', récupération de la valeur utilisée
+       * dans le DPE
+       */
+      if (bug_for_bug_compat && de.tv_umur0_id && matcher.epaisseur_structure === 0) {
+        const rowUmur0 = tv('umur0', {
+          tv_umur0_id: de.tv_umur0_id
+        });
+
+        if (rowUmur0 && rowUmur0.epaisseur_structure) {
+          matcher.epaisseur_structure = rowUmur0.epaisseur_structure;
+
+          console.error(
+            `Aucune valeur trouvée pour epaisseur_structure (ni saisie, ni présente dans la description) pour le mur '${de.description}'.
+             Récupération et utilisation de la valeur ${rowUmur0.epaisseur_structure} depuis tv_umur0_id = ${de.tv_umur0_id}`
+          );
+        }
+      }
     }
   }
-  const row = tv('umur0', matcher, de);
+  const row = tv('umur0', matcher);
   if (row) {
     di.umur0 = Number(row.umur0);
     de.tv_umur0_id = Number(row.tv_umur0_id);
@@ -62,6 +81,15 @@ function tv_umur(di, de, du, pc_id, zc, effetJoule) {
 
       effetJoule = rowUmur.effet_joule;
     }
+
+    if (rowUmur && rowUmur.enum_periode_construction_id.split('|')[0] !== pc_id) {
+      console.error(
+        `L'année de construction du bâtiment ${pc_id} ne correspond pas à celle utilisée dans le DPE pour le calcul de Umur pour le mur '${de.description}'.
+        Celle utilisée ${rowUmur.enum_periode_construction_id}. L'année de construction ${rowUmur.enum_periode_construction_id} est conservée dans la suite des calculs.`
+      );
+
+      pc_id = rowUmur.enum_periode_construction_id.split('|')[0];
+    }
   }
 
   const matcher = {
@@ -87,7 +115,7 @@ function calc_umur0(di, de, du) {
        * Si le type de mur est inconnu, Umur0 = Umur_nu = 2.5.
        */
       di.umur0 = '2.5';
-      return;
+      break;
     case 'déterminé selon le matériau et épaisseur à partir de la table de valeur forfaitaire':
       requestInput(de, du, 'materiaux_structure_mur');
       tv_umur0(di, de, du);
@@ -111,28 +139,22 @@ function calc_umur0(di, de, du) {
 
   // Certaines descriptions contiennent des informations sur le type de doublage
   if (bug_for_bug_compat && (type_doublage === 1 || type_doublage === 2)) {
-    if (de.description.toLowerCase().indexOf('doublage connu (plâtre, brique, bois') !== -1) {
+    if (de.description.toLowerCase().indexOf('doublage connu (plâtre, brique') !== -1) {
       type_doublage = 5;
-    } else if (
-      de.description.toLowerCase().indexOf("doublage indéterminé avec lame d'air su") !== -1
-    ) {
+    } else if (de.description.toLowerCase().indexOf('doublage indéterminé avec lame') !== -1) {
       type_doublage = 4;
-    } else if (
-      de.description.toLowerCase().indexOf("doublage indéterminé ou lame d'air inf") !== -1
-    ) {
+    } else if (de.description.toLowerCase().indexOf('doublage indéterminé ou lame') !== -1) {
       type_doublage = 3;
     }
   }
 
-  di.umur0 = Math.min(2.5, di.umur0);
-
   // 3 - doublage indéterminé ou lame d'air inf 15 mm
   if (type_doublage === 3) {
-    di.umur0 = 1 / (1 / di.umur0 + 0.1);
+    di.umur0 = 1 / (1 / Math.min(2.5, di.umur0) + 0.1);
   } else if (type_doublage === 4 || type_doublage === 5) {
     // 4 - doublage indéterminé avec lame d'air sup 15 mm
     // 5 - doublage connu (plâtre brique bois)
-    di.umur0 = 1 / (1 / di.umur0 + 0.21);
+    di.umur0 = 1 / (1 / Math.min(2.5, di.umur0) + 0.21);
   }
 
   if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1) {

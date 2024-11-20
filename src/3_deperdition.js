@@ -76,7 +76,16 @@ function verifyPontsThermiquesEquality(calculatedPTs, declaredPTs) {
 
   return (
     calculatedPTs.length === declaredPTs.length &&
-    !uptForCalculatedPTs.some((val, i) => val.toFixed(5) !== uptForDeclaredPTs[i].toFixed(5))
+    !uptForCalculatedPTs.some((val, i) => {
+      return (
+        val.toFixed(5) !== uptForDeclaredPTs[i].toFixed(5) &&
+        val.toFixed(5) !==
+          (
+            uptForDeclaredPTs[i] *
+            (calculatedPTs[i].donnee_entree.pourcentage_valeur_pont_thermique || 1)
+          ).toFixed(5)
+      );
+    })
   );
 }
 
