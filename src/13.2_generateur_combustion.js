@@ -114,7 +114,7 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase, methodeSai
    * ratio de virtualisation
    * 17.2.1 - Génération d’un DPE à l’appartement / Traitement des usages collectifs
    */
-  if ([3, 4, 5].includes(methodeSaisie)) {
+  if (![3, 4, 5].includes(methodeSaisie)) {
     if (row.rpn) {
       di.rpn = excel_to_js_exec(row.rpn, di.pn / (de.ratio_virtualisation || 1), E, F) / 100;
     }
@@ -123,7 +123,7 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase, methodeSai
     }
   }
 
-  if ([4, 5].includes(methodeSaisie)) {
+  if (![4, 5].includes(methodeSaisie)) {
     if (row.qp0_perc) {
       const qp0_calc = excel_to_js_exec(row.qp0_perc, di.pn, E, F);
       di.qp0 = row.qp0_perc.includes('Pn') ? qp0_calc * 1000 : qp0_calc * di.pn;
