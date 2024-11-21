@@ -78,14 +78,41 @@ function verifyPontsThermiquesEquality(calculatedPTs, declaredPTs) {
     calculatedPTs.length === declaredPTs.length &&
     !uptForCalculatedPTs.some((val, i) => {
       return (
-        val.toFixed(5) !== uptForDeclaredPTs[i].toFixed(5) &&
-        val.toFixed(5) !==
+        val.toFixed(3) !== uptForDeclaredPTs[i].toFixed(3) &&
+        val.toFixed(3) !==
           (
             uptForDeclaredPTs[i] *
             (calculatedPTs[i].donnee_entree.pourcentage_valeur_pont_thermique || 1)
-          ).toFixed(5)
+          ).toFixed(3)
       );
     })
+  );
+}
+
+/**
+ * Compare la liste des murs déclarés et calculés
+ * Retourne true si individuellement chacun des murs est identique
+ * @param calculatedMurs
+ * @param declaredMurs
+ * @returns {boolean}
+ */
+function verifyMursEquality(calculatedMurs, declaredMurs) {
+  const uMurForCalculatedMurs = calculatedMurs.map(
+    (calculatedMur) =>
+      calculatedMur.donnee_entree.surface_paroi_opaque *
+      (calculatedMur.donnee_intermediaire.umur || 1) *
+      (calculatedMur.donnee_intermediaire.b || 1)
+  );
+  const uMurForDeclaredMurs = declaredMurs.map(
+    (declaredMur) =>
+      declaredMur.donnee_entree.surface_paroi_opaque *
+      (declaredMur.donnee_intermediaire.umur || 1) *
+      (declaredMur.donnee_intermediaire.b || 1)
+  );
+
+  return (
+    calculatedMurs.length === declaredMurs.length &&
+    !uMurForCalculatedMurs.some((val, i) => val.toFixed(3) !== uMurForDeclaredMurs[i].toFixed(3))
   );
 }
 
@@ -128,6 +155,39 @@ function totalDeperditionPontThermique(dpe, calculatedPontsThermiques, declaredP
   return calculatedDeperditionPT;
 }
 
+/**
+ * Calcul de la déperdition totale liée aux murs
+ * @param dpe {FullDpe}
+ * @param calculatedMurs
+ * @param declaredMurs
+ * @return {number}
+ */
+function totalDeperditionMurs(dpe, calculatedMurs, declaredMurs) {
+  // Total déclaré des déperditions des murs
+  const declaredDeperditionMurs = dpe.logement.sortie.deperdition.deperdition_mur;
+
+  /**
+   * Comparaison des valeurs intermédiaires calculées et déclarées pour chacun des murs
+   * @type {boolean}
+   */
+  const sameValues = verifyMursEquality(calculatedMurs, declaredMurs);
+
+  const calculatedDeperditionMur = calculatedMurs.reduce((acc, mur) => acc + Umur(mur) || 0, 0);
+
+  /**
+   * Si individuellement les ponts thermiques déclarés et calculés sont identiques, la déperdition totale devrait l'être également
+   * Pour certains DPE, il réside une différence que l'on prendra en compte pour la suite des calculs.
+   */
+  if (sameValues && calculatedDeperditionMur.toFixed(5) !== declaredDeperditionMurs.toFixed(5)) {
+    console.error(
+      `Les valeurs des murs calculées et déclarées pour le DPE ${dpe.numero_dpe} sont les mêmes mais le total des déperditions pour les murs
+       ${declaredDeperditionMurs} diffère du total calculé avec les mêmes valeurs ${declaredDeperditionMurs}'. Le total déclaré est conservé.`
+    );
+    return declaredDeperditionMurs;
+  }
+  return calculatedDeperditionMur;
+}
+
 export function Upt(pt) {
   const de = pt.donnee_entree;
   const di = pt.donnee_intermediaire;
@@ -141,6 +201,7 @@ export default function calc_deperdition(cg, zc, th, effetJoule, dpe, Sh) {
   const enveloppe = logement.enveloppe;
 
   const mur_list = enveloppe.mur_collection.mur || [];
+  const declaredMurs = structuredClone(mur_list);
   const pb_list = enveloppe.plancher_bas_collection.plancher_bas || [];
   const ph_list = enveloppe.plancher_haut_collection.plancher_haut || [];
   const porte_list = enveloppe.porte_collection.porte || [];
@@ -163,7 +224,7 @@ export default function calc_deperdition(cg, zc, th, effetJoule, dpe, Sh) {
     calc_ventilation(vt, cg, th, Sdep, Sh, mur_list, ph_list, porte_list, bv_list);
   });
 
-  const d_mur = mur_list.reduce((acc, mur) => acc + Umur(mur) || 0, 0);
+  const d_mur = totalDeperditionMurs(dpe, mur_list, declaredMurs);
   const d_pb = pb_list.reduce((acc, pb) => acc + Upb(pb) || 0, 0);
   const d_ph = ph_list.reduce((acc, ph) => acc + Uph(ph) || 0, 0);
   const d_bv = bv_list.reduce((acc, bv) => acc + Ubv(bv) || 0, 0);

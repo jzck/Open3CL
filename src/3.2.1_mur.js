@@ -148,26 +148,52 @@ function calc_umur0(di, de, du) {
     }
   }
 
-  // 3 - doublage indéterminé ou lame d'air inf 15 mm
-  if (type_doublage === 3) {
-    di.umur0 = 1 / (1 / Math.min(2.5, di.umur0) + 0.1);
-  } else if (type_doublage === 4 || type_doublage === 5) {
-    // 4 - doublage indéterminé avec lame d'air sup 15 mm
-    // 5 - doublage connu (plâtre brique bois)
-    di.umur0 = 1 / (1 / Math.min(2.5, di.umur0) + 0.21);
+  // Si présence d'un doublage
+  if (type_doublage > 2) {
+    let umur0Doublage;
+
+    // 3 - doublage indéterminé ou lame d'air inf 15 mm
+    if (type_doublage === 3) {
+      umur0Doublage = 1 / (1 / Math.min(2.5, di.umur0) + 0.1);
+    } else if (type_doublage === 4 || type_doublage === 5) {
+      // 4 - doublage indéterminé avec lame d'air sup 15 mm
+      // 5 - doublage connu (plâtre brique bois)
+      umur0Doublage = 1 / (1 / Math.min(2.5, di.umur0) + 0.21);
+    }
+
+    di.umur0Doublage = umur0Doublage;
+
+    if (
+      bug_for_bug_compat &&
+      umur0_avant !== undefined &&
+      parseFloat(umur0_avant).toFixed(3) === Math.min(2.5, di.umur0).toFixed(3)
+    ) {
+      console.error(`
+        Le mur ${de.description} possède un doublage ${type_doublage}, la valeur de Umur0 devrait prendre en compte ce doublage et devrait être ${umur0Doublage}.
+        Cependant le DPE ne prend pas ce doublage en compte et utilise Umur0=${umur0_avant}. On garde cette valeur ${umur0_avant} dans la suite.
+     `);
+      di.umur0 = umur0_avant;
+    } else {
+      di.umur0 = umur0Doublage;
+    }
   }
 
   if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1) {
+    const umur0Enduit = 1 / (1 / di.umur0 + 0.7);
+    di.umur0Enduit = umur0Enduit;
+
     if (
+      bug_for_bug_compat &&
       umur0_avant !== undefined &&
-      parseFloat(umur0_avant).toFixed(3) === parseFloat(di.umur0).toFixed(3)
+      parseFloat(umur0_avant).toFixed(3) === Math.min(2.5, di.umur0).toFixed(3)
     ) {
-      // BUG: 2287E1923356Q utilise paroi_ancienne=1 mais le calcul est fait avec paroi_ancienne=0
-      console.warn(`BUG(${scriptName}) correction isolation pour parois anciennes pas appliqué`);
-      if (bug_for_bug_compat) di.umur0 = umur0_avant;
-      else di.umur0 = 1 / (1 / di.umur0 + 0.7);
+      console.error(`
+        Le mur ${de.description} est une paroi dite 'paroi ancienne avec enduit', la valeur de Umur0 devrait prendre en compte cet enduit et devrait être ${umur0Enduit}.
+        Cependant le DPE ne prend pas en compte l'enduit et utilise Umur0=${umur0_avant}. On garde cette valeur ${umur0_avant} dans la suite.
+     `);
+      di.umur0 = umur0_avant;
     } else {
-      di.umur0 = 1 / (1 / di.umur0 + 0.7);
+      di.umur0 = umur0Enduit;
     }
   }
 
@@ -190,6 +216,33 @@ export default function calc_mur(mur, zc, pc_id, effetJoule) {
     case 'non isolé':
       calc_umur0(di, de, du);
       di.umur = Math.min(di.umur0, 2.5);
+
+      if (
+        bug_for_bug_compat &&
+        di.umur0Enduit !== undefined &&
+        parseFloat(di.umur0Enduit).toFixed(3) ===
+          parseFloat(mur.donnee_intermediaire?.umur).toFixed(3)
+      ) {
+        console.error(`
+          Le mur ${de.description} est une paroi dite 'paroi ancienne avec enduit', la valeur de Umur devrait être égale à Umur0.
+          Cependant Umur0 ne prend pas en compte l'enduit contrairement à la valeur de Umur. On utilise donc Umur=Umur0Enduit=${di.umur0Enduit} dans la suite.
+        `);
+        di.umur = di.umur0Enduit;
+      }
+
+      if (
+        bug_for_bug_compat &&
+        di.umur0Doublage !== undefined &&
+        parseFloat(di.umur0Doublage).toFixed(3) ===
+          parseFloat(mur.donnee_intermediaire?.umur).toFixed(3)
+      ) {
+        console.error(`
+          Le mur ${de.description} est possède un doublage, la valeur de Umur devrait être égale à Umur0.
+          Cependant Umur0 ne prend pas en compte ce doublage contrairement à la valeur de Umur. On utilise donc Umur=Umur0Doublage=${di.umur0Doublage} dans la suite.
+        `);
+        di.umur = di.umur0Doublage;
+      }
+
       break;
     case 'epaisseur isolation saisie justifiée par mesure ou observation':
     case 'epaisseur isolation saisie justifiée à partir des documents justificatifs autorisés': {
