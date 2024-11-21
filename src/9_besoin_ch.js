@@ -5,7 +5,7 @@ import { calc_besoin_ecs_j } from './11_besoin_ecs.js';
 import { calc_Qrec_gen_j } from './9_generateur_ch.js';
 import { calc_ai_j, calc_as_j } from './6.1_apport_gratuit.js';
 import { calc_sse_j } from './6.2_surface_sud_equivalente.js';
-import { mois_liste, Njj, Njj_sum } from './utils.js';
+import { mois_liste } from './utils.js';
 
 export default function calc_besoin_ch(
   ilpa,
@@ -33,6 +33,8 @@ export default function calc_besoin_ch(
 
   let sumNref19 = 0;
   let sumNref21 = 0;
+  let sumDh19 = 0;
+  let sumDh21 = 0;
   let QrecDistr = 0;
   let QrecDistrDepensier = 0;
   const e = tvs.e[ilpa];
@@ -114,7 +116,9 @@ export default function calc_besoin_ch(
 
     // bvj
     const dh19j = dh19[ca][mois][zc];
+    sumDh19 += dh19j;
     const dh21j = dh21[ca][mois][zc];
+    sumDh21 += dh21j;
     const aij = calc_ai_j(Sh, nadeq, nref19);
     const aij_dep = calc_ai_j(Sh, nadeq, nref21);
     const ssej = calc_sse_j(bv, zc, mois);
@@ -122,8 +126,10 @@ export default function calc_besoin_ch(
     const asj = calc_as_j(ssej, ej);
     const Fj = calc_Fj(GV, asj, aij, dh19j, inertie);
     const Fj_dep = calc_Fj(GV, asj, aij_dep, dh21j, inertie);
-    fraction_apport_gratuit_ch += Fj * Njj[mois];
-    fraction_apport_gratuit_depensier_ch += Fj_dep * Njj[mois];
+
+    fraction_apport_gratuit_ch += Fj * dh19j;
+    fraction_apport_gratuit_depensier_ch += Fj_dep * dh21j;
+
     const bvj = dh19j === 0 ? 0 : calc_bvj(GV, Fj);
     const bvj_dep = dh21j === 0 ? 0 : calc_bvj(GV, Fj_dep);
 
@@ -132,12 +138,13 @@ export default function calc_besoin_ch(
     const Bch_hp_j_dep = bvj_dep * dh21j;
 
     gen_ch_recup.forEach((gen_ch) => {
-      pertes_generateur_ch_recup += calc_Qrec_gen_j(gen_ch, nref19, Bch_hp_j) / 1000;
-      pertes_generateur_ch_recup_depensier += calc_Qrec_gen_j(gen_ch, nref21, Bch_hp_j_dep) / 1000;
+      pertes_generateur_ch_recup += calc_Qrec_gen_j(gen_ch, nref19, Bch_hp_j) / (1000 * 1000);
+      pertes_generateur_ch_recup_depensier +=
+        calc_Qrec_gen_j(gen_ch, nref21, Bch_hp_j_dep) / (1000 * 1000);
     });
 
-    besoin_ch += (bvj * dh19j) / 1000;
-    besoin_ch_depensier += (bvj_dep * dh21j) / 1000;
+    besoin_ch += Bch_hp_j / 1000;
+    besoin_ch_depensier += Bch_hp_j_dep / 1000;
   }
 
   pertes_distribution_ecs_recup = (0.48 * sumNref19 * QrecDistr) / 8760;
@@ -153,8 +160,8 @@ export default function calc_besoin_ch(
   besoin_ch -= recup;
   besoin_ch_depensier -= recup_depensier;
 
-  fraction_apport_gratuit_ch /= Njj_sum;
-  fraction_apport_gratuit_depensier_ch /= Njj_sum;
+  fraction_apport_gratuit_ch /= sumDh19;
+  fraction_apport_gratuit_depensier_ch /= sumDh21;
 
   return {
     besoin_ch,
