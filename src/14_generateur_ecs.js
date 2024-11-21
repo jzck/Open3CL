@@ -1,19 +1,19 @@
 import enums from './enums.js';
 import {
-  tv,
-  tvColumnIDs,
+  bug_for_bug_compat,
+  getVolumeStockageFromDescription,
   requestInput,
   requestInputID,
   Tbase,
-  bug_for_bug_compat,
-  getVolumeStockageFromDescription
+  tv,
+  tvColumnIDs
 } from './utils.js';
-import { tv_scop } from './12.4_pac.js';
 import {
   tv_generateur_combustion,
   updateGenerateurCombustion
 } from './13.2_generateur_combustion.js';
 import { conso_aux_gen } from './15_conso_aux.js';
+import { scopOrCop } from './12.4_pac.js';
 
 function tv_pertes_stockage(di, de) {
   let vb;
@@ -229,15 +229,7 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
   const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ecs');
   let Iecs, Iecs_dep;
   if (pac_ids.includes(type_generateur_id)) {
-    /**
-     * Si la méthode de saisie est "6 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système thermodynamique : scop/cop/eer"
-     */
-    if (de.enum_methode_saisie_carac_sys_id === '6') {
-      di.rg = di.scop || di.cop;
-      di.rg_dep = di.scop || di.cop;
-    } else {
-      tv_scop(di, de, du, zc_id, null, 'ecs');
-    }
+    scopOrCop(di, de, du, zc_id, null, 'ecs');
 
     const cop = di.scop || di.cop;
     Iecs = 1 / cop;
@@ -258,21 +250,13 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
     const zc = enums.zone_climatique[zc_id];
     const tbase = Tbase[ca][zc.slice(0, 2)];
 
-    /**
-     * Si la méthode de saisie n'est pas "Valeur forfaitaire" mais "saisies"
-     * Documentation 3CL : "Pour les installations récentes ou recommandées, les caractéristiques réelles des chaudières présentées sur les bases
-     * de données professionnelles peuvent être utilisées."
-     */
-    if (de.enum_methode_saisie_carac_sys_id === '1') {
-      tv_generateur_combustion(di, de, du, 'ecs', GV, tbase);
-    } else {
-      di.pveil = di.pveilleuse || 0;
+    const methodeSaisie = parseInt(de.enum_methode_saisie_carac_sys_id);
+    tv_generateur_combustion(di, de, du, 'ecs', GV, tbase, methodeSaisie);
 
-      if (bug_for_bug_compat) {
-        if (di.qp0 < 1) {
-          di.qp0 *= 1000;
-          console.warn(`Correction di.qp0 pour le générateur ECS. Passage de la valeur en W`);
-        }
+    if (bug_for_bug_compat) {
+      if (di.qp0 < 1) {
+        di.qp0 *= 1000;
+        console.warn(`Correction di.qp0 pour le générateur ECS. Passage de la valeur en W`);
       }
     }
 

@@ -48,10 +48,19 @@ function excel_to_js_exec(box, pn, E, F) {
   return result;
 }
 
-export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
-  const typeGenerateur = `enum_type_generateur_${type}_id`;
-  const enum_type_generateur_id = de[typeGenerateur];
-
+/**
+ * Si la méthode de saisie n'est pas "Valeur forfaitaire" mais "caractéristiques saisies"
+ * Documentation 3CL : "Pour les installations récentes ou recommandées, les caractéristiques réelles des chaudières présentées sur les bases
+ * de données professionnelles peuvent être utilisées."
+ *
+ * 2 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système à combustion : pn, autres données forfaitaires
+ * 3 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système à combustion : pn, rpn,rpint, autres données forfaitaires
+ * 4 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système à combustion : pn, rpn,rpint,qp0, autres données forfaitaires
+ * 5 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système à combustion : pn, rpn,rpint,qp0,temp_fonc_30,temp_fonc_100
+ */
+export function tv_generateur_combustion(di, de, du, type, GV, tbase, methodeSaisie) {
+  const typeGenerateurKey = `enum_type_generateur_${type}_id`;
+  const enumTypeGenerateurId = de[typeGenerateurKey];
   let row;
 
   /**
@@ -60,34 +69,42 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
    * 119 - CH - système collectif par défaut en abscence d'information : chaudière fioul pénalisante
    * On garde l'information à partir de tv_generateur_combustion_id.
    */
-  if (bug_for_bug_compat && (
-    (type === 'ecs' && enum_type_generateur_id === '84')
-    || (type === 'ch' && enum_type_generateur_id === '119')
-  ) && de.tv_generateur_combustion_id
+  if (
+    bug_for_bug_compat &&
+    ((type === 'ecs' && enumTypeGenerateurId === '84') ||
+      (type === 'ch' && enumTypeGenerateurId === '119')) &&
+    de.tv_generateur_combustion_id
   ) {
-    const tv_row = tv('generateur_combustion', {
+    row = tv('generateur_combustion', {
       tv_generateur_combustion_id: de.tv_generateur_combustion_id
     });
-    console.warn(
-      `Utilisation de tv_generateur_combustion_id pour le générateur ${de.description}.`
-    );
-    row = tv_row;
+    console.warn(`
+      Le générateur ${de.description} est caractérisé 'système collectif par défaut'. 
+      Utilisation de tv_generateur_combustion_id pour récupération des informations techniques du générateur.
+    `);
   } else {
+    // Calcul de la puissance nominale si non définie
     if (!di.pn) {
-      // some engines don't set ms_carac_sys properly...
-      // so instead we just check if di.pn is set or not
       di.pn = (1.2 * GV * (19 - tbase)) / 0.95 ** 3;
     }
 
     let matcher = {};
-    matcher[typeGenerateur] = enum_type_generateur_id;
+    matcher[typeGenerateurKey] = enumTypeGenerateurId;
     matcher.critere_pn = criterePn(di.pn / 1000, matcher);
+
     row = tv('generateur_combustion', matcher);
   }
 
-  if (!row) console.error('!! pas de valeur forfaitaire trouvée pour generateur_combustion !!');
+  if (!row) {
+    console.error(
+      'Pas de valeur forfaitaire trouvée pour le générateur à combustion ${de.description}'
+    );
+    return;
+  }
+
   de.tv_generateur_combustion_id = Number(row.tv_generateur_combustion_id);
   if (Number(row.pn)) di.pn = Number(row.pn) * 1000;
+
   const E = E_tab[de.presence_ventouse];
   const F = F_tab[de.presence_ventouse];
 
@@ -97,16 +114,29 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase) {
    * ratio de virtualisation
    * 17.2.1 - Génération d’un DPE à l’appartement / Traitement des usages collectifs
    */
-  if (row.rpn)
-    di.rpn = excel_to_js_exec(row.rpn, di.pn / (de.ratio_virtualisation || 1), E, F) / 100;
-  if (type === 'ch' && row.rpint) di.rpint = excel_to_js_exec(row.rpint, di.pn, E, F) / 100;
-  if (row.qp0_perc) {
-    const qp0_calc = excel_to_js_exec(row.qp0_perc, di.pn, E, F);
-    if (row.qp0_perc.includes('Pn')) di.qp0 = qp0_calc * 1000;
-    else di.qp0 = qp0_calc * di.pn;
-  } else di.qp0 = 0;
-  if (Number(row.pveil)) di.pveil = Number(row.pveil);
-  else di.pveil = 0;
+  if ([3, 4, 5].includes(methodeSaisie)) {
+    if (row.rpn) {
+      di.rpn = excel_to_js_exec(row.rpn, di.pn / (de.ratio_virtualisation || 1), E, F) / 100;
+    }
+    if (type === 'ch' && row.rpint) {
+      di.rpint = excel_to_js_exec(row.rpint, di.pn, E, F) / 100;
+    }
+  }
+
+  if ([4, 5].includes(methodeSaisie)) {
+    if (row.qp0_perc) {
+      const qp0_calc = excel_to_js_exec(row.qp0_perc, di.pn, E, F);
+      di.qp0 = row.qp0_perc.includes('Pn') ? qp0_calc * 1000 : qp0_calc * di.pn;
+    } else {
+      di.qp0 = 0;
+    }
+  }
+
+  if (methodeSaisie === 1 || !di.pveilleuse) {
+    di.pveil = Number(row.pveil) || 0;
+  } else {
+    di.pveil = di.pveilleuse || 0;
+  }
 }
 
 /**

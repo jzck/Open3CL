@@ -1,9 +1,9 @@
 import enums from './enums.js';
 import { requestInput, requestInputID, tv, tvColumnIDs } from './utils.js';
-import { tv_scop } from './12.4_pac.js';
 import { conso_aux_gen } from './15_conso_aux.js';
 import { conso_ch } from './9_conso_ch.js';
 import { calc_generateur_combustion_ch } from './13.2_generateur_combustion_ch.js';
+import { scopOrCop } from './12.4_pac.js';
 
 function pertes_gen_ch(Bch_hp_j, pn) {
   const pertes = (1.3 * Bch_hp_j) / (0.3 * pn);
@@ -162,16 +162,7 @@ export function calc_generateur_ch(
 
     if (em) {
       const ed_id = em.donnee_entree.enum_type_emission_distribution_id;
-
-      /**
-       * Si la méthode de saisie est "6 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système thermodynamique : scop/cop/eer"
-       */
-      if (de.enum_methode_saisie_carac_sys_id === '6') {
-        di.rg = di.scop || di.cop;
-        di.rg_dep = di.scop || di.cop;
-      } else {
-        tv_scop(di, de, du, zc_id, ed_id, 'ch');
-      }
+      scopOrCop(di, de, du, zc_id, ed_id, 'ch');
     } else {
       console.error(
         `Emetteur de chauffage non trouvé pour le générateur ${de.description}, les valeurs intermédiaires saisies sont prises en compte`
@@ -181,17 +172,7 @@ export function calc_generateur_ch(
       di.rg_dep = di.scop || di.cop;
     }
   } else if (isCombustionGenerator) {
-    /**
-     * Si la méthode de saisie n'est pas "Valeur forfaitaire" mais "saisies"
-     * Documentation 3CL : "Pour les installations récentes ou recommandées, les caractéristiques réelles des chaudières présentées sur les bases
-     * de données professionnelles peuvent être utilisées."
-     */
-    if (de.enum_methode_saisie_carac_sys_id === '1' || !di.rendement_generation) {
-      calc_generateur_combustion_ch(dpe, di, de, du, em_ch, GV, ca_id, zc_id, ac);
-    } else {
-      di.rg = di.rendement_generation;
-      di.rg_dep = di.rendement_generation;
-    }
+    calc_generateur_combustion_ch(dpe, di, de, du, em_ch, GV, ca_id, zc_id, ac);
   } else {
     tv_rendement_generation(di, de, du);
   }
