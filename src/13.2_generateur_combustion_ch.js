@@ -160,10 +160,21 @@ export function calc_generateur_combustion_ch(dpe, di, de, du, em_ch, GV, ca_id,
   const zc = enums.zone_climatique[zc_id];
   const tbase = Tbase[ca][zc.slice(0, 2)];
 
-  tv_generateur_combustion(di, de, du, 'ch', GV, tbase);
+  const methodeSaisie = parseInt(de.enum_methode_saisie_carac_sys_id);
+  tv_generateur_combustion(di, de, du, 'ch', GV, tbase, methodeSaisie);
+
   const type_gen_ch_list = tvColumnIDs('temp_fonc_30', 'type_generateur_ch');
   if (type_gen_ch_list.includes(de.enum_type_generateur_ch_id)) {
-    tv_temp_fonc_30_100(di, de, du, em_ch, ac);
+    /**
+     * Si la méthode de saisie n'est pas "Valeur forfaitaire" mais "caractéristiques saisies"
+     * Documentation 3CL : "Pour les installations récentes ou recommandées, les caractéristiques réelles des chaudières présentées sur les bases
+     * de données professionnelles peuvent être utilisées."
+     *
+     * 5 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système à combustion : pn, rpn,rpint,qp0,temp_fonc_30,temp_fonc_100
+     */
+    if (methodeSaisie !== 5 || !di.temp_fonc_30 || !di.temp_fonc_100) {
+      tv_temp_fonc_30_100(di, de, du, em_ch, ac);
+    }
   }
 
   // Mise à jour du type de générateur si besoin

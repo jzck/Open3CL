@@ -1,6 +1,31 @@
-import { tv, requestInputID } from './utils.js';
+import { requestInputID, tv } from './utils.js';
 
-export function tv_scop(di, de, du, zc_id, ed_id, type) {
+/**
+ * Calcul ou récupération des paramètres scop ou cop
+ * @param di {Donnee_intermediaire}
+ * @param de {Donnee_entree}
+ * @param du {Object}
+ * @param zc_id {string}
+ * @param ed_id {string|null}
+ * @param type {'ecs'|'ch'}
+ */
+export function scopOrCop(di, de, du, zc_id, ed_id, type) {
+  /**
+   * Si la méthode de saisie n'est pas "Valeur forfaitaire" mais "caractéristiques saisies"
+   * Documentation 3CL : "Pour les installations récentes ou recommandées, les caractéristiques réelles présentées sur les bases
+   * de données professionnelles peuvent être utilisées."
+   *
+   * 6 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système thermodynamique : scop/cop/eer
+   */
+  if (de.enum_methode_saisie_carac_sys_id === '6') {
+    di.rg = di.scop || di.cop;
+    di.rg_dep = di.scop || di.cop;
+  } else {
+    tv_scop(di, de, du, zc_id, ed_id, type);
+  }
+}
+
+function tv_scop(di, de, du, zc_id, ed_id, type) {
   const matcher = {
     enum_zone_climatique_id: zc_id
   };
