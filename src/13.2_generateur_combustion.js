@@ -84,7 +84,7 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase, methodeSai
     `);
   } else {
     // Calcul de la puissance nominale si non définie
-    if (!di.pn) {
+    if (methodeSaisie === 1 || !di.pn) {
       di.pn = (1.2 * GV * (19 - tbase)) / 0.95 ** 3;
     }
 
