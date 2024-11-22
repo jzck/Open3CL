@@ -100,14 +100,14 @@ function verifyMursEquality(calculatedMurs, declaredMurs) {
   const uMurForCalculatedMurs = calculatedMurs.map(
     (calculatedMur) =>
       calculatedMur.donnee_entree.surface_paroi_opaque *
-      (calculatedMur.donnee_intermediaire.umur || 1) *
-      (calculatedMur.donnee_intermediaire.b || 1)
+      calculatedMur.donnee_intermediaire.umur *
+      calculatedMur.donnee_intermediaire.b
   );
   const uMurForDeclaredMurs = declaredMurs.map(
     (declaredMur) =>
       declaredMur.donnee_entree.surface_paroi_opaque *
-      (declaredMur.donnee_intermediaire.umur || 1) *
-      (declaredMur.donnee_intermediaire.b || 1)
+      declaredMur.donnee_intermediaire.umur *
+      declaredMur.donnee_intermediaire.b
   );
 
   return (
@@ -175,15 +175,25 @@ function totalDeperditionMurs(dpe, calculatedMurs, declaredMurs) {
   const calculatedDeperditionMur = calculatedMurs.reduce((acc, mur) => acc + Umur(mur) || 0, 0);
 
   /**
-   * Si individuellement les ponts thermiques déclarés et calculés sont identiques, la déperdition totale devrait l'être également
+   * Si individuellement les murs déclarés et calculés sont identiques, la déperdition totale devrait l'être également
    * Pour certains DPE, il réside une différence que l'on prendra en compte pour la suite des calculs.
    */
   if (sameValues && calculatedDeperditionMur.toFixed(5) !== declaredDeperditionMurs.toFixed(5)) {
-    console.error(
-      `Les valeurs des murs calculées et déclarées pour le DPE ${dpe.numero_dpe} sont les mêmes mais le total des déperditions pour les murs
-       ${declaredDeperditionMurs} diffère du total calculé avec les mêmes valeurs ${declaredDeperditionMurs}'. Le total déclaré est conservé.`
-    );
-    return declaredDeperditionMurs;
+    if (declaredDeperditionMurs.toFixed(5) > calculatedDeperditionMur.toFixed(5)) {
+      console.error(
+        `Les valeurs des murs calculées et déclarées pour le DPE ${dpe.numero_dpe} sont les mêmes mais le total déclaré des déperditions pour les murs
+       '${declaredDeperditionMurs}' diffère et est supérieure au total calculé avec les mêmes valeurs '${calculatedDeperditionMur}'. Le total déclaré est conservé.`
+      );
+
+      return declaredDeperditionMurs;
+    } else {
+      console.error(
+        `Les valeurs des murs calculées et déclarées pour le DPE ${dpe.numero_dpe} sont les mêmes mais le total déclaré des déperditions pour les murs
+       '${declaredDeperditionMurs}' diffère et est inférieure au total calculé avec les mêmes valeurs '${calculatedDeperditionMur}'. Le total calculé est conservé.`
+      );
+
+      return calculatedDeperditionMur;
+    }
   }
   return calculatedDeperditionMur;
 }
