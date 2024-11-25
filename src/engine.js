@@ -334,7 +334,21 @@ export function calcul_3cl(dpe) {
   // needed for apport_et_besoin
   instal_ch.forEach((ch) => {
     ch.donnee_entree.ficheTechniqueComptage = ficheTechniqueComptage;
-    calc_chauffage(dpe, ch, ca_id, zc_id, inertie_id, map_id, 0, 0, GV, ShChauffageAndEcs, hsp, ac);
+    calc_chauffage(
+      dpe,
+      ch,
+      ca_id,
+      zc_id,
+      inertie_id,
+      map_id,
+      0,
+      0,
+      GV,
+      ShChauffageAndEcs,
+      hsp,
+      ac,
+      ilpa
+    );
   });
 
   const bv_list = env.baie_vitree_collection.baie_vitree;
@@ -368,7 +382,8 @@ export function calcul_3cl(dpe) {
       GV,
       ShChauffageAndEcs,
       hsp,
-      ac
+      ac,
+      ilpa
     );
   });
 

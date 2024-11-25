@@ -14,7 +14,8 @@ export default function calc_chauffage(
   GV,
   Sh,
   hsp,
-  ac
+  ac,
+  ilpa
 ) {
   const de = ch.donnee_entree;
   const di = {};
@@ -24,7 +25,12 @@ export default function calc_chauffage(
   di.besoin_ch_depensier = bch_dep;
 
   const em_ch = ch.emetteur_chauffage_collection.emetteur_chauffage;
-  em_ch.forEach((em_ch) => calc_emetteur_ch(em_ch, de, map_id, inertie_id));
+  em_ch.forEach((em_ch) => {
+    em_ch.donnee_intermediaire.nombre_niveau_installation_ch =
+      ch.donnee_entree.nombre_niveau_installation_ch || 1;
+    em_ch.donnee_intermediaire.surface_chauffee = ch.donnee_entree.surface_chauffee || Sh;
+    calc_emetteur_ch(em_ch, de, map_id, inertie_id);
+  });
 
   const cfg_id = requestInput(de, du, 'cfg_installation_ch');
   const gen_ch = ch.generateur_chauffage_collection.generateur_chauffage;
@@ -64,7 +70,7 @@ export default function calc_chauffage(
       ca_id,
       zc_id,
       ac,
-      prorataGenerateur
+      ilpa
     );
   });
 

@@ -1,6 +1,6 @@
 import enums from './enums.js';
 import { requestInput, requestInputID, tv, tvColumnIDs } from './utils.js';
-import { conso_aux_gen } from './15_conso_aux.js';
+import { conso_aux_distribution_ch, conso_aux_gen } from './15_conso_aux.js';
 import { conso_ch } from './9_conso_ch.js';
 import { calc_generateur_combustion_ch } from './13.2_generateur_combustion_ch.js';
 import { scopOrCop } from './12.4_pac.js';
@@ -90,7 +90,8 @@ export function calc_generateur_ch(
   hsp,
   ca_id,
   zc_id,
-  ac
+  ac,
+  ilpa
 ) {
   const de = gen_ch.donnee_entree;
   const du = gen_ch.donnee_utilisateur || {};
@@ -178,6 +179,28 @@ export function calc_generateur_ch(
   }
 
   conso_aux_gen(di, de, 'ch', bch, bch_dep);
+
+  /**
+   * 15 Calcul des consommations d’auxiliaires des installations de chauffage (Caux_ch) et d’ECS (Caux_ecs)
+   *
+   * Les consommations des auxiliaires de distribution de chauffage et d’ECS sont prises nulles pour les installations
+   * individuelles en l’absence d’un circulateur externe au générateur. On exclut donc les générateurs suivants :
+   *
+   * >= 4 - exclusion des PAC air / air
+   * >= 20 && <= 47 - exclusion des poêles
+   * 53, 54 - exclusion des radiateurs gaz
+   * >= 98 && <= 105 - exclusion des émetteurs à effet joule, radiateurs électriques, plafonds / planchers électriques
+   *
+   */
+  if (
+    de.enum_type_generateur_ch_id >= 106 ||
+    (de.enum_type_generateur_ch_id >= 55 && de.enum_type_generateur_ch_id <= 97) ||
+    [48, 49, 50, 51, 52].includes(de.enum_type_generateur_ch_id) ||
+    (de.enum_type_generateur_ch_id >= 4 && de.enum_type_generateur_ch_id <= 19)
+  ) {
+    conso_aux_distribution_ch(em_ch, di, Sh, zc_id, ca_id, ilpa, GV);
+  }
+
   conso_ch(di, de, du, _pos, cfg_ch, em_ch, GV, Sh, hsp, bch, bch_dep);
 
   gen_ch.donnee_intermediaire = di;
