@@ -364,7 +364,11 @@ function calc_conso_pond(
     const conso = gen_ch.donnee_intermediaire.conso_auxiliaire_generation_ch_depensier || 0;
     return acc + getConso(coef, 'électricité auxiliaire', conso);
   }, 0);
-  ret.auxiliaire_distribution_ch = 0;
+
+  ret.auxiliaire_distribution_ch = gen_ch.reduce((acc, gen_ch) => {
+    const conso = gen_ch.donnee_intermediaire.conso_auxiliaire_distribution_ch || 0;
+    return acc + getConso(coef, 'électricité auxiliaire', conso);
+  }, 0);
 
   ret.ch = getChauffageConso(gen_ch, 'conso_ch', coef, prorataChauffage);
 
