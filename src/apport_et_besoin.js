@@ -26,13 +26,14 @@ export default function calc_apport_et_besoin(
   const inertie = enums.classe_inertie[enveloppe.inertie.enum_classe_inertie_id];
 
   const bv = enveloppe.baie_vitree_collection.baie_vitree;
+  const ets = enveloppe.ets_collection.ets;
 
   const nadeq = nadeqService.calculateNadeq(logement);
 
   const besoin_ecs = calc_besoin_ecs(ca, zc, nadeq);
-  const besoin_fr = calc_besoin_fr(ca, zc, Sh, nadeq, GV, inertie, bv);
+  const besoin_fr = calc_besoin_fr(ca, zc, Sh, nadeq, GV, inertie, bv, ets);
   const apport_interne = calc_ai(ilpa, ca, zc, Sh, nadeq);
-  const apport_solaire = calc_as(ilpa, ca, zc, bv);
+  const apport_solaire = calc_as(ilpa, ca, zc, bv, ets);
 
   if (clim.length === 0) {
     besoin_fr.besoin_fr = 0;
@@ -45,7 +46,7 @@ export default function calc_apport_et_besoin(
     nadeq,
     v40_ecs_journalier: nadeq * 56,
     v40_ecs_journalier_depensier: nadeq * 79,
-    surface_sud_equivalente: calc_sse(zc, bv),
+    surface_sud_equivalente: calc_sse(ca, zc, bv, ets),
     ...besoin_ecs,
     ...apport_interne,
     ...apport_solaire,
