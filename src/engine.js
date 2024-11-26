@@ -338,6 +338,8 @@ export function calcul_3cl(dpe) {
   });
 
   const bv_list = env.baie_vitree_collection.baie_vitree;
+  const ets = env.ets_collection.ets;
+
   const besoin_ch = calc_besoin_ch(
     ilpa,
     ca_id,
@@ -348,7 +350,8 @@ export function calcul_3cl(dpe) {
     apport_et_besoin.nadeq,
     ecs,
     instal_ch,
-    bv_list
+    bv_list,
+    ets
   );
   apport_et_besoin = { ...apport_et_besoin, ...besoin_ch };
 

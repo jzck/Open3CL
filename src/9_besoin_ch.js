@@ -17,7 +17,8 @@ export default function calc_besoin_ch(
   nadeq,
   instal_ecs,
   instal_ch,
-  bv
+  bv,
+  ets
 ) {
   const ca = enums.classe_altitude[ca_id];
   const zc = enums.zone_climatique[zc_id];
@@ -121,7 +122,7 @@ export default function calc_besoin_ch(
     sumDh21 += dh21j;
     const aij = calc_ai_j(Sh, nadeq, nref19);
     const aij_dep = calc_ai_j(Sh, nadeq, nref21);
-    const ssej = calc_sse_j(bv, zc, mois);
+    const ssej = calc_sse_j(bv, ets, ca, zc, mois);
     const ej = e[ca][mois][zc];
     const asj = calc_as_j(ssej, ej);
     const Fj = calc_Fj(GV, asj, aij, dh19j, inertie);

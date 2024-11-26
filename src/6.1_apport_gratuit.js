@@ -39,7 +39,7 @@ export function calc_ai(ilpa, ca, zc, Sh, nadeq) {
   return ret;
 }
 
-export function calc_as(ilpa, ca, zc, bv) {
+export function calc_as(ilpa, ca, zc, bv, ets) {
   const e = tvs.e[ilpa];
   const e_fr_28 = tvs.e_fr_28;
 
@@ -49,7 +49,7 @@ export function calc_as(ilpa, ca, zc, bv) {
     /* apport_solaire_fr_depensier: 0 */
   };
   for (const mois of mois_liste) {
-    const ssej = calc_sse_j(bv, zc, mois);
+    const ssej = calc_sse_j(bv, ets, ca, zc, mois);
     const ej = e[ca][mois][zc];
     const ej_fr_28 = e_fr_28[ca][mois][zc];
 
