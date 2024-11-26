@@ -1,6 +1,6 @@
 import enums from './enums.js';
 import tvs from './tv.js';
-import { mois_liste } from './utils.js';
+import { mois_liste, Tbase } from './utils.js';
 
 const G = {
   'chaudière gaz': 20,
@@ -16,14 +16,23 @@ const H = {
   // TODO chaudiere bois assité par ventilateur: 10.5
 };
 
-export function conso_aux_gen(di, de, type, bch, bch_dep) {
+export function conso_aux_gen(di, de, type, bch, bch_dep, Sh) {
   const type_generateur = enums[`type_generateur_${type}`][de[`enum_type_generateur_${type}_id`]];
   // find key in G that starts with type_generateur_ch
   const g = G[Object.keys(G).find((key) => type_generateur.startsWith(key))] || 0;
   const h = H[Object.keys(G).find((key) => type_generateur.startsWith(key))] || 0;
   const Paux_g_ch = g + h * (di.pn / 1000);
-  di[`conso_auxiliaire_generation_${type}`] = (Paux_g_ch * bch) / di.pn || 0;
-  di[`conso_auxiliaire_generation_${type}_depensier`] = (Paux_g_ch * bch_dep) / di.pn || 0;
+
+  let ratio = 1;
+
+  // Pour le chauffage, le besoin de chauffage est proratisé à la surface chauffée
+  if (type === 'ch') {
+    const Sc = de.surface_chauffee || Sh;
+    ratio = Sc / Sh;
+  }
+
+  di[`conso_auxiliaire_generation_${type}`] = (Paux_g_ch * bch * ratio) / di.pn || 0;
+  di[`conso_auxiliaire_generation_${type}_depensier`] = (Paux_g_ch * bch_dep * ratio) / di.pn || 0;
 }
 
 /**
@@ -48,7 +57,13 @@ export function conso_aux_distribution_ch(em_ch, di, surfaceHabitable, zcId, caI
     nref19 += Nref19[ca][mois][zc];
   }
 
-  const Pcircem19 = getPuissanceCirculateur(em_ch, di, surfaceHabitable, GV, 19);
+  const Pcircem19 = getPuissanceCirculateur(
+    em_ch,
+    di,
+    surfaceHabitable,
+    GV,
+    Tbase[ca][zc.slice(0, 2)]
+  );
 
   di[`conso_auxiliaire_distribution_ch`] = (Pcircem19 * nref19) / 1000;
 }
@@ -63,6 +78,7 @@ export function conso_aux_distribution_ch(em_ch, di, surfaceHabitable, zcId, caI
  */
 function getPuissanceCirculateur(em_ch, di, surfaceHabitable, GV, Tbase) {
   const typeEmetteur = parseInt(em_ch[0].donnee_entree.enum_type_emission_distribution_id);
+  const temperatureEmetteur = parseInt(em_ch[0].donnee_entree.enum_temp_distribution_ch_id);
 
   // Perte de charge de l’émetteur
   let deltaPem = 35;
@@ -104,7 +120,8 @@ function getPuissanceCirculateur(em_ch, di, surfaceHabitable, GV, Tbase) {
     (em_ch[0].donnee_entree.surface_chauffee || surfaceHabitable) / surfaceHabitable;
 
   // Chute nominale de température de dimensionnement
-  const deltaDim = 7.5;
+  // 4 - température de distribution de chauffage haute
+  const deltaDim = temperatureEmetteur === 4 ? 15 : 7.5;
 
   // Puissance nominale en chaud (kW)
   const Pnc = 10 ** -3 * GV * (20 - Tbase);

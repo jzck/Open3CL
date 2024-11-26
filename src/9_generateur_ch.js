@@ -178,7 +178,7 @@ export function calc_generateur_ch(
     tv_rendement_generation(di, de, du);
   }
 
-  conso_aux_gen(di, de, 'ch', bch, bch_dep);
+  conso_aux_gen(di, de, 'ch', bch, bch_dep, Sh);
 
   /**
    * 15 Calcul des consommations d’auxiliaires des installations de chauffage (Caux_ch) et d’ECS (Caux_ecs)
