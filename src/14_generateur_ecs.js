@@ -216,6 +216,44 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
   const type_generateur_id = type_generateur_ecs(di, de, du, usage_generateur);
   const type_energie = requestInput(de, du, 'type_energie');
 
+  const pac_ids = tvColumnIDs('scop', 'type_generateur_ecs');
+  const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ecs');
+
+  let isCombustionGenerator = combustion_ids.includes(type_generateur_id);
+  let isPacGenerator = pac_ids.includes(type_generateur_id);
+  let isReseauChaleur = type_energie === 'réseau de chauffage urbain';
+  let isElectric = type_energie === 'électricité';
+
+  /**
+   * Pour le type de générateur ECS 84 - système collectif par défaut en abscence d'information : chaudière fioul pénalisante,
+   * détection en fonction des données d'entrées du type de générateur pour calculer les rendements de l'installation
+   *
+   * Si présence de tv_generateur_combustion_id dans les données d'entrée alors générateur à combustion
+   * Si présence de tv_scop_id dans les données d'entrée alors générateur pompe à chaleur
+   */
+  if (type_generateur_id === '84') {
+    if (!isElectric && !isReseauChaleur) {
+      if (de.tv_generateur_combustion_id) {
+        const row = tv('generateur_combustion', {
+          tv_generateur_combustion_id: de.tv_generateur_combustion_id
+        });
+
+        if (row) {
+          // On prend par défaut le premier type de générateur pour effectuer les calculs de rendement
+          const typeGenerateurEcs = row.enum_type_generateur_ecs_id?.split('|');
+
+          if (typeGenerateurEcs && typeGenerateurEcs.length) {
+            de.enum_type_generateur_ecs_id = typeGenerateurEcs[0];
+          }
+        }
+
+        isCombustionGenerator = true;
+      } else if (de.tv_scop_id) {
+        isPacGenerator = true;
+      }
+    }
+  }
+
   calc_Qgw(di, de, du, ecs_de);
 
   /**
@@ -224,17 +262,15 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
   if (ecs_de.enum_type_installation_id !== '1') {
     di.Qgw *= de.ratio_virtualisation;
   }
-
-  const pac_ids = tvColumnIDs('scop', 'type_generateur_ecs');
-  const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ecs');
   let Iecs, Iecs_dep;
-  if (pac_ids.includes(type_generateur_id)) {
+
+  if (isPacGenerator) {
     scopOrCop(di, de, du, zc_id, null, 'ecs');
 
     const cop = di.scop || di.cop;
     Iecs = 1 / cop;
     Iecs_dep = 1 / cop;
-  } else if (type_energie === 'électricité') {
+  } else if (isElectric) {
     const rd = ecs_di.rendement_distribution;
     di.rendement_stockage = 1 / (1 + (di.Qgw * rd) / (besoin_ecs * 1000));
     di.rendement_stockage_depensier = 1 / (1 + (di.Qgw * rd) / (besoin_ecs_dep * 1000));
@@ -245,7 +281,22 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
     }
     Iecs = 1 / di.rendement_stockage;
     Iecs_dep = 1 / di.rendement_stockage_depensier;
-  } else if (combustion_ids.includes(type_generateur_id)) {
+  } else if (isReseauChaleur) {
+    if (bug_for_bug_compat) {
+      if (di.rendement_generation_stockage === 0.9 && ecs_de.reseau_distribution_isole === 0) {
+        ecs_de.reseau_distribution_isole = 1;
+        console.warn(
+          `Correction reseau_distribution_isole pour le générateur ECS (1 au lieu de 0 en fonction de la valeur de rendement_generation_stockage saisi)`
+        );
+      }
+    }
+
+    di.rendement_generation_stockage = rgrsReseauUrbain(ecs_de);
+    di.rendement_generation_stockage_depensier = rgrsReseauUrbain(ecs_de);
+
+    Iecs = 1 / di.rendement_generation_stockage;
+    Iecs_dep = 1 / di.rendement_generation_stockage_depensier;
+  } else if (isCombustionGenerator) {
     const ca = enums.classe_altitude[ca_id];
     const zc = enums.zone_climatique[zc_id];
     const tbase = Tbase[ca][zc.slice(0, 2)];
@@ -297,21 +348,6 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
     } else {
       console.warn(`!! type_generateur_ecs ${type_generateur} non implémenté !!`);
     }
-  } else if (type_energie === 'réseau de chauffage urbain') {
-    if (bug_for_bug_compat) {
-      if (di.rendement_generation_stockage === 0.9 && ecs_de.reseau_distribution_isole === 0) {
-        ecs_de.reseau_distribution_isole = 1;
-        console.warn(
-          `Correction reseau_distribution_isole pour le générateur ECS (1 au lieu de 0 en fonction de la valeur de rendement_generation_stockage saisi)`
-        );
-      }
-    }
-
-    di.rendement_generation_stockage = rgrsReseauUrbain(ecs_de);
-    di.rendement_generation_stockage_depensier = rgrsReseauUrbain(ecs_de);
-
-    Iecs = 1 / di.rendement_generation_stockage;
-    Iecs_dep = 1 / di.rendement_generation_stockage_depensier;
   } else {
     Iecs = 1;
     Iecs_dep = 1;
