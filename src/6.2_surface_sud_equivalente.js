@@ -10,7 +10,7 @@ export function calc_sse_j(bv_list, ets, ca, zc, mois) {
      * 6.3 Traitement des espaces tampons solarisés
      * 10 - 'espace tampon solarisé (véranda,loggia fermée)'
      */
-    if (typeAdjacence === 10) {
+    if (typeAdjacence === 10 && ets) {
       const bver = ets.donnee_intermediaire.bver;
       const T = ets.donnee_intermediaire.coef_transparence_ets;
 
@@ -27,7 +27,13 @@ export function calc_sse_j(bv_list, ets, ca, zc, mois) {
       /**
        * Surface sud équivalente représentant les apports solaires indirects dans le logement
        */
-      const Sstj = ets.baie_ets_collection.baie_ets.reduce((acc, bv) => {
+      let baies = ets.baie_ets_collection.baie_ets;
+
+      if (!Array.isArray(baies)) {
+        baies = [baies];
+      }
+
+      const Sstj = baies.reduce((acc, bv) => {
         return acc + getSsd(bv, zc, mois, 0.8 * T + 0.024);
       }, 0);
 
