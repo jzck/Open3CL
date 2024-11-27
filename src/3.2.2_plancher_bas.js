@@ -172,34 +172,64 @@ export default function calc_pb(pb, zc, pc_id, effetJoule, pb_list) {
 
   b(di, de, du, zc);
 
-  const methode_saisie_u = requestInput(de, du, 'methode_saisie_u');
+  let methode_saisie_u = parseInt(de.enum_methode_saisie_u_id);
+
+  if (bug_for_bug_compat) {
+    // Si la résistance de l'isolation est connue mais que le mode de saisie de u n'est pas
+    // 'resistance isolation saisie justifiée'. On force cette méthode de saisie
+    if (de.resistance_isolation && ![5, 6].includes(methode_saisie_u)) {
+      console.error(`
+        La résistance de l'isolation du plancher bas ${de.description} est connue mais la méthode de saisie du facteur u
+        n'est pas 'resistance isolation saisie justifiée'. La méthode de saisie est modifiée pour la suite du calcul
+      `);
+      methode_saisie_u = 5;
+    }
+    // Si l'épaisseur de l'isolation est connue mais que le mode de saisie de u n'est pas
+    // 'epaisseur isolation saisie justifiée' on force cette méthode de saisie
+    if (de.epaisseur_isolation && ![3, 4].includes(methode_saisie_u)) {
+      console.error(`
+        L'épaisseur de l'isolation du plancher bas ${de.description} est connue mais la méthode de saisie du facteur u
+        n'est pas 'epaisseur isolation saisie justifiée'. La méthode de saisie est modifiée pour la suite du calcul
+      `);
+      methode_saisie_u = 3;
+    }
+  }
+
   switch (methode_saisie_u) {
-    case 'non isolé':
+    case 1:
+      // 1 - non isolé
       calc_upb0(di, de, du);
       di.upb = di.upb0;
       break;
-    case 'epaisseur isolation saisie justifiée par mesure ou observation':
-    case 'epaisseur isolation saisie justifiée à partir des documents justificatifs autorisés': {
-      const e = requestInput(de, du, 'epaisseur_isolation', 'float') * 0.01;
+    case 3:
+    case 4: {
+      // 3 - epaisseur isolation saisie justifiée par mesure ou observation
+      // 4 - epaisseur isolation saisie justifiée à partir des documents justificatifs autorisés
+      const e = parseFloat(de.epaisseur_isolation) * 0.01;
       calc_upb0(di, de, du);
       di.upb = 1 / (1 / di.upb0 + e / 0.042);
       break;
     }
-    case "resistance isolation saisie justifiée observation de l'isolant installé et mesure de son épaisseur":
-    case 'resistance isolation saisie justifiée  à partir des documents justificatifs autorisés': {
-      const r = requestInput(de, du, 'resistance_isolation', 'float');
+    case 5:
+    case 6: {
+      // 5 - resistance isolation saisie justifiée observation de l'isolant installé et mesure de son épaisseur
+      // 6 - resistance isolation saisie justifiée  à partir des documents justificatifs autorisés
+      const r = parseFloat(de.resistance_isolation);
       calc_upb0(di, de, du);
       di.upb = 1 / (1 / di.upb0 + r);
       break;
     }
-    case 'isolation inconnue  (table forfaitaire)':
-    case "année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)": {
+    case 2:
+    case 7: {
+      // 2 - isolation inconnue  (table forfaitaire)
+      // 7 - année d'isolation différente de l'année de construction saisie justifiée (table forfaitaire)
       calc_upb0(di, de, du);
       tv_upb(di, de, du, de.enum_periode_isolation_id || pc_id, zc, effetJoule);
       di.upb = Math.min(di.upb, di.upb0);
       break;
     }
-    case 'année de construction saisie (table forfaitaire)': {
+    case 8: {
+      // 8 - année de construction saisie (table forfaitaire)
       // Si l'année d'isolation est connue, il faut l'utiliser et pas l'année de construction
       let pi_id = de.enum_periode_isolation_id || pc_id;
       if (!de.enum_periode_isolation_id) {
@@ -223,8 +253,10 @@ export default function calc_pb(pb, zc, pc_id, effetJoule, pb_list) {
       di.upb = Math.min(di.upb, di.upb0);
       break;
     }
-    case 'saisie direct u justifiée  (à partir des documents justificatifs autorisés)':
-    case 'saisie direct u depuis rset/rsee( etude rt2012/re2020)':
+    case 9:
+    case 10:
+      // 9 - saisie direct u justifiée (à partir des documents justificatifs autorisés)
+      // 10 - saisie direct u depuis rset/rsee( etude rt2012/re2020)
       di.upb = requestInput(de, du, 'upb_saisi', 'float');
       break;
     default:
