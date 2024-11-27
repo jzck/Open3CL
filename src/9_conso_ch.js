@@ -36,14 +36,14 @@ function coef_ch(Fch) {
       1: 0.25 * (1 - Fch)
     },
     'installation de chauffage avec chaudière en relève de pac': {
-      0: 0.75,
-      1: 0.25
+      0: 0.8,
+      1: 0.2
     },
     'installation de chauffage avec chaudière en relève de pac avec insert ou poêle bois en appoint':
       {
-        0: 0.75 * 0.8,
-        1: 0.25 * 0.8,
-        2: 0.2
+        0: 0.8 * 0.75,
+        1: 0.2 * 0.75,
+        2: 0.25
       },
     'installation de chauffage collectif avec base + appoint': {
       0: 0.75 * (1 - Fch),
