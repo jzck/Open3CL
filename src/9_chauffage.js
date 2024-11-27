@@ -1,6 +1,10 @@
 import { requestInput, tv, tvColumnIDs } from './utils.js';
 import { calc_emetteur_ch } from './9_emetteur_ch.js';
-import { calc_generateur_ch, type_generateur_ch } from './9_generateur_ch.js';
+import {
+  calc_generateur_ch,
+  hasConsoForAuxDistribution,
+  type_generateur_ch
+} from './9_generateur_ch.js';
 
 export default function calc_chauffage(
   dpe,
@@ -26,9 +30,6 @@ export default function calc_chauffage(
 
   const em_ch = ch.emetteur_chauffage_collection.emetteur_chauffage;
   em_ch.forEach((em_ch) => {
-    em_ch.donnee_entree.nombre_niveau_installation_ch =
-      ch.donnee_entree.nombre_niveau_installation_ch || 1;
-    em_ch.donnee_entree.surface_chauffee = ch.donnee_entree.surface_chauffee || Sh;
     calc_emetteur_ch(em_ch, de, map_id, inertie_id);
   });
 
@@ -49,12 +50,21 @@ export default function calc_chauffage(
 
   const Fch = tv_ch_facteur_couverture_solaire(de, zc_id);
 
+  // Nombre de générateurs avec une consommation des auxiliaires de distribution
+  const nbGenWithAuxConsoDistribution = gen_ch.reduce((acc, gen) => {
+    if (hasConsoForAuxDistribution(gen.donnee_entree.enum_type_generateur_ch_id)) {
+      acc++;
+    }
+    return acc;
+  }, 0);
+
   gen_ch.forEach((gen, _pos) => {
     const prorataGenerateur =
       nbCascadeAndCombustion > 1 ? gen.donnee_intermediaire.pn / Pnominal : 1;
 
     gen.donnee_entree.ratio_virtualisation = de.ratio_virtualisation || 1;
     gen.donnee_entree.surface_chauffee = de.surface_chauffee || Sh;
+    gen.donnee_entree.nombre_niveau_installation_ch = de.nombre_niveau_installation_ch || 1;
     gen.donnee_entree.fch = Fch || 0.5;
 
     calc_generateur_ch(
@@ -73,6 +83,14 @@ export default function calc_chauffage(
       ac,
       ilpa
     );
+
+    // Si plusieurs générateurs de chauffage, la consommation des auxiliares est répartie sur chacun d'eux
+    if (
+      gen.donnee_intermediaire.conso_auxiliaire_distribution_ch &&
+      nbGenWithAuxConsoDistribution > 0
+    ) {
+      gen.donnee_intermediaire.conso_auxiliaire_distribution_ch /= nbGenWithAuxConsoDistribution;
+    }
   });
 
   di.conso_ch = gen_ch.reduce((acc, gen_ch) => acc + gen_ch.donnee_intermediaire.conso_ch, 0);

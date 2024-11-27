@@ -182,27 +182,34 @@ export function calc_generateur_ch(
 
   /**
    * 15 Calcul des consommations d’auxiliaires des installations de chauffage (Caux_ch) et d’ECS (Caux_ecs)
-   *
-   * Les consommations des auxiliaires de distribution de chauffage et d’ECS sont prises nulles pour les installations
-   * individuelles en l’absence d’un circulateur externe au générateur. On exclut donc les générateurs suivants :
-   *
-   * >= 4 - exclusion des PAC air / air
-   * >= 20 && <= 47 - exclusion des poêles
-   * 53, 54 - exclusion des radiateurs gaz
-   * >= 98 && <= 105 - exclusion des émetteurs à effet joule, radiateurs électriques, plafonds / planchers électriques
-   *
    */
-  if (
-    de.enum_type_generateur_ch_id >= 106 ||
-    (de.enum_type_generateur_ch_id >= 55 && de.enum_type_generateur_ch_id <= 97) ||
-    [48, 49, 50, 51, 52].includes(de.enum_type_generateur_ch_id) ||
-    (de.enum_type_generateur_ch_id >= 4 && de.enum_type_generateur_ch_id <= 19)
-  ) {
-    conso_aux_distribution_ch(em_ch, di, Sh, zc_id, ca_id, ilpa, GV);
+  if (hasConsoForAuxDistribution(de.enum_type_generateur_ch_id)) {
+    conso_aux_distribution_ch(em_ch, de, di, Sh, zc_id, ca_id, ilpa, GV);
   }
 
   conso_ch(di, de, du, _pos, cfg_ch, em_ch, GV, Sh, hsp, bch, bch_dep);
 
   gen_ch.donnee_intermediaire = di;
   gen_ch.donnee_utilisateur = du;
+}
+
+/**
+ * 15 Calcul des consommations d’auxiliaires des installations de chauffage (Caux_ch) et d’ECS (Caux_ecs)
+ *
+ * Les consommations des auxiliaires de distribution de chauffage et d’ECS sont prises nulles pour les installations
+ * individuelles en l’absence d’un circulateur externe au générateur. On exclut donc les générateurs suivants :
+ *
+ * >= 4 - exclusion des PAC air / air
+ * >= 20 && <= 47 - exclusion des poêles
+ * 53, 54 - exclusion des radiateurs gaz
+ * >= 98 && <= 105 - exclusion des émetteurs à effet joule, radiateurs électriques, plafonds / planchers électriques
+ *
+ */
+export function hasConsoForAuxDistribution(enum_type_generateur_ch_id) {
+  return (
+    enum_type_generateur_ch_id >= 106 ||
+    (enum_type_generateur_ch_id >= 55 && enum_type_generateur_ch_id <= 97) ||
+    [48, 49, 50, 51, 52].includes(enum_type_generateur_ch_id) ||
+    (enum_type_generateur_ch_id >= 4 && enum_type_generateur_ch_id <= 19)
+  );
 }

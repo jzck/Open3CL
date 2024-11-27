@@ -38,14 +38,15 @@ export function conso_aux_gen(di, de, type, bch, bch_dep, Sh) {
 /**
  * Calcul de la consommation des auxiliaires de distribution de chauffage
  * @param em_ch { EmetteurChauffageItem[]}
- * @param di {Donnee_intermediaire} donnée intermédiaire d'une installation_chauffage
+ * @param de {Donnee_entree} donnée du générateur de chauffage
+ * @param di {Donnee_intermediaire} donnée intermédiaire du générateur de chauffage
  * @param surfaceHabitable {number}
  * @param zcId {number} id de la zone climatique du bien
  * @param caId {number} id de la classe d'altitude du bien
  * @param ilpa {number} 1 si bien à inertie lourde, 0 sinon
  * @param GV {number} déperdition de l'enveloppe
  */
-export function conso_aux_distribution_ch(em_ch, di, surfaceHabitable, zcId, caId, ilpa, GV) {
+export function conso_aux_distribution_ch(em_ch, de, di, surfaceHabitable, zcId, caId, ilpa, GV) {
   const ca = enums.classe_altitude[caId];
   const zc = enums.zone_climatique[zcId];
 
@@ -59,6 +60,7 @@ export function conso_aux_distribution_ch(em_ch, di, surfaceHabitable, zcId, caI
 
   const Pcircem19 = getPuissanceCirculateur(
     em_ch,
+    de,
     di,
     surfaceHabitable,
     GV,
@@ -71,12 +73,13 @@ export function conso_aux_distribution_ch(em_ch, di, surfaceHabitable, zcId, caI
 /**
  * 15.2.1 Puissance des circulateurs de chauffage
  * @param em_ch { EmetteurChauffageItem[]}
- * @param di {Donnee_intermediaire} donnée intermédiaire d'une installation_chauffage
+ * @param de {Donnee_entree} donnée du générateur de chauffage
+ * @param di {Donnee_intermediaire} donnée intermédiaire du générateur de chauffage
  * @param surfaceHabitable {number}
  * @param GV {number} déperdition de l'enveloppe
  * @param Tbase {number} température
  */
-function getPuissanceCirculateur(em_ch, di, surfaceHabitable, GV, Tbase) {
+function getPuissanceCirculateur(em_ch, de, di, surfaceHabitable, GV, Tbase) {
   const typeEmetteur = parseInt(em_ch[0].donnee_entree.enum_type_emission_distribution_id);
   const temperatureEmetteur = parseInt(em_ch[0].donnee_entree.enum_temp_distribution_ch_id);
 
@@ -107,7 +110,7 @@ function getPuissanceCirculateur(em_ch, di, surfaceHabitable, GV, Tbase) {
     Fcot = 0.802;
   }
 
-  const nbNiveauChauffage = em_ch[0].donnee_entree.nombre_niveau_installation_ch || 1;
+  const nbNiveauChauffage = de.nombre_niveau_installation_ch || 1;
 
   // Calcul de la longueur du réseau le plus défavorisé
   const Lem = 5 * Fcot * (nbNiveauChauffage + (surfaceHabitable / nbNiveauChauffage) ** 0.5);
@@ -116,8 +119,7 @@ function getPuissanceCirculateur(em_ch, di, surfaceHabitable, GV, Tbase) {
   const deltaPemnom = 0.15 * Lem + deltaPem;
 
   // Ratio du besoin couvert par l’équipement
-  const ratioSurfaceChauffage =
-    (em_ch[0].donnee_entree.surface_chauffee || surfaceHabitable) / surfaceHabitable;
+  const ratioSurfaceChauffage = (de.surface_chauffee || surfaceHabitable) / surfaceHabitable;
 
   // Chute nominale de température de dimensionnement
   // 4 - température de distribution de chauffage haute
