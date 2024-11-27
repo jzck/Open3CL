@@ -341,6 +341,9 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
       type_generateur.includes('accumulateur gaz') ||
       type_generateur.includes('accumulateur gpl/propane/butane')
     ) {
+      // 14.1.3 - Accumulateur gaz
+      di.qp0 = (1.5 * di.pn) / 100;
+
       di.rendement_generation = rg_accumulateur_gaz(di, besoin_ecs);
       di.rendement_generation_depensier = rg_accumulateur_gaz(di, besoin_ecs_dep);
       Iecs = 1 / di.rendement_generation;
