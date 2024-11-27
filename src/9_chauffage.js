@@ -26,9 +26,9 @@ export default function calc_chauffage(
 
   const em_ch = ch.emetteur_chauffage_collection.emetteur_chauffage;
   em_ch.forEach((em_ch) => {
-    em_ch.donnee_intermediaire.nombre_niveau_installation_ch =
+    em_ch.donnee_entree.nombre_niveau_installation_ch =
       ch.donnee_entree.nombre_niveau_installation_ch || 1;
-    em_ch.donnee_intermediaire.surface_chauffee = ch.donnee_entree.surface_chauffee || Sh;
+    em_ch.donnee_entree.surface_chauffee = ch.donnee_entree.surface_chauffee || Sh;
     calc_emetteur_ch(em_ch, de, map_id, inertie_id);
   });
 
@@ -54,6 +54,7 @@ export default function calc_chauffage(
       nbCascadeAndCombustion > 1 ? gen.donnee_intermediaire.pn / Pnominal : 1;
 
     gen.donnee_entree.ratio_virtualisation = de.ratio_virtualisation || 1;
+    gen.donnee_entree.surface_chauffee = de.surface_chauffee || Sh;
     gen.donnee_entree.fch = Fch || 0.5;
 
     calc_generateur_ch(
