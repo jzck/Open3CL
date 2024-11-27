@@ -108,6 +108,8 @@ function tv_umur(di, de, du, pc_id, zc, effetJoule) {
 
 function calc_umur0(di, de, du) {
   const umur0_avant = du.umur0_avant;
+  const umur_avant = du.umur_avant;
+
   const methode_saisie_u0 = requestInput(de, du, 'methode_saisie_u0');
   switch (methode_saisie_u0) {
     case 'type de paroi inconnu (valeur par défaut)':
@@ -154,28 +156,22 @@ function calc_umur0(di, de, du) {
 
     // 3 - doublage indéterminé ou lame d'air inf 15 mm
     if (type_doublage === 3) {
-      umur0Doublage = 1 / (1 / Math.min(2.5, di.umur0) + 0.1);
+      umur0Doublage = 1 / (1 / di.umur0 + 0.1);
     } else if (type_doublage === 4 || type_doublage === 5) {
       // 4 - doublage indéterminé avec lame d'air sup 15 mm
       // 5 - doublage connu (plâtre brique bois)
-      umur0Doublage = 1 / (1 / Math.min(2.5, di.umur0) + 0.21);
+      umur0Doublage = 1 / (1 / di.umur0 + 0.21);
     }
 
-    di.umur0Doublage = umur0Doublage;
-
-    if (
-      bug_for_bug_compat &&
-      umur0_avant !== undefined &&
-      parseFloat(umur0_avant).toFixed(3) === Math.min(2.5, di.umur0).toFixed(3)
-    ) {
-      console.error(`
-        Le mur ${de.description} possède un doublage ${type_doublage}, la valeur de Umur0 devrait prendre en compte ce doublage et devrait être ${umur0Doublage}.
-        Cependant le DPE ne prend pas ce doublage en compte et utilise Umur0=${umur0_avant}. On garde cette valeur ${umur0_avant} dans la suite.
-     `);
-      di.umur0 = umur0_avant;
-    } else {
-      di.umur0 = umur0Doublage;
+    /**
+     * Certains DPE minorent di.umur0 à 2.5 avant d'appliquer le doublage. On vérifie ici si c'est le cas pour informer que
+     * le calcul du doublage se trouvera plus déperditif ici
+     */
+    if (bug_for_bug_compat) {
+      checkDoublageWithMinUmur0(type_doublage, di, de, umur0_avant, umur_avant);
     }
+
+    di.umur0 = umur0Doublage;
   }
 
   if (requestInput(de, du, 'enduit_isolant_paroi_ancienne', 'bool') === 1) {
@@ -204,7 +200,8 @@ export default function calc_mur(mur, zc, pc_id, effetJoule) {
   const de = mur.donnee_entree;
   const du = {};
   const di = {};
-  du.umur0_avant = mur.donnee_intermediaire?.umur0; // pour comparaison
+  du.umur0_avant = mur.donnee_intermediaire?.umur0;
+  du.umur_avant = mur.donnee_intermediaire?.umur;
 
   requestInput(de, du, 'surface_paroi_totale', 'float');
   requestInput(de, du, 'orientation');
@@ -216,33 +213,6 @@ export default function calc_mur(mur, zc, pc_id, effetJoule) {
     case 'non isolé':
       calc_umur0(di, de, du);
       di.umur = Math.min(di.umur0, 2.5);
-
-      if (
-        bug_for_bug_compat &&
-        di.umur0Enduit !== undefined &&
-        parseFloat(di.umur0Enduit).toFixed(3) ===
-          parseFloat(mur.donnee_intermediaire?.umur).toFixed(3)
-      ) {
-        console.error(`
-          Le mur ${de.description} est une paroi dite 'paroi ancienne avec enduit', la valeur de Umur devrait être égale à Umur0.
-          Cependant Umur0 ne prend pas en compte l'enduit contrairement à la valeur de Umur. On utilise donc Umur=Umur0Enduit=${di.umur0Enduit} dans la suite.
-        `);
-        di.umur = di.umur0Enduit;
-      }
-
-      if (
-        bug_for_bug_compat &&
-        di.umur0Doublage !== undefined &&
-        parseFloat(di.umur0Doublage).toFixed(3) ===
-          parseFloat(mur.donnee_intermediaire?.umur).toFixed(3)
-      ) {
-        console.error(`
-          Le mur ${de.description} est possède un doublage, la valeur de Umur devrait être égale à Umur0.
-          Cependant Umur0 ne prend pas en compte ce doublage contrairement à la valeur de Umur. On utilise donc Umur=Umur0Doublage=${di.umur0Doublage} dans la suite.
-        `);
-        di.umur = di.umur0Doublage;
-      }
-
       break;
     case 'epaisseur isolation saisie justifiée par mesure ou observation':
     case 'epaisseur isolation saisie justifiée à partir des documents justificatifs autorisés': {
@@ -326,4 +296,36 @@ export default function calc_mur(mur, zc, pc_id, effetJoule) {
   }
   mur.donnee_utilisateur = du;
   mur.donnee_intermediaire = di;
+}
+
+/**
+ * Vérification si le calcul des déperditions des murs utilisent, dans le DPE d'origine, une minoration à 2.5 de Umur0
+ * pour l'application du doublage
+ * @param type_doublage {number}
+ * @param di {Donnee_intermediaire}
+ * @param de {Donnee_entree}
+ * @param umur0_avant {number}
+ * @param umur_avant {number}
+ */
+function checkDoublageWithMinUmur0(type_doublage, di, de, umur0_avant, umur_avant) {
+  let umur0Doublage;
+
+  // 3 - doublage indéterminé ou lame d'air inf 15 mm
+  if (type_doublage === 3) {
+    umur0Doublage = 1 / (1 / Math.min(2.5, di.umur0) + 0.1);
+  } else if (type_doublage === 4 || type_doublage === 5) {
+    // 4 - doublage indéterminé avec lame d'air sup 15 mm
+    // 5 - doublage connu (plâtre brique bois)
+    umur0Doublage = 1 / (1 / Math.min(2.5, di.umur0) + 0.21);
+  }
+
+  if (
+    umur0_avant.toFixed(3) === umur0Doublage.toFixed(3) ||
+    umur_avant.toFixed(3) === umur0Doublage.toFixed(3)
+  ) {
+    console.error(`
+      Le calcul Umur0 pour le mur ${de.description} utilise Umur0 minoré à 2.5 pour l'application du doublage alors qu'il est de ${di.umur0}.
+      Nous conservons ${di.umur0} pour la suite des calculs, les murs sont donc plus déperditifs que dans le DPE d'origine.
+    `);
+  }
 }

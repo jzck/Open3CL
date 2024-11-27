@@ -33,9 +33,17 @@ function tv_scop(di, de, du, zc_id, ed_id, type) {
   if (ed_id) matcher.enum_type_emission_distribution_id = ed_id;
   const row = tv('scop', matcher, de);
   if (row) {
-    de.tv_scop_id = Number(row.tv_scop_id);
     const scop = row.scop_ou_cop;
     di[scop] = Number(row.scop);
+
+    if (de.tv_scop_id && de.tv_scop_id !== Number(row.tv_scop_id)) {
+      console.error(`
+        Le paramètre ${scop} utilisé par le DPE est erroné. 
+        Utilisation de tv_scop_id = ${de.tv_scop_id} alors que devrait être utilisé tv_scop_id = ${row.tv_scop_id} (utilisé dans la suite du calcul) 
+      `);
+    }
+
+    de.tv_scop_id = Number(row.tv_scop_id);
 
     // for Ich
     di.rg = di[scop];
