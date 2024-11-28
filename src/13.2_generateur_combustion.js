@@ -119,7 +119,7 @@ export function tv_generateur_combustion(di, de, du, type, GV, tbase, methodeSai
       di.rpn = excel_to_js_exec(row.rpn, di.pn / (de.ratio_virtualisation || 1), E, F) / 100;
     }
     if (type === 'ch' && row.rpint) {
-      di.rpint = excel_to_js_exec(row.rpint, di.pn, E, F) / 100;
+      di.rpint = excel_to_js_exec(row.rpint, di.pn / (de.ratio_virtualisation || 1), E, F) / 100;
     }
   }
 
