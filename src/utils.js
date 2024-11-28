@@ -195,7 +195,7 @@ function tvMatch(row, key, matcher) {
     if (!values.some((v) => v.toLowerCase().match(String(match_value)))) {
       return false;
     }
-  } else if (Number.isInteger(match_value) && ['≥', '≤'].some((char) => row[key].includes(char))) {
+  } else if (Number.isInteger(matcher[key]) && ['≥', '≤'].some((char) => row[key].includes(char))) {
     return eval(match_value + row[key].replace('≥', '>=').replace('≤', '<='));
   } else if (!row[key].toLowerCase().match(String(match_value))) {
     return false;
@@ -232,7 +232,7 @@ function tvMatchOptimized(row, key, matcher) {
     return row_value.split('|').includes(match_value);
   }
 
-  if (Number.isInteger(match_value) && ['≥', '≤'].some((char) => row[key].includes(char))) {
+  if (Number.isInteger(matcher[key]) && ['≥', '≤'].some((char) => row[key].includes(char))) {
     return eval(match_value + row[key].replace('≥', '>=').replace('≤', '<='));
   }
 
