@@ -1,5 +1,6 @@
 import { bug_for_bug_compat, tv, tvColumnLines } from './utils.js';
 import getFicheTechnique from './ficheTechnique.js';
+import enums from './enums.js';
 
 function criterePn(Pn, matcher) {
   let critere_list = tvColumnLines('generateur_combustion', 'critere_pn', matcher);
@@ -57,11 +58,29 @@ function excel_to_js_exec(box, pn, E, F) {
  * 3 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système à combustion : pn, rpn,rpint, autres données forfaitaires
  * 4 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système à combustion : pn, rpn,rpint,qp0, autres données forfaitaires
  * 5 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système à combustion : pn, rpn,rpint,qp0,temp_fonc_30,temp_fonc_100
+ *
+ * @param dpe {FullDpe}
+ * @param di {Donnee_intermediaire} données du générateur
+ * @param de {Donnee_entree} données du générateur
+ * @param type {'ecs'|'ch'}
+ * @param GV {number} déperdition de l'enveloppe
+ * @param tbase {number} température de fonctionnement du générateur
+ * @param methodeSaisie {number} méthode de saisie des caractéristiques du générateur
  */
-export function tv_generateur_combustion(di, de, du, type, GV, tbase, methodeSaisie) {
+export function tv_generateur_combustion(dpe, di, de, type, GV, tbase, methodeSaisie) {
   const typeGenerateurKey = `enum_type_generateur_${type}_id`;
-  const enumTypeGenerateurId = de[typeGenerateurKey];
+  let enumTypeGenerateurId = de[typeGenerateurKey];
   let row;
+
+  /**
+   * Certains DPE configurent mal les données du générateur ECS lorsque c'est un générateur mixte Chauffage + ECS
+   * Confrontation du type de générateur ECS et CH et prise en compte des données du générateur de chauffage
+   *
+   * enum_usage_generateur_id = 3 - 'chauffage + ecs'
+   */
+  if (bug_for_bug_compat && type === 'ecs' && de.enum_usage_generateur_id === '3') {
+    enumTypeGenerateurId = checkEcsVsChauffageForMixteGeneration(dpe, enumTypeGenerateurId);
+  }
 
   /**
    * Si le type de générateur est
@@ -310,4 +329,57 @@ function updateGenerateur(dpe, ids, de, type) {
 
     de[enumType] = newGenerateurId;
   }
+}
+
+/**
+ * Vérifier que les informations du générateur ECS sont bien les mêmes que celles du générateur de chauffage
+ * Dans le cas d'une génération mixte, le type du générateur doit être le même
+ * @param dpe {FullDpe}
+ * @param ecsGenerateurId {string}
+ * @returns {string}
+ */
+function checkEcsVsChauffageForMixteGeneration(dpe, ecsGenerateurId) {
+  /**
+   * @type {InstallationChauffageItem[]}
+   */
+  const installationsCh = dpe.logement.installation_chauffage_collection.installation_chauffage;
+
+  // Récupération des générateurs de chauffage ayant pour usage ECS + Chauffage également
+  const generateursChMixtes = installationsCh.reduce((acc, ch) => {
+    return acc.concat(
+      ch.generateur_chauffage_collection.generateur_chauffage.filter(
+        (value) => value.donnee_entree.enum_usage_generateur_id === '3'
+      )
+    );
+  }, []);
+
+  if (generateursChMixtes.length) {
+    const firstChGenerateurMixte = generateursChMixtes[0];
+    const firstChGenerateurMixteId =
+      firstChGenerateurMixte.donnee_entree.enum_type_generateur_ch_id;
+    const typeGenerateurEcs = enums.type_generateur_ecs;
+    const typeGenerateurCh = enums.type_generateur_ch;
+
+    const ecsGenerateurType = typeGenerateurEcs[ecsGenerateurId];
+    const chGenerateurType = typeGenerateurCh[firstChGenerateurMixteId];
+
+    // Si les 2 générateurs n'ont pas le même type
+    if (ecsGenerateurType !== chGenerateurType) {
+      // Recherche de l'identifiant du générateur ECS identique au générateur de chauffage
+      const newEcsGenerateurId = Object.keys(typeGenerateurEcs).find(
+        (key) => typeGenerateurEcs[key] === typeGenerateurCh[firstChGenerateurMixteId]
+      );
+
+      if (newEcsGenerateurId) {
+        console.error(`
+          Le générateur mixte ECS + CH identifié pour la génération ECS '${ecsGenerateurType}' n'est pas le même que celui identifié pour le générateur de chauffage '${chGenerateurType}'.
+          On conserve le type de générateur de chauffage '${chGenerateurType}' pour la suite des calculs ECS.
+        `);
+
+        return newEcsGenerateurId;
+      }
+    }
+  }
+
+  return ecsGenerateurId;
 }

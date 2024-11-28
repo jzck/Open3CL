@@ -161,7 +161,7 @@ export function calc_generateur_combustion_ch(dpe, di, de, du, em_ch, GV, ca_id,
   const tbase = Tbase[ca][zc.slice(0, 2)];
 
   const methodeSaisie = parseInt(de.enum_methode_saisie_carac_sys_id);
-  tv_generateur_combustion(di, de, du, 'ch', GV, tbase, methodeSaisie);
+  tv_generateur_combustion(dpe, di, de, 'ch', GV, tbase, methodeSaisie);
 
   const type_gen_ch_list = tvColumnIDs('temp_fonc_30', 'type_generateur_ch');
   if (type_gen_ch_list.includes(de.enum_type_generateur_ch_id)) {

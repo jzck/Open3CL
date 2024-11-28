@@ -302,7 +302,7 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
     const tbase = Tbase[ca][zc.slice(0, 2)];
 
     const methodeSaisie = parseInt(de.enum_methode_saisie_carac_sys_id);
-    tv_generateur_combustion(di, de, du, 'ecs', GV, tbase, methodeSaisie);
+    tv_generateur_combustion(dpe, di, de, 'ecs', GV, tbase, methodeSaisie);
 
     if (bug_for_bug_compat) {
       if (di.qp0 < 1) {
