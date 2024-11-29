@@ -1,9 +1,13 @@
 import enums from './enums.js';
-import { tv, tvColumnIDs, requestInput, requestInputID, Tbase } from './utils.js';
 import {
-  tv_generateur_combustion,
-  updateGenerateurCombustion
-} from './13.2_generateur_combustion.js';
+  bug_for_bug_compat,
+  requestInput,
+  requestInputID,
+  Tbase,
+  tv,
+  tvColumnIDs
+} from './utils.js';
+import { tv_generateur_combustion } from './13.2_generateur_combustion.js';
 
 const coef_pond = {
   0.05: 0.1,
@@ -177,9 +181,19 @@ export function calc_generateur_combustion_ch(dpe, di, de, du, em_ch, GV, ca_id,
     }
   }
 
-  // Mise à jour du type de générateur si besoin
-  // ex: poêles à bois bouilleur -> chaudière bois
-  updateGenerateurCombustion(dpe, de, 'ch');
+  if (bug_for_bug_compat) {
+    if (di.qp0 < 1) {
+      di.qp0 *= 1000;
+      console.warn(
+        `Correction di.qp0 pour le générateur de chauffage ${de.description}. Passage de la valeur en W`
+      );
+    }
+  }
+
+  // La puissance de la veilleuse est à prendre en compte seulement si elle est présente dans l'installation
+  if (!di.pveilleuse) {
+    di.pveil = 0;
+  }
 
   const Cdimref = di.pn / (GV * (19 - tbase));
   const Cdimref_dep = di.pn / (GV * (21 - tbase));
