@@ -78,11 +78,19 @@ function tv_sw(di, de, du) {
 
   matcher.enum_type_baie_id = requestInputID(de, du, 'type_baie');
   matcher.enum_type_materiaux_menuiserie_id = requestInputID(de, du, 'type_materiaux_menuiserie');
-  matcher.vitrage_vir = requestInput(de, du, 'vitrage_vir', 'bool');
-  matcher.enum_type_pose_id = requestInputID(de, du, 'type_pose');
-  /* if (!["1", "2", "3"].includes(matcher.enum_type_baie_id)) { */
-  /*   // not for briques verre/polycarbonate */
-  /* } */
+
+  /**
+   * 6.2.1 Détermination du facteur solaire
+   * Les champs vitrage_vir et enum_type_pose_id ne sont pas présentes pour les matériaux 'brique de verre' et 'polycarbonate'
+   *
+   * enum_type_materiaux_menuiserie_id
+   * 1 - brique de verre
+   * 2 - polycarbonate
+   */
+  if (![1, 2].includes(matcher.enum_type_materiaux_menuiserie_id)) {
+    matcher.vitrage_vir = requestInput(de, du, 'vitrage_vir', 'bool');
+    matcher.enum_type_pose_id = requestInputID(de, du, 'type_pose');
+  }
 
   const row = tv('sw', matcher);
   if (row) {
