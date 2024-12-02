@@ -209,7 +209,6 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
   const besoin_ecs_dep = ecs_di.besoin_ecs_depensier;
 
   // Mise à jour du type de générateur si besoin
-  // ex: poêles à bois bouilleur -> chaudière bois
   updateGenerateurCombustion(dpe, de, 'ecs');
 
   const usage_generateur = requestInput(de, du, 'usage_generateur');
@@ -307,7 +306,9 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
     if (bug_for_bug_compat) {
       if (di.qp0 < 1) {
         di.qp0 *= 1000;
-        console.warn(`Correction di.qp0 pour le générateur ECS. Passage de la valeur en W`);
+        console.warn(
+          `Correction di.qp0 pour le générateur ECS ${de.description}. Passage de la valeur en W`
+        );
       }
     }
 

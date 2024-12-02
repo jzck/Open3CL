@@ -4,6 +4,7 @@ import { conso_aux_distribution_ch, conso_aux_gen } from './15_conso_aux.js';
 import { conso_ch } from './9_conso_ch.js';
 import { calc_generateur_combustion_ch } from './13.2_generateur_combustion_ch.js';
 import { scopOrCop } from './12.4_pac.js';
+import { updateGenerateurCombustion } from './13.2_generateur_combustion.js';
 
 function pertes_gen_ch(Bch_hp_j, pn) {
   const pertes = (1.3 * Bch_hp_j) / (0.3 * pn);
@@ -99,6 +100,9 @@ export function calc_generateur_ch(
 
   const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ch');
   const pac_ids = tvColumnIDs('scop', 'type_generateur_ch');
+
+  // Mise à jour du type de générateur si besoin
+  updateGenerateurCombustion(dpe, de, 'ch');
 
   const usage_generateur = requestInput(de, du, 'usage_generateur');
   const type_gen_ch_id = type_generateur_ch(di, de, du, usage_generateur);
