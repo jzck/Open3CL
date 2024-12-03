@@ -1,4 +1,4 @@
-import { bug_for_bug_compat, tv, tvColumnLines } from './utils.js';
+import { bug_for_bug_compat, convertExpression, tv, tvColumnLines } from './utils.js';
 import enums from './enums.js';
 import { updateGenerateurBouilleurs } from './13.2_generateur_combustion_bouilleur.js';
 import { updateGenerateurChaudieres } from './13.2_generateur_combustion_chaudiere.js';
@@ -15,7 +15,7 @@ function criterePn(Pn, matcher) {
     critere_list = critere_list.map((c) => c.replace('≤', '<='));
     // find critere in critere_list that is true when executed
     for (const critere of critere_list) {
-      if (eval(`let Pn=${Pn} ;${critere}`)) {
+      if (eval(`let Pn=${Pn} ;${convertExpression(critere)}`)) {
         ret = critere.replace('<=', '≤');
         break;
       }
@@ -111,7 +111,7 @@ export function tv_generateur_combustion(dpe, di, de, type, GV, tbase, methodeSa
 
     let matcher = {};
     matcher[typeGenerateurKey] = enumTypeGenerateurId;
-    matcher.critere_pn = criterePn(di.pn / 1000, matcher);
+    matcher.critere_pn = criterePn(di.pn / (de.ratio_virtualisation * 1000), matcher);
 
     row = tv('generateur_combustion', matcher);
 
@@ -150,7 +150,6 @@ export function tv_generateur_combustion(dpe, di, de, type, GV, tbase, methodeSa
   }
 
   de.tv_generateur_combustion_id = Number(row.tv_generateur_combustion_id);
-  if (Number(row.pn)) di.pn = Number(row.pn) * 1000;
 
   const E = E_tab[de.presence_ventouse];
   const F = F_tab[de.presence_ventouse];
