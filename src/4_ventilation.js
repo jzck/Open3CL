@@ -172,6 +172,21 @@ export default function calc_ventilation(
     pfe = pfeFicheTechnique;
   }
 
+  /**
+   * Si une fiche technique pour cette variable est présente, elle est prise en compte
+   * Les valeurs de ventilation_post_2012 n'étant pas toujours utilisées de la même manière
+   * dans tous les DPEs (parfois 0 = 'Oui', d'autres 0 = 'Non')
+   */
+  if (de.ficheTechniqueVentilationPost2012 && de.ventilation_post_2012 === 0) {
+    console.error(
+      `La valeur de la variable ventilation_post_2012 ne correspond pas à celle présente 
+      dans la fiche technique "${de.ficheTechniqueVentilationPost2012.description}". 
+      La valeur de la fiche technique est prise en compte.`
+    );
+
+    de.ventilation_post_2012 = 1;
+  }
+
   calc_hperm(di, surface_ventile, Hsp, Sdep, pfe);
   calc_pvent(di, de, du, th);
 

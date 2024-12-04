@@ -157,9 +157,17 @@ export function calcul_3cl(dpe) {
    * Les valeurs des coefficients de protection E et F sont différents si plusieurs façades sont exposées ou non
    */
   const ficheTechniqueFacadesExposees = getFicheTechnique(dpe, '10', 'exposées');
+  const ficheTechniqueVentilationPost2012 = getFicheTechnique(
+    dpe,
+    '10',
+    'après 2012',
+    null,
+    'valeur'
+  );
 
   logement.ventilation_collection.ventilation.forEach((ventilation) => {
     ventilation.donnee_entree.ficheTechniqueFacadesExposees = ficheTechniqueFacadesExposees;
+    ventilation.donnee_entree.ficheTechniqueVentilationPost2012 = ficheTechniqueVentilationPost2012;
   });
 
   const deperdition = calc_deperdition(
@@ -168,8 +176,7 @@ export function calcul_3cl(dpe) {
     th,
     isEffetJoule(instal_ch),
     dpe,
-    ShChauffageAndEcs,
-    ficheTechniqueFacadesExposees
+    ShChauffageAndEcs
   );
   const GV = deperdition.deperdition_enveloppe;
 
