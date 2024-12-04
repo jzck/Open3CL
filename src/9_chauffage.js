@@ -1,6 +1,10 @@
 import { requestInput, Tbase, tv, tvColumnIDs } from './utils.js';
 import { calc_emetteur_ch } from './9_emetteur_ch.js';
-import { calc_generateur_ch, checkForGeneratorType, hasConsoForAuxDistribution } from './9_generateur_ch.js';
+import {
+  calc_generateur_ch,
+  checkForGeneratorType,
+  hasConsoForAuxDistribution
+} from './9_generateur_ch.js';
 import { tv_generateur_combustion } from './13.2_generateur_combustion.js';
 import { tv_temp_fonc_30_100 } from './13.2_generateur_combustion_ch.js';
 import enums from './enums.js';
@@ -86,7 +90,7 @@ export default function calc_chauffage(
    * Cas particulier des PAC hybrides avec répartition forfaitaire du besoin
    * @type {number|number}
    */
-  const Pnominal = gen_ch.reduce((acc, gen) => acc + gen.donnee_intermediaire.pn, 0);
+  const Pnominal = gen_ch.reduce((acc, gen) => acc + (gen.donnee_intermediaire.pn || 0), 0);
   du.Pnominal = Pnominal;
 
   const nbCascadeAndCombustion = gen_ch.filter(
@@ -250,23 +254,10 @@ export function tauxChargeForGenerator(installationChauffage, GV, caId, zcId) {
     0
   );
 
-  // Pour une seule installation avec des générateurs à combustion
   installChauffageWithCombustion.forEach((installCh) => {
     (installCh.donnee_utilisateur.genCombustion || []).forEach((gen) => {
-      let cdimref;
-      let cdimrefDep;
-
-      if (installChauffageWithCombustion.length > 1) {
-        // Plusieurs installations indépendantes de chauffage avec générateur à combustion
-        cdimref = Pn / (GV * (19 - tbase));
-        cdimrefDep = Pn / (GV * (21 - tbase));
-      } else {
-        // Pour une seule installation avec des générateurs à combustion
-        cdimref = gen.donnee_intermediaire.pn / (GV * (19 - tbase));
-        cdimrefDep = gen.donnee_intermediaire.pn / (GV * (21 - tbase));
-      }
-      gen.donnee_utilisateur.cdimref = cdimref;
-      gen.donnee_utilisateur.cdimrefDep = cdimrefDep;
+      gen.donnee_utilisateur.cdimref = Pn / (GV * (19 - tbase));
+      gen.donnee_utilisateur.cdimrefDep = Pn / (GV * (21 - tbase));
     });
   });
 }
