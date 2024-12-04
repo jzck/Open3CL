@@ -98,8 +98,8 @@ function getSsd(bv, zc, mois, coeff) {
   if (inclinaison === 'horizontal') oi = 'horizontal';
   const c1j = c1[zc][mois][oi];
 
-  const fe1 = di.fe1 || 1;
-  const fe2 = di.fe2 || 1;
+  const fe1 = di.fe1 ?? 1;
+  const fe2 = di.fe2 ?? 1;
 
   return de.surface_totale_baie * c1j * coeff * fe1 * fe2;
 }
