@@ -4,7 +4,7 @@ import calc_apport_et_besoin from './apport_et_besoin.js';
 import calc_clim from './10_clim.js';
 import calc_ecs from './11_ecs.js';
 import calc_besoin_ch from './9_besoin_ch.js';
-import calc_chauffage from './9_chauffage.js';
+import calc_chauffage, { tauxChargeForGenerator } from './9_chauffage.js';
 import calc_confort_ete from './2021_04_13_confort_ete.js';
 import calc_qualite_isolation from './2021_04_13_qualite_isolation.js';
 import calc_conso from './conso.js';
@@ -371,6 +371,13 @@ export function calcul_3cl(dpe) {
 
   const bch = apport_et_besoin.besoin_ch;
   const bch_dep = apport_et_besoin.besoin_ch_depensier;
+
+  /**
+   * 13.2.1.2 Présence d’un ou plusieurs générateurs à combustion indépendants
+   * Calcul des taux de charge pour chacun des générateurs de chauffage
+   */
+  tauxChargeForGenerator(instal_ch, GV, ca_id, zc_id);
+
   instal_ch.forEach((ch) => {
     ch.donnee_entree.ficheTechniqueComptage = ficheTechniqueComptage;
     calc_chauffage(

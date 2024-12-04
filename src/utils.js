@@ -437,3 +437,21 @@ export function isEffetJoule(instal_ch) {
 export function containsAnySubstring(mainString, substrings) {
   return substrings.some((substring) => mainString.toLowerCase().includes(substring.toLowerCase()));
 }
+
+/**
+ * Conversion des expressions du type `70 < Pn <= 400` en (70 < Pn) && (Pn <= 400)
+ * @param expression {string}
+ * @returns {string}
+ */
+export function convertExpression(expression) {
+  if (!expression) {
+    return expression;
+  }
+
+  // Gère les expressions combinées comme `70 < Pn <= 400`
+  expression = expression.replace(
+    /(\d+)\s*<\s*([a-zA-Z_$][\w]*)\s*<=\s*(\d+)/g,
+    '($1 < $2) && ($2 <= $3)'
+  );
+  return expression;
+}

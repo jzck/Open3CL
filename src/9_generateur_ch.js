@@ -78,26 +78,14 @@ export function type_generateur_ch(di, de, du, usage_generateur) {
   return type_generateur;
 }
 
-export function calc_generateur_ch(
-  dpe,
-  gen_ch,
-  _pos,
-  em_ch,
-  cfg_ch,
-  bch,
-  bch_dep,
-  GV,
-  Sh,
-  hsp,
-  ca_id,
-  zc_id,
-  ac,
-  ilpa
-) {
-  const de = gen_ch.donnee_entree;
-  const du = gen_ch.donnee_utilisateur || {};
-  const di = gen_ch.donnee_intermediaire || {};
-
+/**
+ * Récupération du type de générateur
+ * @param dpe {FullDpe}
+ * @param de {Donnee_entree}
+ * @param di {Donnee_intermediaire}
+ * @param du {Object}
+ */
+export function checkForGeneratorType(dpe, de, di, du) {
   const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ch');
   const pac_ids = tvColumnIDs('scop', 'type_generateur_ch');
 
@@ -154,7 +142,30 @@ export function calc_generateur_ch(
     }
   }
 
-  if (isPacGenerator) {
+  du.isPacGenerator = isPacGenerator;
+  du.isCombustionGenerator = isCombustionGenerator;
+}
+
+export function calc_generateur_ch(
+  dpe,
+  gen_ch,
+  _pos,
+  em_ch,
+  cfg_ch,
+  bch,
+  bch_dep,
+  GV,
+  Sh,
+  hsp,
+  ca_id,
+  zc_id,
+  ilpa
+) {
+  const de = gen_ch.donnee_entree;
+  const du = gen_ch.donnee_utilisateur || {};
+  const di = gen_ch.donnee_intermediaire || {};
+
+  if (du.isPacGenerator) {
     let em;
 
     // Si un seul émetteur de chauffage décrit, on considère que cet émetteur est relié au générateur de chauffage
@@ -176,8 +187,8 @@ export function calc_generateur_ch(
       di.rg = di.scop || di.cop;
       di.rg_dep = di.scop || di.cop;
     }
-  } else if (isCombustionGenerator) {
-    calc_generateur_combustion_ch(dpe, di, de, du, em_ch, GV, ca_id, zc_id, ac);
+  } else if (du.isCombustionGenerator) {
+    calc_generateur_combustion_ch(dpe, di, de, du);
   } else {
     tv_rendement_generation(di, de, du);
   }

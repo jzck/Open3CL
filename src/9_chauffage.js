@@ -1,10 +1,13 @@
-import { requestInput, tv, tvColumnIDs } from './utils.js';
+import { requestInput, Tbase, tv, tvColumnIDs } from './utils.js';
 import { calc_emetteur_ch } from './9_emetteur_ch.js';
 import {
   calc_generateur_ch,
-  hasConsoForAuxDistribution,
-  type_generateur_ch
+  checkForGeneratorType,
+  hasConsoForAuxDistribution
 } from './9_generateur_ch.js';
+import { tv_generateur_combustion } from './13.2_generateur_combustion.js';
+import { tv_temp_fonc_30_100 } from './13.2_generateur_combustion_ch.js';
+import enums from './enums.js';
 
 export default function calc_chauffage(
   dpe,
@@ -25,6 +28,10 @@ export default function calc_chauffage(
   const di = {};
   const du = {};
 
+  const ca = enums.classe_altitude[ca_id];
+  const zc = enums.zone_climatique[zc_id];
+  const tbase = Tbase[ca][zc.slice(0, 2)];
+
   di.besoin_ch = bch;
   di.besoin_ch_depensier = bch_dep;
 
@@ -33,22 +40,64 @@ export default function calc_chauffage(
     calc_emetteur_ch(em_ch, de, map_id, inertie_id);
   });
 
+  const Fch = tv_ch_facteur_couverture_solaire(de, zc_id);
   const cfg_id = requestInput(de, du, 'cfg_installation_ch');
   const gen_ch = ch.generateur_chauffage_collection.generateur_chauffage;
+
+  gen_ch.forEach((gen) => {
+    const genChDe = gen.donnee_entree;
+    const genChDu = gen.donnee_utilisateur || {};
+    const genChDi = gen.donnee_intermediaire || {};
+
+    genChDe.ratio_virtualisation = de.ratio_virtualisation || 1;
+    genChDe.surface_chauffee = de.surface_chauffee || Sh;
+    genChDe.nombre_niveau_installation_ch = de.nombre_niveau_installation_ch || 1;
+    genChDe.fch = Fch || 0.5;
+
+    // Récupération du type de générateur
+    checkForGeneratorType(dpe, genChDe, genChDi, genChDu);
+
+    if (genChDu.isCombustionGenerator) {
+      const methodeSaisie = parseInt(genChDe.enum_methode_saisie_carac_sys_id);
+      tv_generateur_combustion(dpe, genChDi, genChDe, 'ch', GV, tbase, methodeSaisie);
+
+      const type_gen_ch_list = tvColumnIDs('temp_fonc_30', 'type_generateur_ch');
+      if (type_gen_ch_list.includes(genChDe.enum_type_generateur_ch_id)) {
+        /**
+         * Si la méthode de saisie n'est pas "Valeur forfaitaire" mais "caractéristiques saisies"
+         * Documentation 3CL : "Pour les installations récentes ou recommandées, les caractéristiques réelles des chaudières présentées sur les bases
+         * de données professionnelles peuvent être utilisées."
+         *
+         * 5 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système à combustion : pn, rpn,rpint,qp0,temp_fonc_30,temp_fonc_100
+         */
+        if (methodeSaisie !== 5 || !genChDi.temp_fonc_30 || !genChDi.temp_fonc_100) {
+          tv_temp_fonc_30_100(genChDi, genChDe, genChDu, em_ch, ac);
+        }
+      }
+    }
+
+    gen.donnee_intermediaire = genChDi;
+    gen.donnee_utilisateur = genChDu;
+    gen.donnee_entree = genChDe;
+  });
 
   /**
    * 13.2.1.3 Cascade de deux générateurs à combustion
    * Une puissance relative pour chaque générateur est calculée et appliquée à la conso globale de chauffage
    * Seuls les générateurs en cascade sont concernés
+   *
+   * 9.1.4.3 Les pompes à chaleur hybrides
+   * Cas particulier des PAC hybrides avec répartition forfaitaire du besoin
    * @type {number|number}
    */
   const Pnominal = gen_ch.reduce((acc, gen) => acc + gen.donnee_intermediaire.pn, 0);
+  du.Pnominal = Pnominal;
+
   const nbCascadeAndCombustion = gen_ch.filter(
     (value) =>
-      isGenerateurCombustion(value) && Number.parseInt(de.enum_cfg_installation_ch_id) === 1
+      value.donnee_utilisateur.isCombustionGenerator &&
+      Number.parseInt(de.enum_cfg_installation_ch_id) === 1
   ).length;
-
-  const Fch = tv_ch_facteur_couverture_solaire(de, zc_id);
 
   // Nombre de générateurs avec une consommation des auxiliaires de distribution
   const nbGenWithAuxConsoDistribution = gen_ch.reduce((acc, gen) => {
@@ -61,11 +110,6 @@ export default function calc_chauffage(
   gen_ch.forEach((gen, _pos) => {
     const prorataGenerateur =
       nbCascadeAndCombustion > 1 ? gen.donnee_intermediaire.pn / Pnominal : 1;
-
-    gen.donnee_entree.ratio_virtualisation = de.ratio_virtualisation || 1;
-    gen.donnee_entree.surface_chauffee = de.surface_chauffee || Sh;
-    gen.donnee_entree.nombre_niveau_installation_ch = de.nombre_niveau_installation_ch || 1;
-    gen.donnee_entree.fch = Fch || 0.5;
 
     calc_generateur_ch(
       dpe,
@@ -80,11 +124,10 @@ export default function calc_chauffage(
       hsp,
       ca_id,
       zc_id,
-      ac,
       ilpa
     );
 
-    // Si plusieurs générateurs de chauffage, la consommation des auxiliares est répartie sur chacun d'eux
+    // Si plusieurs générateurs de chauffage, la consommation des auxiliaires est répartie sur chacun d'eux
     if (
       gen.donnee_intermediaire.conso_auxiliaire_distribution_ch &&
       nbGenWithAuxConsoDistribution > 0
@@ -101,24 +144,6 @@ export default function calc_chauffage(
 
   ch.donnee_intermediaire = di;
   ch.donnee_utilisateur = du;
-}
-
-/**
- * Return true si le générateur est de type combustion
- * @param gen_ch {GenerateurChauffageItem}
- * @returns {boolean}
- */
-function isGenerateurCombustion(gen_ch) {
-  const de = gen_ch.donnee_entree;
-  const di = gen_ch.donnee_intermediaire || {};
-  const du = gen_ch.donnee_utilisateur || {};
-
-  const usage_generateur = requestInput(de, du, 'usage_generateur');
-  const type_gen_ch_id = type_generateur_ch(di, de, du, usage_generateur);
-
-  const combustion_ids = tvColumnIDs('generateur_combustion', 'type_generateur_ch');
-
-  return combustion_ids.includes(type_gen_ch_id);
 }
 
 /**
@@ -147,4 +172,64 @@ function tv_ch_facteur_couverture_solaire(de, zc_id) {
     console.error('!! pas de valeur forfaitaire trouvée pour facteur_couverture_solaire !!');
     return null;
   }
+}
+
+/**
+ * 13.2.1.2 Présence d’un ou plusieurs générateurs à combustion indépendants
+ * Calcul du taux de charge cdimref et cdimrefDep pour chacun des générateurs
+ *
+ * @param installationChauffage {InstallationChauffageItem[]}
+ * @param GV {number} déperdition de l'enveloppe
+ * @param zcId {string} id de la zone climatique du bien
+ * @param caId {string} id de la classe d'altitude du bien
+ */
+export function tauxChargeForGenerator(installationChauffage, GV, caId, zcId) {
+  // Récupération des installations de chauffage avec générateur à combustion
+  const installChauffageWithCombustion = [];
+  installationChauffage.forEach((ch) => {
+    const gen_ch = ch.generateur_chauffage_collection.generateur_chauffage;
+
+    const genCombustion = gen_ch.reduce((acc, gen) => {
+      if (gen.donnee_utilisateur.isCombustionGenerator) {
+        acc.push(gen);
+      }
+
+      return acc;
+    }, []);
+
+    if (genCombustion.length) {
+      ch.donnee_utilisateur.genCombustion = genCombustion;
+      installChauffageWithCombustion.push(ch);
+    }
+  });
+
+  const ca = enums.classe_altitude[caId];
+  const zc = enums.zone_climatique[zcId];
+  const tbase = Tbase[ca][zc.slice(0, 2)];
+
+  // Pour N générateurs à combustion, puissance totale de tous les générateurs
+  const Pn = installChauffageWithCombustion.reduce(
+    (acc, gen) => acc + gen.donnee_utilisateur.Pnominal,
+    0
+  );
+
+  // Pour une seule installation avec des générateurs à combustion
+  installChauffageWithCombustion.forEach((installCh) => {
+    (installCh.donnee_utilisateur.genCombustion || []).forEach((gen) => {
+      let cdimref;
+      let cdimrefDep;
+
+      if (installChauffageWithCombustion.length > 1) {
+        // Plusieurs installations indépendantes de chauffage avec générateur à combustion
+        cdimref = Pn / (GV * (19 - tbase));
+        cdimrefDep = Pn / (GV * (21 - tbase));
+      } else {
+        // Pour une seule installation avec des générateurs à combustion
+        cdimref = gen.donnee_intermediaire.pn / (GV * (19 - tbase));
+        cdimrefDep = gen.donnee_intermediaire.pn / (GV * (21 - tbase));
+      }
+      gen.donnee_utilisateur.cdimref = cdimref;
+      gen.donnee_utilisateur.cdimrefDep = cdimrefDep;
+    });
+  });
 }

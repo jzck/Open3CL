@@ -1,13 +1,5 @@
 import enums from './enums.js';
-import {
-  bug_for_bug_compat,
-  requestInput,
-  requestInputID,
-  Tbase,
-  tv,
-  tvColumnIDs
-} from './utils.js';
-import { tv_generateur_combustion } from './13.2_generateur_combustion.js';
+import { bug_for_bug_compat, requestInput, requestInputID, tv } from './utils.js';
 
 const coef_pond = {
   0.05: 0.1,
@@ -40,7 +32,7 @@ const K = {
   'réseau de froid urbain': undefined
 };
 
-function tv_temp_fonc_30_100(di, de, du, em_ch, ac) {
+export function tv_temp_fonc_30_100(di, de, du, em_ch, ac) {
   for (const em of em_ch) {
     const em_ch_de = em.donnee_entree;
     const em_ch_du = em.donnee_utilisateur;
@@ -159,28 +151,7 @@ function Pcons(x, de, di, Cdimref) {
   return Pfou(x, di, Cdimref) * (1 + QPx(x_final, de, di) / Px(x, di, Cdimref));
 }
 
-export function calc_generateur_combustion_ch(dpe, di, de, du, em_ch, GV, ca_id, zc_id, ac) {
-  const ca = enums.classe_altitude[ca_id];
-  const zc = enums.zone_climatique[zc_id];
-  const tbase = Tbase[ca][zc.slice(0, 2)];
-
-  const methodeSaisie = parseInt(de.enum_methode_saisie_carac_sys_id);
-  tv_generateur_combustion(dpe, di, de, 'ch', GV, tbase, methodeSaisie);
-
-  const type_gen_ch_list = tvColumnIDs('temp_fonc_30', 'type_generateur_ch');
-  if (type_gen_ch_list.includes(de.enum_type_generateur_ch_id)) {
-    /**
-     * Si la méthode de saisie n'est pas "Valeur forfaitaire" mais "caractéristiques saisies"
-     * Documentation 3CL : "Pour les installations récentes ou recommandées, les caractéristiques réelles des chaudières présentées sur les bases
-     * de données professionnelles peuvent être utilisées."
-     *
-     * 5 - caractéristiques saisies à partir de la plaque signalétique ou d'une documentation technique du système à combustion : pn, rpn,rpint,qp0,temp_fonc_30,temp_fonc_100
-     */
-    if (methodeSaisie !== 5 || !di.temp_fonc_30 || !di.temp_fonc_100) {
-      tv_temp_fonc_30_100(di, de, du, em_ch, ac);
-    }
-  }
-
+export function calc_generateur_combustion_ch(dpe, di, de, du) {
   if (bug_for_bug_compat) {
     if (di.qp0 < 1) {
       di.qp0 *= 1000;
@@ -195,8 +166,8 @@ export function calc_generateur_combustion_ch(dpe, di, de, du, em_ch, GV, ca_id,
     di.pveil = 0;
   }
 
-  const Cdimref = di.pn / (GV * (19 - tbase));
-  const Cdimref_dep = di.pn / (GV * (21 - tbase));
+  const Cdimref = du.cdimref || 0;
+  const Cdimref_dep = du.cdimrefDep || 0;
   const Pmfou = Object.keys(coef_pond).reduce((acc, x) => acc + Pfou(x, di, Cdimref), 0);
   const Pmcons = Object.keys(coef_pond).reduce((acc, x) => acc + Pcons(x, de, di, Cdimref), 0);
   const Pmfou_dep = Object.keys(coef_pond).reduce((acc, x) => acc + Pfou(x, di, Cdimref_dep), 0);
