@@ -1,10 +1,6 @@
 import { requestInput, Tbase, tv, tvColumnIDs } from './utils.js';
 import { calc_emetteur_ch } from './9_emetteur_ch.js';
-import {
-  calc_generateur_ch,
-  checkForGeneratorType,
-  hasConsoForAuxDistribution
-} from './9_generateur_ch.js';
+import { calc_generateur_ch, checkForGeneratorType, hasConsoForAuxDistribution } from './9_generateur_ch.js';
 import { tv_generateur_combustion } from './13.2_generateur_combustion.js';
 import { tv_temp_fonc_30_100 } from './13.2_generateur_combustion_ch.js';
 import enums from './enums.js';
@@ -108,8 +104,7 @@ export default function calc_chauffage(
   }, 0);
 
   gen_ch.forEach((gen, _pos) => {
-    const prorataGenerateur =
-      nbCascadeAndCombustion > 1 ? gen.donnee_intermediaire.pn / Pnominal : 1;
+    const prorataGenerateur = getProrataGenerateur(gen, nbCascadeAndCombustion, Pnominal, zc);
 
     calc_generateur_ch(
       dpe,
@@ -144,6 +139,48 @@ export default function calc_chauffage(
 
   ch.donnee_intermediaire = di;
   ch.donnee_utilisateur = du;
+}
+
+/**
+ * 13.2.1.3 Cascade de deux générateurs à combustion
+ * Une puissance relative pour chaque générateur est calculée et appliquée à la conso globale de chauffage
+ * Seuls les générateurs en cascade sont concernés
+ *
+ * 9.1.4.3 Les pompes à chaleur hybrides
+ * Cas particulier des PAC hybrides avec répartition forfaitaire du besoin
+ * @type {number|number}
+ */
+function getProrataGenerateur(genCh, nbCascadeAndCombustion, Pnominal, zc) {
+  // IDs des pompes à chaleur hybrides
+  if (
+    genCh.donnee_entree.enum_type_generateur_ch_id >= 145 &&
+    genCh.donnee_entree.enum_type_generateur_ch_id <= 170
+  ) {
+    const zone = zc.slice(0, 2);
+    const hybrideProrata = {
+      h1: {
+        pac: 0.8,
+        chaudiere: 0.2
+      },
+      h2: {
+        pac: 0.83,
+        chaudiere: 0.17
+      },
+      h3: {
+        pac: 0.88,
+        chaudiere: 0.12
+      }
+    };
+
+    // Partie PAC du générateur
+    if (genCh.donnee_intermediaire.scop || genCh.donnee_intermediaire.cop) {
+      return hybrideProrata[zone]['pac'];
+    } else {
+      return hybrideProrata[zone]['chaudiere'];
+    }
+  }
+
+  return nbCascadeAndCombustion > 1 ? genCh.donnee_intermediaire.pn / Pnominal : 1;
 }
 
 /**
