@@ -171,8 +171,10 @@ export function tv_generateur_combustion(dpe, di, de, type, GV, tbase, methodeSa
 
   if (![4, 5].includes(methodeSaisie)) {
     if (row.qp0_perc) {
-      const qp0_calc = excel_to_js_exec(row.qp0_perc, di.pn, E, F);
-      di.qp0 = row.qp0_perc.includes('Pn') ? qp0_calc * 1000 : qp0_calc * di.pn;
+      const qp0_calc = excel_to_js_exec(row.qp0_perc, di.pn / (de.ratio_virtualisation || 1), E, F);
+      di.qp0 = row.qp0_perc.includes('Pn')
+        ? qp0_calc * 1000 * (de.ratio_virtualisation || 1)
+        : qp0_calc * di.pn;
     } else {
       di.qp0 = 0;
     }

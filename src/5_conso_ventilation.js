@@ -31,6 +31,7 @@ const pvent_immeuble = {
 };
 
 /**
+ * 5 - Calcul des consommations d’auxiliaires de ventilation
  * Retourne le coefficient en fonction du type d'habitation et du type de ventilation
  * @param {string} th Type d'habitation (maison ou autre)
  * @param {boolean} hybride Ventilation hybride ou pas

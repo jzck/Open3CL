@@ -6,12 +6,14 @@
  * @param categoryFicheTechiqueId {string}
  * @param description {string}
  * @param classification {string | null}
+ * @param field {'description' | 'valeur'}
  */
 export default function getFicheTechnique(
   dpe,
   categoryFicheTechiqueId,
   description,
-  classification = null
+  classification = null,
+  field = 'description'
 ) {
   /** @type {FicheTechniqueItem[]} */
   let fichesTechniques = dpe.fiche_technique_collection.fiche_technique;
@@ -66,8 +68,8 @@ export default function getFicheTechnique(
   const firstFiche = fichesTechniques.filter(
     (ficheTechnique) =>
       ficheTechnique &&
-      ficheTechnique.description &&
-      ficheTechnique.description.toLowerCase().indexOf(description.toLowerCase()) !== -1
+      ficheTechnique[field] &&
+      ficheTechnique[field].toString().toLowerCase().indexOf(description.toLowerCase()) !== -1
   );
 
   if (!firstFiche.length) {
