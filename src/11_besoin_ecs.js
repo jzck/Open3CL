@@ -2,14 +2,21 @@ import { tvs } from './tv.js';
 import { mois_liste, Njj } from './utils.js';
 
 export function calc_besoin_ecs_j(ca, mois, zc, nadeq, depensier) {
-  const tefsj = tvs.tefs[ca][mois][zc];
-  const njj = Njj[mois];
-
-  if (depensier) {
-    return (1.163 * nadeq * 79 * (40 - tefsj) * njj) / 1000;
-  } else {
-    return (1.163 * nadeq * 56 * (40 - tefsj) * njj) / 1000;
+  // Vérification de l'existence de tvs.tefs[ca][mois][zc]
+  const tefsj = tvs.tefs?.[ca]?.[mois]?.[zc];
+  if (tefsj === undefined) {
+    return 0; // Valeur par défaut en cas de données manquantes
   }
+
+  // Vérification de l'existence de Njj[mois]
+  const njj = Njj[mois];
+  if (njj === undefined) {
+    return 0; // Valeur par défaut en cas de données manquantes
+  }
+
+  // Calcul du besoin en fonction du type de consommation
+  const facteur = depensier ? 79 : 56;
+  return (1.163 * nadeq * facteur * (40 - tefsj) * njj) / 1000;
 }
 
 export default function calc_besoin_ecs(ca, zc, nadeq) {
