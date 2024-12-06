@@ -63,7 +63,10 @@ function tv_intermittence(di, de, inst_ch_de, map_id, inertie_id) {
 
   if (inst_ch_de.ficheTechniqueComptage) {
     // Si une fiche technique permet de connaitre la présence ou non d'un comptage individuel pour le chauffage
-    hasComptage = Number.parseInt(inst_ch_de.ficheTechniqueComptage.valeur) === 1;
+    const ficheTechniqueValue = inst_ch_de.ficheTechniqueComptage.valeur;
+    hasComptage =
+      ficheTechniqueValue &&
+      (Number.parseInt(ficheTechniqueValue) === 1 || ficheTechniqueValue.toLowerCase() === 'oui');
   } else {
     if (bug_for_bug_compat) {
       // Si info inconnue, on se base sur tv_intermittence_id pour récupérer cette info
