@@ -109,6 +109,7 @@ export default function calc_chauffage(
 
   gen_ch.forEach((gen, _pos) => {
     const prorataGenerateur = getProrataGenerateur(gen, nbCascadeAndCombustion, Pnominal, zc);
+    (gen.donnee_utilisateur = gen.donnee_utilisateur || {}).nbGenerateurCascade = gen_ch.length;
 
     calc_generateur_ch(
       dpe,

@@ -3,6 +3,7 @@ import enums from './enums.js';
 import { updateGenerateurBouilleurs } from './13.2_generateur_combustion_bouilleur.js';
 import { updateGenerateurChaudieres } from './13.2_generateur_combustion_chaudiere.js';
 import { updateGenerateurPacs } from './13.2_generateur_pac.js';
+import getFicheTechnique from './ficheTechnique.js';
 
 function criterePn(Pn, matcher) {
   let critere_list = tvColumnLines('generateur_combustion', 'critere_pn', matcher);
@@ -197,6 +198,27 @@ export function updateGenerateurCombustion(dpe, de, type) {
   updateGenerateurBouilleurs(dpe, de, type);
   updateGenerateurChaudieres(dpe, de, type);
   updateGenerateurPacs(dpe, de, type);
+  addInfosFromFichesTechniques(dpe, de);
+}
+
+/**
+ * Récupération d'informations complémentaires issues des fiches techniques pour les générateurs
+ *
+ * @param dpe {FullDpe}
+ * @param de {Donnee_entree}
+ */
+function addInfosFromFichesTechniques(dpe, de) {
+  // Récupération de la présence ou non d'un système de ventilation
+  const ficheTechnique = getFicheTechnique(
+    dpe,
+    '8',
+    'Présence ventilateur / dispositif circulation air dans circuit combustion',
+    de.description
+  )?.valeur;
+
+  if (ficheTechnique && ficheTechnique === 'oui') {
+    de.presenceVentilateur = 1;
+  }
 }
 
 /**

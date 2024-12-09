@@ -199,7 +199,7 @@ export function calc_generateur_ch(
    * 15 Calcul des consommations d’auxiliaires des installations de chauffage (Caux_ch) et d’ECS (Caux_ecs)
    */
   if (hasConsoForAuxDistribution(de.enum_type_generateur_ch_id)) {
-    conso_aux_distribution_ch(em_ch, de, di, Sh, zc_id, ca_id, ilpa, GV);
+    conso_aux_distribution_ch(em_ch, de, di, du, Sh, zc_id, ca_id, ilpa, GV);
   }
 
   conso_ch(di, de, du, _pos, cfg_ch, em_ch, GV, Sh, hsp, bch, bch_dep);

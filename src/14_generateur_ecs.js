@@ -288,6 +288,12 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
           `Correction reseau_distribution_isole pour le générateur ECS (1 au lieu de 0 en fonction de la valeur de rendement_generation_stockage saisi)`
         );
       }
+
+      if (di.rendement_generation_stockage === 0.75 && ecs_de.reseau_distribution_isole === 1) {
+        console.warn(`
+          La variable reseau_distribution_isole pour le générateur ECS ${de.description} n'est pas en accord avec la valeur utilisée par le DPE pour rendement_generation_stockage
+        `);
+      }
     }
 
     di.rendement_generation_stockage = rgrsReseauUrbain(ecs_de);
