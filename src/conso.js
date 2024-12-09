@@ -1,6 +1,7 @@
 import enums from './enums.js';
 import calc_conso_eclairage from './16_conso_eclairage.js';
 import tvs from './tv.js';
+import { tv } from './utils.js';
 
 const coef_ep = {
   'électricité ch': 2.3,
@@ -98,6 +99,40 @@ function getConso(coef, type_energie, conso) {
   return conso;
 }
 
+/**
+ * Récupération du coefficient d'émission GES pour le générateur
+ * @param gen_ch {GenerateurChauffageItem||GenerateurEcsItem}
+ * @param suffix {'ch'|'ecs'}
+ * @returns {number}
+ */
+function getGesCoeffForGenerateur(gen_ch, suffix) {
+  const typeEnergie = getTypeEnergie(gen_ch.donnee_entree, suffix);
+
+  /**
+   * Cas spécifique des réseaux de chaleur urbain qui ont des coefficients différents en fonction de réseau de distribution
+   */
+  if (typeEnergie === 'réseau de chauffage urbain') {
+    const identifiant_reseau = gen_ch.donnee_entree.identifiant_reseau_chaleur;
+
+    if (identifiant_reseau) {
+      const row = tv('reseau_chaleur_2022', { identifiant_reseau });
+
+      if (row) {
+        return row.contenu_co2_acv;
+      } else {
+        console.error(`
+          Aucun coefficient GES trouvé pour le réseau de chaleur ${identifiant_reseau}
+        `);
+      }
+    } else {
+      // Prendre la valeur pour "AUTRES RESEAUX DE CHALEUR"
+      return 0.385;
+    }
+  }
+
+  return coef_ges[typeEnergie] ?? 1;
+}
+
 export default function calc_conso(
   Sh,
   zc_id,
@@ -120,6 +155,8 @@ export default function calc_conso(
           ch.donnee_entree.cle_repartition_ch || prorataChauffage;
       }
       value.donnee_entree.enum_type_installation_id = ch.donnee_entree.enum_type_installation_id;
+      (value.donnee_utilisateur = value.donnee_utilisateur || {}).coeffEmissionGes =
+        getGesCoeffForGenerateur(value, 'ch');
     });
     return acc.concat(generateur_chauffage);
   }, []);
@@ -128,11 +165,12 @@ export default function calc_conso(
     const generateur_ecs = ecs.generateur_ecs_collection.generateur_ecs;
     if (prorataECS === 1) {
       // S'il existe une clé de repartition ECS, utilisation de celle-ci pour répartir la conso ECS collective à l'appartement
-      generateur_ecs.forEach(
-        (value) =>
-          (value.donnee_entree.cle_repartition_ecs =
-            (ecs.donnee_entree.cle_repartition_ecs || 1) * (ecs.donnee_entree.rdim || 1))
-      );
+      generateur_ecs.forEach((value) => {
+        value.donnee_entree.cle_repartition_ecs =
+          (ecs.donnee_entree.cle_repartition_ecs || 1) * (ecs.donnee_entree.rdim || 1);
+        (value.donnee_utilisateur = value.donnee_utilisateur || {}).coeffEmissionGes =
+          getGesCoeffForGenerateur(value, 'ecs');
+      });
     }
     return acc.concat(generateur_ecs);
   }, []);
@@ -296,16 +334,24 @@ function classe_emission_ges(emission_ges_5_usages_m2, zc_id, ca_id, Sh) {
  * @param field {string}
  * @param coef {number}
  * @param prorataECS {number}
+ * @param prefix {string}
  * @returns {number}
  */
-function getEcsConso(gen_ecs, field, coef, prorataECS) {
+function getEcsConso(gen_ecs, field, coef, prorataECS, prefix) {
   return gen_ecs.reduce((acc, gen_ecs) => {
     const conso = gen_ecs.donnee_intermediaire[field];
     const typeEnergie = getTypeEnergie(gen_ecs.donnee_entree, 'ecs');
 
+    let coeffConsoEcs = { ...coef };
+
+    if (prefix === 'emission_ges') {
+      coeffConsoEcs[typeEnergie] = gen_ecs.donnee_utilisateur.coeffEmissionGes;
+    }
+
     return (
       acc +
-      getConso(coef, typeEnergie, conso) * (gen_ecs.donnee_entree.cle_repartition_ecs || prorataECS)
+      getConso(coeffConsoEcs, typeEnergie, conso) *
+        (gen_ecs.donnee_entree.cle_repartition_ecs || prorataECS)
     );
   }, 0);
 }
@@ -316,9 +362,10 @@ function getEcsConso(gen_ecs, field, coef, prorataECS) {
  * @param field {string}
  * @param coef {number}
  * @param prorataChauffage {number}
+ * @param prefix {string}
  * @returns {number}
  */
-function getChauffageConso(gen_ch, field, coef, prorataChauffage) {
+function getChauffageConso(gen_ch, field, coef, prorataChauffage, prefix) {
   return gen_ch.reduce((acc, gen_ch) => {
     const conso = gen_ch.donnee_intermediaire[field];
     const typeEnergie = getTypeEnergie(gen_ch.donnee_entree, 'ch');
@@ -329,7 +376,13 @@ function getChauffageConso(gen_ch, field, coef, prorataChauffage) {
         ? gen_ch.donnee_entree.cle_repartition_ch || prorataChauffage
         : prorataChauffage;
 
-    return acc + getConso(coef, typeEnergie, conso) * repartition;
+    let coeffConsoChauffage = { ...coef };
+
+    if (prefix === 'emission_ges') {
+      coeffConsoChauffage[typeEnergie] = gen_ch.donnee_utilisateur.coeffEmissionGes;
+    }
+
+    return acc + getConso(coeffConsoChauffage, typeEnergie, conso) * repartition;
   }, 0);
 }
 
@@ -370,9 +423,15 @@ function calc_conso_pond(
     return acc + getConso(coef, 'électricité auxiliaire', conso);
   }, 0);
 
-  ret.ch = getChauffageConso(gen_ch, 'conso_ch', coef, prorataChauffage);
+  ret.ch = getChauffageConso(gen_ch, 'conso_ch', coef, prorataChauffage, prefix);
 
-  ret.ch_depensier = getChauffageConso(gen_ch, 'conso_ch_depensier', coef, prorataChauffage);
+  ret.ch_depensier = getChauffageConso(
+    gen_ch,
+    'conso_ch_depensier',
+    coef,
+    prorataChauffage,
+    prefix
+  );
 
   ret.auxiliaire_generation_ecs = gen_ecs.reduce((acc, gen_ecs) => {
     const conso = gen_ecs.donnee_intermediaire.conso_auxiliaire_generation_ecs || 0;
@@ -386,9 +445,9 @@ function calc_conso_pond(
 
   ret.auxiliaire_distribution_ecs = 0;
 
-  ret.ecs = getEcsConso(gen_ecs, 'conso_ecs', coef, prorataECS);
+  ret.ecs = getEcsConso(gen_ecs, 'conso_ecs', coef, prorataECS, prefix);
 
-  ret.ecs_depensier = getEcsConso(gen_ecs, 'conso_ecs_depensier', coef, prorataECS);
+  ret.ecs_depensier = getEcsConso(gen_ecs, 'conso_ecs_depensier', coef, prorataECS, prefix);
 
   ret.fr = fr_list.reduce((acc, fr) => {
     const conso = fr.donnee_intermediaire.conso_fr;
