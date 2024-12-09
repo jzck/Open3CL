@@ -386,7 +386,6 @@ export function calcul_3cl(dpe) {
   tauxChargeForGenerator(instal_ch, GV, ca_id, zc_id);
 
   instal_ch.forEach((ch) => {
-    ch.donnee_entree.ficheTechniqueComptage = ficheTechniqueComptage;
     calc_chauffage(
       dpe,
       ch,
