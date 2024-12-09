@@ -2,26 +2,46 @@ import enums from './enums.js';
 import tvs from './tv.js';
 import { mois_liste, Tbase } from './utils.js';
 
-const G = {
-  'chaudière gaz': 20,
-  'chaudière fioul': 20,
-  'radiateur à gaz': 40
-  // TODO chaudiere bois assité par ventilateur: 73.3
-};
+const G_CHAUDIERE = 20;
+const G_RADIATEURS_GAZ = 40;
+const G_CHAUDIERE_BOIS = 73.3;
+const H_CHAUDIERE = 1.6;
+const H_GENERATEUR_AIR_CHAUD = 4;
+const H_CHAUDIERE_BOIS = 10.5;
 
-const H = {
-  'chaudière gaz': 1.6,
-  'chaudière fioul': 1.6,
-  'générateur à air chaud': 4
-  // TODO chaudiere bois assité par ventilateur: 10.5
-};
+/**
+ * 15.1 Consommation des auxiliaires de génération
+ * @param di {Donnee_intermediaire}
+ * @param de {Donnee_entree}
+ * @param type {'ecs'|'ch'}
+ * @param besoin {number} Besoin en chauffage ou ecs pour ce générateur
+ * @param besoin_dep {number} Besoin en chauffage ou ecs pour ce générateur (mode dépensier)
+ * @param Sh {number} Surface habitable du logement
+ */
+export function conso_aux_gen(di, de, type, besoin, besoin_dep, Sh) {
+  const typeGenerateur = parseInt(de[`enum_type_generateur_${type}_id`]);
 
-export function conso_aux_gen(di, de, type, bch, bch_dep, Sh) {
-  const type_generateur = enums[`type_generateur_${type}`][de[`enum_type_generateur_${type}_id`]];
-  // find key in G that starts with type_generateur_ch
-  const g = G[Object.keys(G).find((key) => type_generateur.startsWith(key))] || 0;
-  const h = H[Object.keys(G).find((key) => type_generateur.startsWith(key))] || 0;
-  const Paux_g_ch = g + h * (di.pn / 1000);
+  const presenceVentilateur = de.presenceVentilateur || 0;
+
+  const g = getG(type, typeGenerateur, presenceVentilateur === 1);
+  const h = getH(type, typeGenerateur, presenceVentilateur === 1);
+
+  let pe = di.pn / (de.ratio_virtualisation || 1);
+
+  // Pour les chaudières gaz ou fioul : si Pn > 400 kW alors Pn = 400 kW
+  if (g === G_CHAUDIERE && pe > 400000) {
+    pe = 400000;
+  }
+  // Pour les générateurs d’air chaud : si Pn > 300 kW alors Pn = 300 kW
+  if (h === H_GENERATEUR_AIR_CHAUD && pe > 300000) {
+    pe = 300000;
+  }
+  // Pour les chaudières bois : si Pn > 70 kW alors Pn = 70 kW
+  if (g === G_CHAUDIERE_BOIS && pe > 70000) {
+    pe = 70000;
+  }
+
+  const Paux_g_ch = g + (h * (pe / 1000)) / (de.ratio_virtualisation || 1);
 
   let ratio = 1;
 
@@ -31,8 +51,91 @@ export function conso_aux_gen(di, de, type, bch, bch_dep, Sh) {
     ratio = Sc / Sh;
   }
 
-  di[`conso_auxiliaire_generation_${type}`] = (Paux_g_ch * bch * ratio) / di.pn || 0;
-  di[`conso_auxiliaire_generation_${type}_depensier`] = (Paux_g_ch * bch_dep * ratio) / di.pn || 0;
+  di[`conso_auxiliaire_generation_${type}`] =
+    ((de.ratio_virtualisation || 1) * (Paux_g_ch * besoin * ratio)) / pe || 0;
+  di[`conso_auxiliaire_generation_${type}_depensier`] =
+    (Paux_g_ch * besoin_dep * ratio) / di.pn || 0;
+}
+
+/**
+ * Récupération du facteur G en fonction du type de générateur
+ * @param type {'ecs'|'ch'}
+ * @param id {number}
+ * @param presenceVentilateur {boolean} - Seules les chaudières bois assistées par ventilateur sont concernées
+ */
+function getG(type, id, presenceVentilateur) {
+  const values = {
+    ch: [
+      { min: 85, max: 97, value: G_CHAUDIERE }, // Chaudières à gaz
+      { min: 148, max: 149, value: G_CHAUDIERE }, // PAC hybride : partie chaudière gaz
+      { min: 127, max: 139, value: G_CHAUDIERE }, // Chaudière gpl/propane/butane
+      { min: 160, max: 161, value: G_CHAUDIERE }, // PAC hybride : partie chaudière gpl/propane/butane
+      { min: 75, max: 84, value: G_CHAUDIERE }, // Chaudières fioul
+      { min: 150, max: 151, value: G_CHAUDIERE }, // PAC hybride : partie chaudière fioul
+      { min: 53, max: 54, value: G_RADIATEURS_GAZ }, // Radiateur à gaz
+      { min: 55, max: 74, value: G_CHAUDIERE_BOIS, withVentilateur: true }, // Chaudières bois assistées par ventilateur
+      { min: 152, max: 156, value: G_CHAUDIERE_BOIS, withVentilateur: true } // PAC hybride : partie chaudière bois
+    ],
+    ecs: [
+      { min: 45, max: 57, value: G_CHAUDIERE }, // Chaudières à gaz
+      { min: 120, max: 121, value: G_CHAUDIERE }, // PAC hybride : partie chaudière gaz
+      { min: 92, max: 104, value: G_CHAUDIERE }, // Chaudière gpl/propane/butane
+      { min: 132, max: 133, value: G_CHAUDIERE }, // PAC hybride : partie chaudière gpl/propane/butane
+      { min: 35, max: 44, value: G_CHAUDIERE }, // Chaudières fioul
+      { min: 122, max: 123, value: G_CHAUDIERE }, // PAC hybride : partie chaudière fioul
+      { min: 13, max: 34, value: G_CHAUDIERE_BOIS, withVentilateur: true }, // Chaudières bois assistées par ventilateur
+      { min: 122, max: 123, value: G_CHAUDIERE_BOIS, withVentilateur: true } // PAC hybride : partie chaudière bois
+    ]
+  };
+
+  return getFacteur(values, type, id, presenceVentilateur);
+}
+
+/**
+ * Récupération du facteur H en fonction du type de générateur
+ * @param type {'ecs'|'ch'}
+ * @param id {number}
+ * @param presenceVentilateur {boolean} - Seules les chaudières bois assistées par ventilateur sont concernées
+ */
+function getH(type, id, presenceVentilateur) {
+  const values = {
+    ch: [
+      { min: 85, max: 97, value: H_CHAUDIERE }, // Chaudières à gaz
+      { min: 148, max: 149, value: H_CHAUDIERE }, // PAC hybride : partie chaudière gaz
+      { min: 127, max: 139, value: H_CHAUDIERE }, // Chaudière gpl/propane/butane
+      { min: 160, max: 161, value: H_CHAUDIERE }, // PAC hybride : partie chaudière gpl/propane/butane
+      { min: 75, max: 84, value: H_CHAUDIERE }, // Chaudières fioul
+      { min: 150, max: 151, value: H_CHAUDIERE }, // PAC hybride : partie chaudière fioul
+      { min: 50, max: 52, value: H_GENERATEUR_AIR_CHAUD }, // Générateurs à air chaud
+      { min: 55, max: 74, value: H_CHAUDIERE_BOIS, withVentilateur: true }, // Chaudières bois assistées par ventilateur
+      { min: 152, max: 156, value: H_CHAUDIERE_BOIS, withVentilateur: true } // PAC hybride : partie chaudière bois
+    ],
+    ecs: [
+      { min: 45, max: 57, value: H_CHAUDIERE }, // Chaudières à gaz
+      { min: 120, max: 121, value: H_CHAUDIERE }, // PAC hybride : partie chaudière gaz
+      { min: 92, max: 104, value: H_CHAUDIERE }, // Chaudière gpl/propane/butane
+      { min: 132, max: 133, value: H_CHAUDIERE }, // PAC hybride : partie chaudière gpl/propane/butane
+      { min: 35, max: 44, value: H_CHAUDIERE }, // Chaudières fioul
+      { min: 122, max: 123, value: H_CHAUDIERE }, // PAC hybride : partie chaudière fioul
+      { min: 13, max: 34, value: H_CHAUDIERE_BOIS, withVentilateur: true }, // Chaudières bois assistées par ventilateur
+      { min: 122, max: 123, value: H_CHAUDIERE_BOIS, withVentilateur: true } // PAC hybride : partie chaudière bois
+    ]
+  };
+
+  return getFacteur(values, type, id, presenceVentilateur);
+}
+
+function getFacteur(values, type, id, presenceVentilateur) {
+  const ranges = values[type] || [];
+  for (const range of ranges) {
+    if (id >= range.min && id <= range.max) {
+      if (!range.withVentilateur || presenceVentilateur) {
+        return range.value;
+      }
+    }
+  }
+
+  return 0;
 }
 
 /**
@@ -40,13 +143,24 @@ export function conso_aux_gen(di, de, type, bch, bch_dep, Sh) {
  * @param em_ch { EmetteurChauffageItem[]}
  * @param de {Donnee_entree} donnée du générateur de chauffage
  * @param di {Donnee_intermediaire} donnée intermédiaire du générateur de chauffage
+ * @param du {object} donnée utilisateur du générateur de chauffage
  * @param surfaceHabitable {number}
  * @param zcId {number} id de la zone climatique du bien
  * @param caId {number} id de la classe d'altitude du bien
  * @param ilpa {number} 1 si bien à inertie lourde, 0 sinon
  * @param GV {number} déperdition de l'enveloppe
  */
-export function conso_aux_distribution_ch(em_ch, de, di, surfaceHabitable, zcId, caId, ilpa, GV) {
+export function conso_aux_distribution_ch(
+  em_ch,
+  de,
+  di,
+  du,
+  surfaceHabitable,
+  zcId,
+  caId,
+  ilpa,
+  GV
+) {
   const ca = enums.classe_altitude[caId];
   const zc = enums.zone_climatique[zcId];
 
@@ -62,6 +176,7 @@ export function conso_aux_distribution_ch(em_ch, de, di, surfaceHabitable, zcId,
     em_ch,
     de,
     di,
+    du,
     surfaceHabitable,
     GV,
     Tbase[ca][zc.slice(0, 2)]
@@ -75,11 +190,12 @@ export function conso_aux_distribution_ch(em_ch, de, di, surfaceHabitable, zcId,
  * @param em_ch { EmetteurChauffageItem[]}
  * @param de {Donnee_entree} donnée du générateur de chauffage
  * @param di {Donnee_intermediaire} donnée intermédiaire du générateur de chauffage
+ * @param du {object} donnée utilisateur du générateur de chauffage
  * @param surfaceHabitable {number}
  * @param GV {number} déperdition de l'enveloppe
  * @param Tbase {number} température
  */
-function getPuissanceCirculateur(em_ch, de, di, surfaceHabitable, GV, Tbase) {
+function getPuissanceCirculateur(em_ch, de, di, du, surfaceHabitable, GV, Tbase) {
   const typeEmetteur = parseInt(em_ch[0].donnee_entree.enum_type_emission_distribution_id);
   const temperatureEmetteur = parseInt(em_ch[0].donnee_entree.enum_temp_distribution_ch_id);
 
@@ -119,7 +235,9 @@ function getPuissanceCirculateur(em_ch, de, di, surfaceHabitable, GV, Tbase) {
   const deltaPemnom = 0.15 * Lem + deltaPem;
 
   // Ratio du besoin couvert par l’équipement
-  const ratioSurfaceChauffage = (de.surface_chauffee || surfaceHabitable) / surfaceHabitable;
+  const nbGenerateurCascade = du.nbGenerateurCascade || 1;
+  const ratioSurfaceChauffage =
+    (de.surface_chauffee || surfaceHabitable) / (surfaceHabitable * nbGenerateurCascade);
 
   // Chute nominale de température de dimensionnement
   // 4 - température de distribution de chauffage haute
