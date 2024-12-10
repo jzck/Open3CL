@@ -108,7 +108,28 @@ export default function calc_chauffage(
   }, 0);
 
   gen_ch.forEach((gen, _pos) => {
-    const prorataGenerateur = getProrataGenerateur(gen, nbCascadeAndCombustion, Pnominal, zc);
+    // Nombre de générateurs en cascade pour un même émetteur si l'installation est une installation simple
+    const nbEmetteur = em_ch.filter(
+      (em) =>
+        em.donnee_entree.enum_lien_generateur_emetteur_id ===
+        gen.donnee_entree.enum_lien_generateur_emetteur_id
+    ).length;
+    const nbCascadeForSameEmetteur =
+      Number.parseInt(de.enum_cfg_installation_ch_id) === 1 && nbEmetteur === 1
+        ? gen_ch.filter(
+            (gen_ch) =>
+              gen_ch.donnee_entree.enum_lien_generateur_emetteur_id ===
+              gen.donnee_entree.enum_lien_generateur_emetteur_id
+          ).length
+        : 0;
+
+    const prorataGenerateur = getProrataGenerateur(
+      gen,
+      nbCascadeAndCombustion,
+      nbCascadeForSameEmetteur,
+      Pnominal,
+      zc
+    );
     (gen.donnee_utilisateur = gen.donnee_utilisateur || {}).nbGenerateurCascade = gen_ch.length;
 
     calc_generateur_ch(
@@ -155,7 +176,7 @@ export default function calc_chauffage(
  * Cas particulier des PAC hybrides avec répartition forfaitaire du besoin
  * @type {number|number}
  */
-function getProrataGenerateur(genCh, nbCascadeAndCombustion, Pnominal, zc) {
+function getProrataGenerateur(genCh, nbCascadeAndCombustion, nbGenerateurCascade, Pnominal, zc) {
   // IDs des pompes à chaleur hybrides
   if (
     genCh.donnee_entree.enum_type_generateur_ch_id >= 145 &&
@@ -185,7 +206,9 @@ function getProrataGenerateur(genCh, nbCascadeAndCombustion, Pnominal, zc) {
     }
   }
 
-  return nbCascadeAndCombustion > 1 ? genCh.donnee_intermediaire.pn / Pnominal : 1;
+  return nbCascadeAndCombustion > 1
+    ? genCh.donnee_intermediaire.pn / Pnominal
+    : 1 / (nbGenerateurCascade || 1);
 }
 
 /**
