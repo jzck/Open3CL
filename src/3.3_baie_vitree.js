@@ -87,7 +87,7 @@ function tv_sw(di, de, du) {
    * 1 - brique de verre
    * 2 - polycarbonate
    */
-  if (![1, 2].includes(matcher.enum_type_materiaux_menuiserie_id)) {
+  if (![1, 2].includes(parseInt(matcher.enum_type_materiaux_menuiserie_id))) {
     matcher.vitrage_vir = requestInput(de, du, 'vitrage_vir', 'bool');
     matcher.enum_type_pose_id = requestInputID(de, du, 'type_pose');
   }
