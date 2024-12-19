@@ -66,7 +66,6 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
           `Calcul de hperm pour la ventilation ${de.description}. Le DPE considère isolation_surfaces = ${rowQ4paConv.isolation_surfaces} 
           alors que ce devrait être isolation_surfaces = ${isolation_surfaces}. La valeur du DPE isolation_surfaces = ${rowQ4paConv.isolation_surfaces} est utilisée.`
         );
-        isolation_surfaces = rowQ4paConv.isolation_surfaces;
       }
 
       if (rowQ4paConv.presence_joints_menuiserie !== pjt) {
@@ -74,7 +73,6 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
           `Calcul de hperm pour la ventilation ${de.description}. Le DPE considère presence_joints_menuiserie = ${rowQ4paConv.presence_joints_menuiserie} 
           alors que ce devrait être presence_joints_menuiserie = ${pjt}. La valeur du DPE presence_joints_menuiserie = ${rowQ4paConv.presence_joints_menuiserie} est utilisée.`
         );
-        pjt = rowQ4paConv.presence_joints_menuiserie;
       }
     }
   }
