@@ -220,7 +220,11 @@ export default function calc_gen_ecs(dpe, gen_ecs, ecs_di, ecs_de, GV, ca_id, zc
 
   let isCombustionGenerator = combustion_ids.includes(type_generateur_id);
   let isPacGenerator = pac_ids.includes(type_generateur_id);
-  let isReseauChaleur = type_energie === 'réseau de chauffage urbain';
+  /**
+   * enum_type_installation_id = 3 => 'installation collective multi-bâtiment : modélisée comme un réseau de chaleur'
+   */
+  let isReseauChaleur =
+    type_energie === 'réseau de chauffage urbain' || ecs_de.enum_type_installation_id === '3';
   let isElectric = type_energie === 'électricité';
 
   /**
