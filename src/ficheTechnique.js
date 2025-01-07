@@ -5,14 +5,14 @@
  * @param dpe {FullDpe}
  * @param categoryFicheTechiqueId {string}
  * @param description {string}
- * @param classification {string | null}
+ * @param classifications {[string]}
  * @param field {'description' | 'valeur'}
  */
 export default function getFicheTechnique(
   dpe,
   categoryFicheTechiqueId,
   description,
-  classification = null,
+  classifications = [],
   field = 'description'
 ) {
   /** @type {FicheTechniqueItem[]} */
@@ -30,7 +30,7 @@ export default function getFicheTechnique(
          * Plusieurs collections de fiches techniques peuvent exister pour la même catégorie (pour 2 systèmes ECS par exemple)
          * Le champs classification permet de trouver la collection qui convient en filtrant sur une seconde donnée
          */
-        if (classification) {
+        if (classifications.length) {
           /** @type {SousFicheTechniqueItem[]} */
           let sousFichesTechniques =
             ficheTechnique.sous_fiche_technique_collection.sous_fiche_technique;
@@ -39,19 +39,23 @@ export default function getFicheTechnique(
             sousFichesTechniques = [sousFichesTechniques];
           }
 
-          const secondFiche = sousFichesTechniques.filter((ficheTechnique) => {
-            const valeur = ficheTechnique?.valeur;
+          const allContained = classifications.every((classification) =>
+            sousFichesTechniques.some((ficheTechnique) => {
+              const valeur = ficheTechnique?.valeur;
 
-            if (typeof valeur === 'string') {
-              return (
-                ficheTechnique.valeur.toLowerCase().indexOf(classification.toLowerCase()) !== -1
-              );
-            }
+              if (typeof valeur === 'string') {
+                return (
+                  ficheTechnique.valeur
+                    .toLowerCase()
+                    .indexOf(classification.toString().toLowerCase()) !== -1
+                );
+              }
 
-            return ficheTechnique.valeur === classification;
-          });
+              return ficheTechnique.valeur === classification;
+            })
+          );
 
-          if (!secondFiche.length) {
+          if (!allContained) {
             return acc;
           }
         }

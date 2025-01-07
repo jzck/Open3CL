@@ -151,6 +151,39 @@ export function calcul_3cl(dpe) {
   const ca_id = logement.meteo.enum_classe_altitude_id;
 
   const instal_ch = logement.installation_chauffage_collection.installation_chauffage;
+  const bv_list = env.baie_vitree_collection.baie_vitree;
+
+  bv_list.forEach((baieVitree) => {
+    const donneeEntree = baieVitree.donnee_entree;
+
+    // Si pas d'information sur la présence de joint => vérification dans les fiches techniques
+    if (donneeEntree.presence_joint === undefined) {
+      const orientation = enums.orientation[donneeEntree.enum_orientation_id];
+      const typeVitrage = enums.type_vitrage[donneeEntree.enum_type_vitrage_id];
+      const typeBaie = enums.type_baie[donneeEntree.enum_type_baie_id];
+      const typeMateriauxMenuiserie =
+        enums.type_materiaux_menuiserie[donneeEntree.enum_type_materiaux_menuiserie_id];
+
+      const ficheTechnique = getFicheTechnique(dpe, '4', 'joint', [
+        orientation,
+        typeVitrage,
+        typeBaie,
+        typeMateriauxMenuiserie
+      ]);
+
+      if (ficheTechnique) {
+        if (ficheTechnique.valeur.toLowerCase() === 'oui') {
+          donneeEntree.presence_joint = 1;
+        } else if (ficheTechnique.valeur.toLowerCase() === 'non') {
+          donneeEntree.presence_joint = 0;
+        } else {
+          console.warn(`
+            La valeur de la sous-fiche technique pour la présence de joint de la baie vitrée ${baieVitree.donnee_entree.description} est inconnue
+          `);
+        }
+      }
+    }
+  });
 
   /**
    * 4 - Calcul des déperditions par renouvellement d’air
@@ -161,7 +194,7 @@ export function calcul_3cl(dpe) {
     dpe,
     '10',
     'après 2012',
-    null,
+    [],
     'valeur'
   );
 
@@ -256,7 +289,7 @@ export function calcul_3cl(dpe) {
           dpe,
           '8',
           'hors volume habitable',
-          generateur.donnee_entree.description
+          [generateur.donnee_entree.description]
         );
 
         if (ficheProductionVolumeHabitable) {
@@ -358,7 +391,6 @@ export function calcul_3cl(dpe) {
     );
   });
 
-  const bv_list = env.baie_vitree_collection.baie_vitree;
   const ets = env.ets_collection.ets;
 
   const besoin_ch = calc_besoin_ch(
