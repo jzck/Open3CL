@@ -38,19 +38,19 @@ function tv_q4pa_conv(di, de, cg, mur_list, ph_list, porte_list, bv_list) {
   // presence joints menuiserie
   let surface_bv_avec_joint = bv_list.reduce((acc, bv) => {
     if (bv.donnee_entree.presence_joint) return acc + bv.donnee_entree.surface_totale_baie;
-    else return 0;
+    else return acc;
   }, 0);
   surface_bv_avec_joint += porte_list.reduce((acc, porte) => {
     if (porte.donnee_entree.presence_joint) return acc + porte.donnee_entree.surface_porte;
-    else return 0;
+    else return acc;
   }, 0);
   let surface_bv_sans_joint = bv_list.reduce((acc, bv) => {
     if (!bv.donnee_entree.presence_joint) return acc + bv.donnee_entree.surface_totale_baie;
-    else return 0;
+    else return acc;
   }, 0);
   surface_bv_sans_joint += porte_list.reduce((acc, porte) => {
     if (!porte.donnee_entree.presence_joint) return acc + porte.donnee_entree.surface_porte;
-    else return 0;
+    else return acc;
   }, 0);
   let pjt =
     surface_bv_avec_joint / (surface_bv_avec_joint + surface_bv_sans_joint) > 0.5 ? '1' : '0';

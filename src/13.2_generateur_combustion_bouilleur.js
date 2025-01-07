@@ -134,7 +134,7 @@ function updateGenerateurBouilleur(dpe, ids, de, type) {
     const values = ids[generateurId];
 
     // Récupération de l'année d'installation du système ECS ou Chauffage dans les fiches techniques
-    const ficheTechnique = getFicheTechnique(dpe, '7', 'année', 'bouilleur')?.valeur;
+    const ficheTechnique = getFicheTechnique(dpe, '7', 'année', ['bouilleur'])?.valeur;
 
     /**
      * Par défaut:

@@ -123,12 +123,9 @@ function updateGenerateurChaudiere(dpe, ids, de, type) {
     de[`previous_${enumType}`] = generateurId;
 
     // Récupération de l'année d'installation du système ECS ou Chauffage dans les fiches techniques
-    const ficheTechnique = getFicheTechnique(
-      dpe,
-      type === 'ch' ? '7' : '8',
-      'année',
+    const ficheTechnique = getFicheTechnique(dpe, type === 'ch' ? '7' : '8', 'année', [
       'Autre système à combustion'
-    )?.valeur;
+    ])?.valeur;
 
     if (ficheTechnique) {
       if (ficheTechnique.toString().toLowerCase() === 'avant 1948') {

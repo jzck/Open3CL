@@ -213,7 +213,7 @@ function addInfosFromFichesTechniques(dpe, de) {
     dpe,
     '8',
     'Présence ventilateur / dispositif circulation air dans circuit combustion',
-    de.description
+    [de.description]
   )?.valeur;
 
   if (ficheTechnique && ficheTechnique === 'oui') {
