@@ -82,10 +82,6 @@ export class SynchronizeValeurTables {
             },
             (value, key) => {
               if (typeof value === 'string') {
-                // ALl value that ends with '%' are replace by value to be compatible with the legacy `tv.js` file
-                if (value.endsWith('%')) {
-                  return `${parseFloat(value.replace('%', '')) / 100}`;
-                }
                 // Remove 'kW' to be compatible with the legacy `tv.js` file
                 if (value.endsWith('kW')) {
                   return value.replace(/kW/g, '').replace(/\s/g, '');

@@ -173,9 +173,12 @@ export function tv_generateur_combustion(dpe, di, de, type, GV, tbase, methodeSa
   if (![4, 5].includes(methodeSaisie)) {
     if (row.qp0_perc) {
       const qp0_calc = excel_to_js_exec(row.qp0_perc, di.pn / (de.ratio_virtualisation || 1), E, F);
+      // Certaines chaudières ont un qp0 en % de pn, d'autres ont des valeurs constantes
       di.qp0 = row.qp0_perc.includes('Pn')
         ? qp0_calc * 1000 * (de.ratio_virtualisation || 1)
-        : qp0_calc * di.pn;
+        : row.qp0_perc.includes('%')
+          ? qp0_calc * di.pn
+          : qp0_calc * 1000;
     } else {
       di.qp0 = 0;
     }

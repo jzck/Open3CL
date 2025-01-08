@@ -24901,7 +24901,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '84 + 2 logPn',
       rpint: '80 + 3 logPn',
-      qp0_perc: '0.04',
+      qp0_perc: '4%',
       pveil: '240'
     },
     {
@@ -24912,7 +24912,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '84 + 2 logPn',
       rpint: '80 + 3 logPn',
-      qp0_perc: '0.02',
+      qp0_perc: '2%',
       pveil: '150'
     },
     {
@@ -24923,7 +24923,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '84 + 2 logPn',
       rpint: '80 + 3 logPn',
-      qp0_perc: '0.015',
+      qp0_perc: '1.50%',
       pveil: '150'
     },
     {
@@ -24934,7 +24934,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '84 + 2 logPn',
       rpint: '80 + 3 logPn',
-      qp0_perc: '0.012',
+      qp0_perc: '1.20%',
       pveil: '120'
     },
     {
@@ -24945,7 +24945,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '84 + 2 logPn',
       rpint: '80 + 3 logPn',
-      qp0_perc: '0.01'
+      qp0_perc: '1%'
     },
     {
       tv_generateur_combustion_id: '6',
@@ -24965,7 +24965,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '87,5 + 1,5logPn',
       rpint: '87,5 + 1,5logPn',
-      qp0_perc: '0.012',
+      qp0_perc: '1.20%',
       pveil: '120'
     },
     {
@@ -24976,7 +24976,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '87,5 + 1,5logPn',
       rpint: '87,5 + 1,5logPn',
-      qp0_perc: '0.01'
+      qp0_perc: '1%'
     },
     {
       tv_generateur_combustion_id: '9',
@@ -24996,7 +24996,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '91 + logPn',
       rpint: '97 + logPn',
-      qp0_perc: '0.01',
+      qp0_perc: '1%',
       pveil: '150'
     },
     {
@@ -25007,7 +25007,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '91 + logPn',
       rpint: '97 + logPn',
-      qp0_perc: '0.01',
+      qp0_perc: '1%',
       pveil: '120'
     },
     {
@@ -25018,7 +25018,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '91 + logPn',
       rpint: '97 + logPn',
-      qp0_perc: '0.01'
+      qp0_perc: '1%'
     },
     {
       tv_generateur_combustion_id: '13',
@@ -25029,7 +25029,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '91 + 3 logPn',
       rpint: '103 + 2,5logPn',
-      qp0_perc: '0.005'
+      qp0_perc: '0.50%'
     },
     {
       tv_generateur_combustion_id: '14',
@@ -25040,7 +25040,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '94 + logPn',
       rpint: '105 + 0,5logPn',
-      qp0_perc: '0.003'
+      qp0_perc: '0.30%'
     },
     {
       tv_generateur_combustion_id: '15',
@@ -25051,7 +25051,7 @@ export const tvs = {
       pn: '400',
       rpn: '96.6',
       rpint: '106.3',
-      qp0_perc: '0.003'
+      qp0_perc: '0.30%'
     },
     {
       tv_generateur_combustion_id: '16',
@@ -25061,7 +25061,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '84 + 2 logPn',
       rpint: '80 + 3 logPn',
-      qp0_perc: '0.04'
+      qp0_perc: '4%'
     },
     {
       tv_generateur_combustion_id: '17',
@@ -25071,7 +25071,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '84 + 2 logPn',
       rpint: '80 + 3 logPn',
-      qp0_perc: '0.03'
+      qp0_perc: '3%'
     },
     {
       tv_generateur_combustion_id: '18',
@@ -25081,7 +25081,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '84 + 2 logPn',
       rpint: '80 + 3 logPn',
-      qp0_perc: '0.02'
+      qp0_perc: '2%'
     },
     {
       tv_generateur_combustion_id: '19',
@@ -25091,7 +25091,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '84 + 2 logPn',
       rpint: '80 + 3 logPn',
-      qp0_perc: '0.01'
+      qp0_perc: '1%'
     },
     {
       tv_generateur_combustion_id: '20',
@@ -25101,7 +25101,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '84 + 2 logPn',
       rpint: '80 + 3 logPn',
-      qp0_perc: '0.01'
+      qp0_perc: '1%'
     },
     {
       tv_generateur_combustion_id: '21',
@@ -25121,7 +25121,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '87,5 + 1,5 logPn',
       rpint: '87,5 + 1,5 logPn',
-      qp0_perc: '0.01'
+      qp0_perc: '1%'
     },
     {
       tv_generateur_combustion_id: '23',
@@ -25141,7 +25141,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '91 + logPn',
       rpint: '97 + logPn',
-      qp0_perc: '0.01'
+      qp0_perc: '1%'
     },
     {
       tv_generateur_combustion_id: '25',
@@ -25152,7 +25152,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '91 + 3 logPn',
       rpint: '98 + 3 logPn',
-      qp0_perc: '0.005'
+      qp0_perc: '0.50%'
     },
     {
       tv_generateur_combustion_id: '26',
@@ -25163,7 +25163,7 @@ export const tvs = {
       pn: 'Pn',
       rpn: '94 + logPn',
       rpint: '100 + logPn',
-      qp0_perc: '0.006'
+      qp0_perc: '0.60%'
     },
     {
       tv_generateur_combustion_id: '27',
@@ -25174,7 +25174,7 @@ export const tvs = {
       pn: '400',
       rpn: '96.6',
       rpint: '102.6',
-      qp0_perc: '0.003'
+      qp0_perc: '0.30%'
     },
     {
       tv_generateur_combustion_id: '28',
@@ -25738,7 +25738,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée avant 1980',
       critere_pn: 'Pn≤10',
       rpn: '70',
-      qp0_perc: '0.04',
+      qp0_perc: '4.0 %',
       pveil: '150'
     },
     {
@@ -25747,7 +25747,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée 1981-1989',
       critere_pn: 'Pn≤10',
       rpn: '75',
-      qp0_perc: '0.02',
+      qp0_perc: '2.0 %',
       pveil: '120'
     },
     {
@@ -25756,7 +25756,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée 1990-2000',
       critere_pn: 'Pn≤10',
       rpn: '81',
-      qp0_perc: '0.012',
+      qp0_perc: '1.2 %',
       pveil: '120'
     },
     {
@@ -25765,7 +25765,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée 2001-2015',
       critere_pn: 'Pn≤10',
       rpn: '82',
-      qp0_perc: '0.01',
+      qp0_perc: '1.0 %',
       pveil: '100'
     },
     {
@@ -25774,7 +25774,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée après  2015',
       critere_pn: 'Pn≤10',
       rpn: '82',
-      qp0_perc: '0.01'
+      qp0_perc: '1.0 %'
     },
     {
       tv_generateur_combustion_id: '89',
@@ -25782,7 +25782,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée avant 1980',
       critere_pn: 'Pn>10',
       rpn: '70',
-      qp0_perc: '0.04',
+      qp0_perc: '4.0 %',
       pveil: '150'
     },
     {
@@ -25791,7 +25791,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée 1981-1989',
       critere_pn: 'Pn>10',
       rpn: '75',
-      qp0_perc: '0.02',
+      qp0_perc: '2.0 %',
       pveil: '120'
     },
     {
@@ -25800,7 +25800,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée 1990-2000',
       critere_pn: 'Pn>10',
       rpn: '82',
-      qp0_perc: '0.012',
+      qp0_perc: '1.2 %',
       pveil: '120'
     },
     {
@@ -25809,7 +25809,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée 2001-2015',
       critere_pn: 'Pn>10',
       rpn: '84',
-      qp0_perc: '0.01',
+      qp0_perc: '1.0 %',
       pveil: '100'
     },
     {
@@ -25818,7 +25818,7 @@ export const tvs = {
       type_generateur: 'Chauffe-eau gaz à production instantanée après  2015',
       critere_pn: 'Pn>10',
       rpn: '84',
-      qp0_perc: '0.006'
+      qp0_perc: '0.6 %'
     }
   ],
   pertes_stockage: [
