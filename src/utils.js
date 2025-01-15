@@ -435,7 +435,9 @@ export function isEffetJoule(instal_ch) {
  * @returns {boolean}
  */
 export function containsAnySubstring(mainString, substrings) {
-  return substrings.some((substring) => mainString.toLowerCase().includes(substring.toLowerCase()));
+  return substrings.some((substring) =>
+    mainString.toString().toLowerCase().includes(substring.toLowerCase())
+  );
 }
 
 /**
@@ -454,4 +456,45 @@ export function convertExpression(expression) {
     '($1 < $2) && ($2 <= $3)'
   );
   return expression;
+}
+
+/**
+ * Retourne les valeurs qui encadrent inputNumber dans ranges
+ * Si inputNumber est présent dans ranges, inputNumber est retourné comme borne 1 et borne 2
+ *
+ * @param inputNumber {float}
+ * @param ranges {number[]}
+ * @returns {*[]}
+ */
+export function getRange(inputNumber, ranges) {
+  const result = [];
+
+  ranges.sort();
+
+  if (inputNumber < ranges[0]) {
+    result.push(ranges[0]);
+    result.push(ranges[1]);
+    return result;
+  }
+  if (inputNumber > ranges[ranges.length - 1]) {
+    result.push(ranges[ranges.length - 2]);
+    result.push(ranges[ranges.length - 1]);
+  }
+  if (ranges.includes(inputNumber)) {
+    result.push(inputNumber);
+    result.push(inputNumber);
+  } else {
+    ranges.find((range, index) => {
+      if (inputNumber < range) {
+        if (index > 0) {
+          result.push(ranges[index - 1]);
+        } else {
+          result.push(ranges[index]);
+        }
+        result.push(ranges[index]);
+        return true;
+      }
+    });
+  }
+  return result;
 }

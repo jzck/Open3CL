@@ -1,4 +1,4 @@
-import { convertExpression, getThicknessFromDescription } from './utils.js';
+import { convertExpression, getRange, getThicknessFromDescription } from './utils.js';
 
 describe('Utils unit tests', () => {
   it.each([
@@ -23,5 +23,14 @@ describe('Utils unit tests', () => {
     [undefined, undefined]
   ])('should transform expression %s to %s', (expression, expected) => {
     expect(convertExpression(expression)).toBe(expected);
+  });
+
+  it.each([
+    [[1, 1.2, 3.4, 5.6], 0.5, [1, 1.2]],
+    [[1, 1.2, 3.4, 5.6], 1, [1, 1]],
+    [[1, 1.2, 3.4, 5.6], 1.3, [1.2, 3.4]],
+    [[1, 1.2, 3.4, 5.6], 6.5, [3.4, 5.6]]
+  ])('should for values %s and inputNumber %s return range %s', (ranges, inputNumber, expected) => {
+    expect(getRange(inputNumber, ranges)).toStrictEqual(expected);
   });
 });
