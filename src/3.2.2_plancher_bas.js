@@ -1,6 +1,6 @@
 import enums from './enums.js';
 import b from './3.1_b.js';
-import { tv, requestInput, getKeyByValue, bug_for_bug_compat } from './utils.js';
+import { tv, requestInput, getKeyByValue, bug_for_bug_compat, getRange } from './utils.js';
 
 const scriptName = new URL(import.meta.url).pathname.split('/').pop();
 
@@ -53,36 +53,6 @@ function tv_upb(di, de, du, pc_id, zc, effetJoule) {
   }
 }
 
-function ue_ranges(inputNumber, ranges) {
-  const result = [];
-
-  if (inputNumber < ranges[0]) {
-    result.push(ranges[0]);
-    result.push(ranges[1]);
-  }
-  if (inputNumber > ranges[ranges.length - 1]) {
-    result.push(ranges[ranges.length - 2]);
-    result.push(ranges[ranges.length - 1]);
-  }
-  if (ranges.includes(inputNumber)) {
-    result.push(inputNumber);
-    result.push(inputNumber);
-  } else {
-    ranges.find((range, index) => {
-      if (inputNumber < range) {
-        if (index > 0) {
-          result.push(ranges[index - 1]);
-        } else {
-          result.push(ranges[index]);
-        }
-        result.push(ranges[index]);
-        return true;
-      }
-    });
-  }
-  return result;
-}
-
 const values_2s_p = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20];
 
 function tv_ue(di, de, du, pc_id, pb_list) {
@@ -92,14 +62,14 @@ function tv_ue(di, de, du, pc_id, pb_list) {
   if (type_adjacence === 'terre-plein') {
     if (Number(pc_id) < 7) {
       type_adjacence_plancher = 'terre plein bâtiment construit avant 2001';
-      [upb1, upb2] = ue_ranges(di.upb, [0.46, 0.59, 0.85, 1.5, 3.4]);
+      [upb1, upb2] = getRange(di.upb, [0.46, 0.59, 0.85, 1.5, 3.4]);
     } else {
       type_adjacence_plancher = 'terre plein bâtiment construit à partir de 2001';
-      [upb1, upb2] = ue_ranges(di.upb, [0.31, 0.37, 0.46, 0.6, 0.85, 1.5, 3.4]);
+      [upb1, upb2] = getRange(di.upb, [0.31, 0.37, 0.46, 0.6, 0.85, 1.5, 3.4]);
     }
   } else {
     type_adjacence_plancher = 'plancher sur vide sanitaire ou sous-sol non chauffé';
-    [upb1, upb2] = ue_ranges(di.upb, [0.31, 0.34, 0.37, 0.41, 0.45, 0.83, 1.43, 3.33]);
+    [upb1, upb2] = getRange(di.upb, [0.31, 0.34, 0.37, 0.41, 0.45, 0.83, 1.43, 3.33]);
   }
 
   /**

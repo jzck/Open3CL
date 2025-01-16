@@ -22,6 +22,8 @@ export default function getFicheTechnique(
     fichesTechniques = [fichesTechniques];
   }
 
+  classifications = classifications.filter((classification) => classification);
+
   fichesTechniques = fichesTechniques
     .filter((ficheTechnique) => ficheTechnique)
     .reduce((acc, ficheTechnique) => {

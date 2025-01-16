@@ -49,7 +49,7 @@ export default function calc_qualite_isolation(enveloppe, dp) {
     } else {
       if (
         plancherHaut.donnee_entree.enum_type_plancher_haut_id === '12' ||
-        plancherHaut.donnee_entree.description.toLowerCase().indexOf('combles aménagés') !== -1
+        plancherHaut.donnee_entree.description?.toLowerCase().indexOf('combles aménagés') !== -1
       ) {
         phCombleAmenagee.push(plancherHaut);
       } else {

@@ -1,5 +1,6 @@
 import b from './3.1_b.js';
-import { tv, requestInput, requestInputID, bug_for_bug_compat } from './utils.js';
+import { tv, requestInput, requestInputID, bug_for_bug_compat, getRange } from './utils.js';
+import tvs from './tv.js';
 
 function tv_ug(di, de, du) {
   const matcher = {
@@ -22,24 +23,73 @@ function tv_ug(di, de, du) {
   }
 }
 
-function tv_uw(di, de, du) {
-  const matcher = {
-    enum_type_baie_id: requestInputID(de, du, 'type_baie')
-  };
+function tv_uw(di, de) {
+  const enum_type_baie_id = de.enum_type_baie_id;
+  const matcher = { enum_type_baie_id };
+  let uw;
 
-  if (
-    matcher.enum_type_baie_id &&
-    !['1', '2', '3'].includes(matcher.enum_type_baie_id.toString())
-  ) {
-    matcher.enum_type_materiaux_menuiserie_id = requestInputID(de, du, 'type_materiaux_menuiserie');
-    matcher.ug = `^${di.ug}$`;
-  }
-  const row = tv('uw', matcher);
-  if (row) {
-    di.uw = Number(row.uw);
-    de.tv_uw_id = Number(row.tv_uw_id);
+  /**
+   * Pas de notion de ug pour les parois polycarbonate ou verre
+   * enum_type_baie_id
+   * 1 - paroi en brique de verre pleine
+   * 2 - paroi en brique de verre creuse
+   * 3 - paroi en polycarbonnate
+   */
+  if (matcher.enum_type_baie_id && ['1', '2', '3'].includes(enum_type_baie_id)) {
+    const row = tv('uw', matcher);
+    if (row) {
+      uw = Number(row.uw);
+      de.tv_uw_id = Number(row.tv_uw_id);
+    }
   } else {
-    console.error('!! pas de valeur forfaitaire trouvée pour uw !!');
+    const enum_type_materiaux_menuiserie_id = de.enum_type_materiaux_menuiserie_id;
+    matcher.enum_type_materiaux_menuiserie_id = enum_type_materiaux_menuiserie_id;
+
+    // Récupération de toutes les valeurs de Ug présentes dans les tables Uw pour le type de baie et matériaux de la baie vitrée
+    const ugValues = tvs.uw
+      .filter((row) => {
+        return (
+          row.enum_type_baie_id.split('|').includes(enum_type_baie_id) &&
+          row.enum_type_materiaux_menuiserie_id
+            .split('|')
+            .includes(enum_type_materiaux_menuiserie_id)
+        );
+      })
+      .map((row) => parseFloat(row.ug));
+
+    /**
+     * 3.3.2 Coefficients Uw des fenêtres / portes-fenêtres
+     * Les Uw associés à des Ug non présents dans les tableaux peuvent être obtenus par interpolation ou
+     * extrapolation avec les deux Ug tabulés les plus proches.
+     */
+    let ug1, ug2;
+    [ug1, ug2] = getRange(di.ug, ugValues);
+
+    const matcher_1 = { ...matcher, ...{ ug: `^${ug1}$` } };
+    const row_1 = tv('uw', matcher_1);
+    const delta_ug = ug2 - ug1;
+
+    if (delta_ug === 0) {
+      if (row_1) {
+        uw = Number(row_1.uw);
+      }
+    } else {
+      const matcher_2 = { ...matcher, ...{ ug: `^${ug2}$` } };
+      const row_2 = tv('uw', matcher_2);
+
+      if (row_1 && row_2) {
+        const delta_uw = Number(row_2.uw) - Number(row_1.uw);
+        uw = Number(row_1.uw) + (delta_uw * (di.ug - ug1)) / delta_ug;
+      }
+    }
+  }
+
+  if (uw) {
+    di.uw = uw;
+  } else {
+    console.error(`
+      Pas de valeur forfaitaire uw trouvée pour la baie vitrée ${de.description}.
+    `);
   }
 }
 
@@ -158,7 +208,7 @@ export default function calc_bv(bv, zc) {
 
   tv_ug(di, de, du);
   if (de.uw_saisi) di.uw = de.uw_saisi;
-  else tv_uw(di, de, du);
+  else tv_uw(di, de);
 
   /**
    * S'il existe une double-fenêtre, calcul des facteurs sw et uw équivalents
@@ -196,7 +246,7 @@ export default function calc_bv(bv, zc) {
     if (deDoubleFenetre.uw_saisi) {
       diDoubleFenetre.uw = deDoubleFenetre.uw_saisi;
     } else {
-      tv_uw(diDoubleFenetre, deDoubleFenetre, du);
+      tv_uw(diDoubleFenetre, deDoubleFenetre);
     }
 
     const uw = 1 / (1 / di.uw + 1 / diDoubleFenetre.uw + 0.07);

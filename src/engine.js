@@ -285,29 +285,31 @@ export function calcul_3cl(dpe) {
        * dans tous les DPEs (parfois 0 = 'Oui', d'autres 0 = 'Non')
        */
       ecs.generateur_ecs_collection.generateur_ecs.forEach((generateur) => {
-        const ficheProductionVolumeHabitable = getFicheTechnique(
-          dpe,
-          '8',
-          'hors volume habitable',
-          [generateur.donnee_entree.description]
-        );
-
-        if (ficheProductionVolumeHabitable) {
-          const pvcFicheTechnique = containsAnySubstring(ficheProductionVolumeHabitable.valeur, [
+        if (generateur.donnee_entree.description) {
+          const ficheProductionVolumeHabitable = getFicheTechnique(
+            dpe,
+            '8',
             'hors volume habitable',
-            'oui'
-          ])
-            ? 0
-            : 1;
+            [generateur.donnee_entree.description]
+          );
 
-          if (generateur.donnee_entree.position_volume_chauffe !== pvcFicheTechnique) {
-            console.error(
-              `La valeur de la variable position_volume_chauffe pour le générateur ECS ${generateur.donnee_entree.description} 
+          if (ficheProductionVolumeHabitable) {
+            const pvcFicheTechnique = containsAnySubstring(ficheProductionVolumeHabitable.valeur, [
+              'hors volume habitable',
+              'oui'
+            ])
+              ? 0
+              : 1;
+
+            if (generateur.donnee_entree.position_volume_chauffe !== pvcFicheTechnique) {
+              console.error(
+                `La valeur de la variable position_volume_chauffe pour le générateur ECS ${generateur.donnee_entree.description} 
                 ne correspond pas à celle présente dans la fiche technique "${ficheProductionVolumeHabitable.description}". 
                 La valeur de la fiche technique est prise en compte.`
-            );
+              );
 
-            generateur.donnee_entree.position_volume_chauffe = pvcFicheTechnique;
+              generateur.donnee_entree.position_volume_chauffe = pvcFicheTechnique;
+            }
           }
         }
 
