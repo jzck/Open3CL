@@ -59,11 +59,15 @@ function coef_ch(Fch) {
 export function conso_ch(di, de, du, _pos, cfg_ch, em_list, GV, Sh, hsp, bch, bch_dep) {
   const gen_lge_id = requestInputID(de, du, 'lien_generateur_emetteur');
   const coef = coef_ch(de.fch || 0.5)[cfg_ch][_pos] || 1;
+  let em_filt;
 
-  const em_filt = em_list.filter(
-    (em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id
-  );
-
+  if (em_list.length === 1) {
+    em_filt = em_list;
+  } else {
+    em_filt = em_list.filter(
+      (em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id
+    );
+  }
   const emetteur_eq = em_filt.reduce((acc, em) => {
     const int = calc_intermittence(GV, Sh, hsp, em.donnee_intermediaire.i0);
     const r_em = rendement_emission(em);
