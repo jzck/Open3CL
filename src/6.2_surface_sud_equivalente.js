@@ -93,7 +93,7 @@ function getSsd(bv, zc, mois, coeff) {
   const di = bv.donnee_intermediaire || {};
 
   const orientation = enums.orientation[de.enum_orientation_id];
-  const inclinaison = enums.inclinaison_vitrage[de.enum_inclinaison_vitrage_id];
+  const inclinaison = enums.inclinaison_vitrage[de.enum_inclinaison_vitrage_id ?? 3];
   let oi = `${orientation} ${inclinaison}`;
   if (inclinaison === 'horizontal') oi = 'horizontal';
   const c1j = c1[zc][mois][oi];

@@ -154,6 +154,8 @@ export default function calc_conso(
         value.donnee_entree.cle_repartition_ch =
           ch.donnee_entree.cle_repartition_ch || prorataChauffage;
       }
+      value.donnee_entree.enum_methode_calcul_conso_id =
+        ch.donnee_entree.enum_methode_calcul_conso_id;
       value.donnee_entree.enum_type_installation_id = ch.donnee_entree.enum_type_installation_id;
       (value.donnee_utilisateur = value.donnee_utilisateur || {}).coeffEmissionGes =
         getGesCoeffForGenerateur(value, 'ch');
@@ -267,7 +269,18 @@ export default function calc_conso(
     const gen_ecs_en = gen_ecs.filter(
       (gen_ecs) => gen_ecs.donnee_entree.enum_type_energie_id === energie_id
     );
-    let conso_en = calc_conso_pond(Sh, zc_id, vt_en, gen_ch_en, gen_ecs_en, fr_en, '', null);
+    let conso_en = calc_conso_pond(
+      Sh,
+      zc_id,
+      vt_en,
+      gen_ch_en,
+      gen_ecs_en,
+      fr_en,
+      '',
+      null,
+      prorataECS,
+      prorataChauffage
+    );
     conso_en = {
       conso_ch: conso_en._ch,
       conso_ecs: conso_en._ecs,
@@ -400,7 +413,12 @@ function calc_conso_pond(
 ) {
   const ret = {};
   ret.auxiliaire_ventilation = vt_list.reduce((acc, vt) => {
-    const conso = vt.donnee_intermediaire.conso_auxiliaire_ventilation || 0;
+    let conso = vt.donnee_intermediaire.conso_auxiliaire_ventilation || 0;
+
+    if (vt.donnee_entree.cle_repartition_ventilation) {
+      conso *= vt.donnee_entree.cle_repartition_ventilation;
+    }
+
     return acc + getConso(coef, 'électricité auxiliaire', conso);
   }, 0);
 
@@ -419,7 +437,19 @@ function calc_conso_pond(
   }, 0);
 
   ret.auxiliaire_distribution_ch = gen_ch.reduce((acc, gen_ch) => {
-    const conso = gen_ch.donnee_intermediaire.conso_auxiliaire_distribution_ch || 0;
+    let conso = gen_ch.donnee_intermediaire.conso_auxiliaire_distribution_ch || 0;
+
+    /**
+     * enum_methode_calcul_conso_id
+     * 2 : 'installation collective rapportée à un logement : cas générateur à combustion virtuel ou ecs collective virtuelle'
+     */
+    if (
+      ['2', '4'].includes(gen_ch.donnee_entree.enum_methode_calcul_conso_id) &&
+      gen_ch.donnee_entree.cle_repartition_ch
+    ) {
+      conso *= gen_ch.donnee_entree.cle_repartition_ch;
+    }
+
     return acc + getConso(coef, 'électricité auxiliaire', conso);
   }, 0);
 
@@ -484,7 +514,7 @@ function calc_conso_pond(
 }
 
 /**
- * Retourne le type d'énergie utlisé.
+ * Retourne le type d'énergie utilisé.
  * 1 - Electricité par défaut si la donnée n'est pas définie
  * @param donneeEntree {Donnee_entree}
  * @param suffix {string} Suffix à ajouter au type électricité
