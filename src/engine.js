@@ -18,6 +18,7 @@ import {
 } from './utils.js';
 import { Inertie } from './7_inertie.js';
 import getFicheTechnique from './ficheTechnique.js';
+import { ProductionENR } from './16.2_production_enr.js';
 
 function calc_th(map_id) {
   const map = enums.methode_application_dpe_log[map_id];
@@ -29,6 +30,7 @@ function calc_th(map_id) {
 }
 
 const inertie = new Inertie();
+const productionENR = new ProductionENR();
 
 export function calcul_3cl(dpe) {
   sanitize_dpe(dpe);
@@ -478,16 +480,13 @@ export function calcul_3cl(dpe) {
     prorataChauffage
   );
 
-  const production_electricite = {
-    conso_elec_ac: 0,
-    conso_elec_ac_autre_usage: 0,
-    conso_elec_ac_auxiliaire: 0,
-    conso_elec_ac_ch: 0,
-    conso_elec_ac_eclairage: 0,
-    conso_elec_ac_ecs: 0,
-    conso_elec_ac_fr: 0,
-    production_pv: 0
-  };
+  const production_electricite = productionENR.calculateEnr(
+    dpe.logement.production_elec_enr,
+    conso,
+    Sh,
+    th,
+    zc_id
+  );
 
   // get all baie_vitree orientations
   const ph_list = env.plancher_haut_collection.plancher_haut || [];
