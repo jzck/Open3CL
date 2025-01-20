@@ -16,7 +16,7 @@ function tv_seer(di, de, du, zc_id) {
 
 export default function calc_clim(clim, bfr, bfr_dep, zc_id, Sh) {
   const de = clim.donnee_entree;
-  const di = {};
+  const di = clim.donnee_intermediaire || {};
   const du = {};
 
   const rs = de.surface_clim / Sh;
