@@ -163,7 +163,7 @@ export default function calc_pb(pb, zc, pc_id, effetJoule, pb_list) {
       `);
       methode_saisie_u = 3;
     }
-    // Si Upb est saisie mais que le mode de saisie de u n'est pas 'saisie direct u' on force cette méthode de saisie.
+    // Si Upb est saisi mais que le mode de saisie de u n'est pas 'saisie direct u' on force cette méthode de saisie.
     if (de.upb_saisi && ![9, 10].includes(methode_saisie_u)) {
       console.error(`
         Upb du plancher bas ${de.description} est saisi mais la méthode de saisie du facteur u
