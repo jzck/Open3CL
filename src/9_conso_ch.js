@@ -1,4 +1,4 @@
-import { requestInput, requestInputID } from './utils.js';
+import { requestInputID } from './utils.js';
 import { rendement_emission } from './9_emetteur_ch.js';
 import { calc_intermittence } from './8_intermittence.js';
 
@@ -68,13 +68,22 @@ export function conso_ch(di, de, du, _pos, cfg_ch, em_list, GV, Sh, hsp, bch, bc
       (em) => em.donnee_entree.enum_lien_generateur_emetteur_id === gen_lge_id
     );
   }
+
+  const hasMultipleEmetteur = em_filt.length > 1;
+
   const emetteur_eq = em_filt.reduce((acc, em) => {
     const int = calc_intermittence(GV, Sh, hsp, em.donnee_intermediaire.i0);
     const r_em = rendement_emission(em);
-    const em_de = em.donnee_entree;
-    const em_du = em.donnee_utilisateur;
-    const Sc = requestInput(em_de, em_du, 'surface_chauffee', 'float');
-    const ratio_s = Sc / Sh;
+
+    /**
+     * 9.1.3 Installation avec plusieurs émissions pour un même générateur
+     * La part de la consommation traitée par chaque émetteur est proratisé par le ratio des surfaces habitables.
+     * @type {number|number}
+     */
+    const ratio_s = hasMultipleEmetteur
+      ? em.donnee_entree.surface_chauffee / de.surface_chauffee
+      : 1;
+
     const Ich = 1 / r_em;
     return acc + ratio_s * int * Ich;
   }, 0);

@@ -40,6 +40,10 @@ export default function calc_chauffage(
     calc_emetteur_ch(em_ch, de, map_id, inertie_id);
   });
 
+  if (de.surface_chauffee !== Sh) {
+    bch *= de.surface_chauffee / Sh;
+  }
+
   const Fch = tv_ch_facteur_couverture_solaire(de, zc_id);
   const cfg_id = requestInput(de, du, 'cfg_installation_ch');
   const gen_ch = ch.generateur_chauffage_collection.generateur_chauffage;
